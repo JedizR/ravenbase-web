@@ -892,3 +892,18 @@ test("landing page has no critical accessibility violations", async ({ page }) =
 # Verify: (1) focus ring always visible, (2) logical order, (3) no keyboard traps
 # Test with VoiceOver (Mac): Cmd+F5 to toggle. Navigate with VO+arrow keys.
 ```
+
+---
+
+## Agent Checklist (run before every commit)
+
+```
+□ Did I follow all 19 RULES above? No exceptions.
+□ Did I run npm run build → 0 TypeScript errors, 0 warnings?
+□ Did I run npm run test → 0 failures?
+□ Did I update docs/stories/epics.md → changed this story's 🔲 to ✅?
+□ Did I increment docs/.bmad/story-counter.txt by 1?
+□ Did I update docs/.bmad/project-status.md with current sprint and next story?
+□ Did I append an entry to docs/.bmad/journal.md with all 6 fields?
+□ Did I commit ALL FOUR docs files in one commit: epics.md + story-counter.txt + project-status.md + journal.md?
+```
