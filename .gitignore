@@ -1,6 +1,11 @@
-.env.local
 .next/
+out/
 node_modules/
+.env.local
+.env.*.local
+dist/
+coverage/
+.DS_Store
 playwright-report/
 test-results/
 .worktrees/
