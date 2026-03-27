@@ -905,5 +905,7 @@ test("landing page has no critical accessibility violations", async ({ page }) =
 □ Did I increment docs/.bmad/story-counter.txt by 1?
 □ Did I update docs/.bmad/project-status.md with current sprint and next story?
 □ Did I append an entry to docs/.bmad/journal.md with all 6 fields?
+□ Did I fill in the actual commit hash in the journal entry?
+  (run: git log --oneline -1 to get it — never write TBD)
 □ Did I commit ALL FOUR docs files in one commit: epics.md + story-counter.txt + project-status.md + journal.md?
 ```
