@@ -4,6 +4,17 @@
 **Priority:** P0
 **Complexity:** Small
 **Depends on:** STORY-001
+**Type:** Backend
+**Repo:** ravenbase-api
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+None — adapter initialization and database constraint setup story.
+
+## Component
+COMP-01: IngestionPipeline, COMP-02: GraphEngine, COMP-03: RetrievalEngine
 
 ---
 

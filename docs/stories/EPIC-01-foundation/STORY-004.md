@@ -4,6 +4,17 @@
 **Priority:** P0
 **Complexity:** Small
 **Depends on:** STORY-002, STORY-003
+**Type:** Backend
+**Repo:** ravenbase-api
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+None — ARQ worker setup and health endpoint story.
+
+## Component
+COMP-01: IngestionPipeline (ARQ queue foundation)
 
 ---
 

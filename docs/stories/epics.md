@@ -1,6 +1,6 @@
 # Stories — Epics & Story Master List
 
-> **Status key:** 🔲 DRAFT | ✅ DONE | 🔄 IN_PROGRESS | 🔍 IN_REVIEW
+> **Status key:** 🔲 DRAFT | ✅ DONE | 🔄 IN_PROGRESS | 🔍 IN_REVIEW | ✅ BE / 🔲 FE PARTIAL (cross-repo story, backend done, frontend pending Phase B)
 >
 > **Total stories:** 37 | **Total epics:** 9
 >
@@ -15,10 +15,10 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-001 | API repo scaffold + Web repo scaffold + Makefile + Docker Compose | P0 | Medium | 🔲 |
-| STORY-002 | PostgreSQL schema + Alembic migrations | P0 | Medium | 🔲 |
-| STORY-003 | Qdrant + Neo4j initialization + constraints | P0 | Small | 🔲 |
-| STORY-004 | ARQ worker setup + health endpoint | P0 | Small | 🔲 |
+| STORY-001 | API repo scaffold + Web repo scaffold + Makefile + Docker Compose | P0 | Medium | ✅ |
+| STORY-002 | PostgreSQL schema + Alembic migrations | P0 | Medium | ✅ |
+| STORY-003 | Qdrant + Neo4j initialization + constraints | P0 | Small | ✅ |
+| STORY-004 | ARQ worker setup + health endpoint | P0 | Small | ✅ |
 
 ---
 
@@ -29,10 +29,10 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-005 | File upload endpoint + Supabase Storage | P0 | Medium | 🔲 |
-| STORY-006 | Docling parse + chunk + embed worker | P0 | Large | 🔲 |
-| STORY-007 | SSE progress stream (Redis pub/sub) | P0 | Medium | 🔲 |
-| STORY-008 | Text quick-capture (Omnibar /ingest) | P0 | Small | 🔲 |
+| STORY-005 | File upload endpoint + Supabase Storage | P0 | Medium | ✅ |
+| STORY-006 | Docling parse + chunk + embed worker | P0 | Large | ✅ |
+| STORY-007 | SSE progress stream (Redis pub/sub) | P0 | Medium | ✅ BE / 🔲 FE |
+| STORY-008 | Text quick-capture (Omnibar /ingest) | P0 | Small | ✅ BE / 🔲 FE |
 
 ---
 
@@ -43,8 +43,8 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-009 | Entity extraction (Claude Haiku) + Neo4j writer | P0 | Large | 🔲 |
-| STORY-010 | Graph API endpoints (nodes + neighborhood) | P0 | Medium | 🔲 |
+| STORY-009 | Entity extraction (Claude Haiku) + Neo4j writer | P0 | Large | ✅ |
+| STORY-010 | Graph API endpoints (nodes + neighborhood) | P0 | Medium | ✅ |
 | STORY-011 | Graph Explorer UI (Cytoscape.js, node click panel) | P1 | Large | 🔲 |
 
 ---
@@ -56,8 +56,8 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-012 | Conflict detection worker (Qdrant scan + LLM classify) | P0 | Large | 🔲 |
-| STORY-013 | Conflict API (list, resolve, undo) | P0 | Medium | 🔲 |
+| STORY-012 | Conflict detection worker (Qdrant scan + LLM classify) | P0 | Large | ✅ |
+| STORY-013 | Conflict API (list, resolve, undo) | P0 | Medium | ✅ |
 | STORY-014 | Memory Inbox UI (keyboard navigation, 3 flows) | P0 | Large | 🔲 |
 
 ---
@@ -69,8 +69,8 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-015 | Hybrid retrieval service (Qdrant + Neo4j) | P0 | Large | 🔲 |
-| STORY-016 | Meta-Doc generation worker (PII mask + LLM stream) | P0 | Large | 🔲 |
+| STORY-015 | Hybrid retrieval service (Qdrant + Neo4j) | P0 | Large | ✅ |
+| STORY-016 | Meta-Doc generation worker (PII mask + LLM stream) | P0 | Large | ✅ |
 | STORY-017 | Workstation UI (SSE streaming, Markdown render, export) | P0 | Medium | 🔲 |
 
 ---
@@ -82,7 +82,7 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-018 | Clerk auth integration (FE + BE webhook) | P0 | Medium | 🔲 |
+| STORY-018 | Clerk auth integration (FE + BE webhook) | P0 | Medium | ✅ BE / 🔲 FE |
 | STORY-019 | Onboarding wizard (profile creation + first upload) | P0 | Medium | 🔲 |
 | STORY-020 | System Profile switching (Omnibar /profile command) | P1 | Small | 🔲 |
 
@@ -107,16 +107,16 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-023 | Credits system (deduction, top-up, ledger) | P1 | Medium | 🔲 |
-| STORY-024 | GDPR account deletion cascade | P1 | Medium | 🔲 |
-| STORY-025 | PII masking in production + Presidio config | P1 | Medium | 🔲 |
+| STORY-023 | Credits system (deduction, top-up, ledger) | P1 | Medium | ✅ |
+| STORY-024 | GDPR account deletion cascade | P1 | Medium | ✅ |
+| STORY-025 | PII masking in production + Presidio config | P1 | Medium | ✅ |
 | STORY-031 | Dark mode toggle (localStorage + .dark class) | P1 | Small | 🔲 |
 | STORY-032 | Transactional email (welcome, low-credits, ingestion complete via Resend) | P1 | Medium | 🔲 |
 | STORY-033 | Legal pages (Privacy Policy, Terms of Service, Cookie Consent) | P0 | Small | 🔲 |
 | STORY-034 | Referral system (code gen, reward on first upload, Settings → Referrals) | P1 | Medium | 🔲 |
 | STORY-035 | Data export / portability (multi-store ZIP, email link, Settings → Data) | P1 | Medium | 🔲 |
-| STORY-036 | Internal admin dashboard (user management, credit adjustment, stats) | P1 | Medium | 🔲 |
-| STORY-037 | Cold data lifecycle — inactivity archival for Free-tier users (CRON, warning email, data purge) | P1 | Medium | 🔲 |
+| STORY-036 | Internal admin dashboard (user management, credit adjustment, stats) | P1 | Medium | ✅ BE / 🔲 FE |
+| STORY-037 | Cold data lifecycle — inactivity archival for Free-tier users (CRON, warning email, data purge) | P1 | Medium | ✅ |
 
 ---
 
@@ -133,10 +133,10 @@ see highlighted results.
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-026 | Conversational memory chat — backend | P0 | Large | 🔲 |
+| STORY-026 | Conversational memory chat — backend | P0 | Large | ✅ |
 | STORY-027 | Conversational memory chat — frontend | P0 | Large | 🔲 |
-| STORY-028 | AI chat context import helper | P1 | Medium | 🔲 |
-| STORY-029 | Natural language graph query — backend | P1 | Medium | 🔲 |
+| STORY-028 | AI chat context import helper | P1 | Medium | ✅ BE / 🔲 FE |
+| STORY-029 | Natural language graph query — backend | P1 | Medium | ✅ |
 | STORY-030 | Natural language graph query — frontend | P1 | Medium | 🔲 |
 
 ---

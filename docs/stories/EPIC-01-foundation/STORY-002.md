@@ -4,6 +4,17 @@
 **Priority:** P0
 **Complexity:** Medium
 **Depends on:** STORY-001
+**Type:** Backend
+**Repo:** ravenbase-api
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+None — database schema and Alembic migrations story.
+
+## Component
+Infrastructure
 
 ---
 

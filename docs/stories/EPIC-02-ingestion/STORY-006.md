@@ -4,6 +4,20 @@
 **Priority:** P0
 **Complexity:** Large
 **Depends on:** STORY-005
+**Type:** Backend
+**Repo:** ravenbase-api
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+- FR-01-AC-4: Source record created in PostgreSQL with status PENDING → PROCESSING → INDEXING → COMPLETED transitions
+- FR-01-AC-5: Chunks upserted to Qdrant with tenant_id in payload
+- FR-01-AC-6: Progress published to Redis pub/sub at each status transition
+- FR-01-AC-7: graph_extraction enqueued after COMPLETED
+
+## Component
+COMP-01: IngestionPipeline
 
 ---
 

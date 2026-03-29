@@ -4,6 +4,24 @@
 **Priority:** P0
 **Complexity:** Large
 **Depends on:** STORY-006
+**Type:** Backend
+**Repo:** ravenbase-api
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+- FR-03-AC-1: graph_extraction triggered automatically after ingestion COMPLETED
+- FR-03-AC-2: Each chunk sent to LLMRouter (Gemini Flash primary, Haiku fallback) for entity extraction
+- FR-03-AC-3: Concept nodes use MERGE — no duplicates per {name, tenant_id}
+- FR-03-AC-4: Memory nodes use CREATE — each extraction is unique
+- FR-03-AC-5: EXTRACTED_FROM relationship links Memory → Concept
+- FR-03-AC-6: RELATES_TO relationship links Concept → Concept
+- FR-03-AC-7: All nodes include tenant_id — no cross-tenant leakage
+- FR-03-AC-8: Chunks below confidence threshold 0.6 are discarded
+
+## Component
+COMP-02: GraphEngine
 
 ---
 

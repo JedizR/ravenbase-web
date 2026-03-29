@@ -4,6 +4,17 @@
 **Priority:** P0
 **Complexity:** Medium
 **Depends on:** Nothing (first story)
+**Type:** Cross-repo
+**Repo:** ravenbase-api + ravenbase-web
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+None — infrastructure scaffolding story (repos, Docker Compose, Makefile).
+
+## Component
+Infrastructure
 
 ---
 

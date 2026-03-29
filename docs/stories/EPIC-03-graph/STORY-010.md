@@ -4,6 +4,21 @@
 **Priority:** P0
 **Complexity:** Medium
 **Depends on:** STORY-009
+**Type:** Backend
+**Repo:** ravenbase-api
+
+---
+
+## Functional Requirements
+<!-- Which FR acceptance criteria does this story satisfy? -->
+- FR-04-AC-1: GET /v1/graph/nodes returns all Concept and Memory nodes for the authenticated tenant
+- FR-04-AC-2: Empty graph returns {nodes:[], edges:[]} — never 404
+- FR-04-AC-3: GET /v1/graph/neighborhood/{node_id} returns N-hop subgraph (default hops=2, max hops=5)
+- FR-04-AC-4: tenant_id comes from JWT only — never from query params
+- FR-04-AC-5: Optional profile_id filter scopes results to a profile
+
+## Component
+COMP-02: GraphEngine
 
 ---
 
