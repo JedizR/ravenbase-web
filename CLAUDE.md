@@ -893,6 +893,20 @@ test("landing page has no critical accessibility violations", async ({ page }) =
 
 ---
 
+## Design System Compliance
+
+Every frontend story MUST begin with the agent reading the design
+preamble before writing any JSX:
+
+  docs/design/AGENT_DESIGN_PREAMBLE.md
+
+This file contains non-negotiable visual rules, anti-patterns to
+reject, and a pre-commit checklist. It is a mandatory read, not
+a suggestion. Agents that skip it produce generic AI-looking UI
+that violates the brand.
+
+---
+
 ## Agent Checklist (run before every commit)
 
 ```
