@@ -1,6 +1,4 @@
-# Ravenbase Frontend — Agent Instructions (CLAUDE_FRONTEND.md)
-
-> Copy this file to `ravenbase-web/CLAUDE_FRONTEND.md`
+# Ravenbase Frontend — Agent Instructions
 
 ---
 
