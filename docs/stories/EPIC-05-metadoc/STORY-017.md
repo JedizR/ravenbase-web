@@ -177,8 +177,6 @@ npm run build
 ## Agent Implementation Brief
 
 ```
-EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
-
 Implement STORY-017: Workstation UI (Streaming + Markdown + Export).
 
 Read first:

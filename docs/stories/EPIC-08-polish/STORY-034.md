@@ -136,8 +136,6 @@ async def award_referrer_on_first_upload(referee_id: uuid.UUID, db: AsyncSession
 ## Agent Implementation Brief
 
 ```
-EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
-
 Implement STORY-034: Referral System.
 
 Read first:

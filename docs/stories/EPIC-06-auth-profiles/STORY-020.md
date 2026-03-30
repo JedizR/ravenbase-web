@@ -247,8 +247,6 @@ curl -X GET http://localhost:8000/v1/profiles \
 ## Agent Implementation Brief
 
 ```
-EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
-
 Implement STORY-020: System Profile Switching.
 
 Read first:

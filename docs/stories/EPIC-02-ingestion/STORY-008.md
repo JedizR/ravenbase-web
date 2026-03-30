@@ -202,8 +202,6 @@ Show plan first. Do not implement yet.
 > Use this brief when opening a session in `ravenbase-web/` (Phase B — journal Sprint 6)
 
 ```
-EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
-
 Implement STORY-008 Frontend: Omnibar /ingest command UI.
 
 This is a frontend-only session in ravenbase-web. The backend
