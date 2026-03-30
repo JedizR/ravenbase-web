@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 24 / 37 |
+| Total stories complete | 26 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 22 |
+| Current sprint | 24 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-007-FE) |
+| Last entry | 2026-03-30 (STORY-017) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -893,7 +893,29 @@ _No entries yet._
 > Streaming Markdown, export, auto-save ◆ status indicator.
 > Sprint 24 covers STORY-017.
 
-_No entries yet._
+### STORY-017 — Workstation UI (SSE Streaming + Markdown + Export)
+**Date:** 2026-03-30 | **Sprint:** 24 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors
+**Commit:** `TBD` ← fill after committing
+
+**What was built:**
+Workstation page at `/dashboard/workstation` with two-panel layout (history sidebar + editor). MetaDocEditor streams SSE tokens and renders Markdown progressively via `react-markdown` (dynamic import, SSR disabled). Auto-save status indicator per RULE 19 (`◆ GENERATING` / `◆ SAVED_JUST_NOW` / `◆ SAVED_2_MIN_AGO`). Export to .md via Blob anchor download, export to PDF via `window.print()` with `@media print` CSS. Mobile collapses history into a shadcn Sheet. `useSSEStream` hook created as separate from existing `useSSE` (ingestion) for token accumulation.
+
+**Key decisions:**
+- `use-sse-stream.ts` created as a new hook separate from `use-sse.ts` (which handles ingestion progress with `progress_pct/message` fields). New hook accumulates `type: "token"` events into a string.
+- `react-markdown` uses `dynamic(() => import("react-markdown"), { ssr: false })` per CLAUDE.md performance rules — heavy component must not be in initial bundle.
+- Backend `GET /v1/metadoc` endpoint added to ravenbase-api before frontend work (Phase 0) since STORY-016 only created `POST /generate` and `GET /stream/{job_id}`.
+- No `<form>` tags in prompt area — uses div + controlled Textarea + onClick button per CLAUDE.md RULE 1.
+- `remark-gfm` imported normally (plugin object, not heavy component).
+
+**Gotchas:**
+- `MetaDocSummary` in generated client uses camelCase `pageSize` not snake_case `page_size` — fixed in `MetaDocHistory.tsx`.
+- `initialDocId` prop typed as `?: string` but defaulted to `null` — TypeScript error. Fixed by changing type to `?: string | null`.
+- `remarkGfm` import was missing from MetaDocEditor — added `import remarkGfm from "remark-gfm"` after the services import.
+
+**Tech debt noted:**
+- `MetaDocDetail` endpoint (`GET /v1/metadoc/{doc_id}`) not implemented in backend — history panel currently loads documents from localStorage or shows prompt only. Future story should add this endpoint to enable full doc reload from server.
+- Sources panel shows "Generate a document to see which memory nodes contributed" — contributing memory count not yet wired up (would require `MetaDocDetail` endpoint).
 
 ---
 

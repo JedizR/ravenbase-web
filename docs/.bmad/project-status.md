@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 23
-**Status:** In progress — 25 of 37 stories complete (Phase A backend complete, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE done)
+**Current sprint:** 24
+**Status:** In progress — 26 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE done)
 
-**Next story to implement:** STORY-017 (Sprint 23 — Workstation UI)
-**Story file:** `docs/stories/EPIC-05-metadoc/STORY-017.md`
+**Next story to implement:** STORY-027 (Sprint 21 — Chat UI)
+**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-027.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-008-FE — Omnibar /ingest Command** (2026-03-30)
-Omnibar `/ingest [text]` command added to `components/domain/Omnibar.tsx`. Typing `/ingest [text]` + Enter calls `useApiFetch` → POST /v1/ingest/text with `{ content, profile_id, tags }`. Shows `toast.success("Captured to [ProfileName]")` on success. `/search` and `/generate` show `toast.info("Command not yet implemented")` instead of navigating.
+**STORY-017 — Workstation UI (Sprint 23)** (2026-03-30)
+Workstation page at `/dashboard/workstation` with two-panel layout (history sidebar + editor). MetaDocEditor streams SSE tokens and renders Markdown progressively via `react-markdown` (dynamic import, SSR disabled). Auto-save status indicator per RULE 19. Export to .md via Blob, export to PDF via `window.print()`. Mobile collapses history into a Sheet.
 
 ---
 
 ## Context for Next Session
 
-STORY-008-FE complete. Omnibar now supports text quick-capture via `/ingest` command. Component tests added in `components/__tests__/Omnibar.test.tsx` (6 tests). `@vitejs/plugin-react` v4 and `@testing-library/dom` added as dev deps for component testing. Next story is STORY-017 (Sprint 23 — Workstation UI).
+STORY-017 complete. Added `GET /v1/metadoc` backend endpoint for listing MetaDocuments (Phase 0). Created `hooks/use-sse-stream.ts` (separate from existing `useSSE` for ingestion). Frontend uses dynamic import for `react-markdown` per CLAUDE.md performance rules. `npm run build` passes with 0 TypeScript errors. Next story is STORY-027 (Chat UI).
 
 ---
 

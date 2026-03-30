@@ -124,3 +124,28 @@
 .card-exit {
   animation: fade-out 0.15s ease-in, slide-out-to-right-4 0.15s ease-in;
 }
+
+/* Print styles for Meta-Document PDF export */
+@media print {
+  /* Hide UI chrome when printing */
+  .no-print {
+    display: none !important;
+  }
+
+  /* White background for print */
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Ensure article content is visible */
+  article {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* Hide streaming cursor */
+  .prose {
+    font-family: var(--font-serif) !important;
+  }
+}
