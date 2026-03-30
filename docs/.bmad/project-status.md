@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 22
-**Status:** In progress — 24 of 37 stories complete (Phase A backend complete, STORY-019, STORY-020, STORY-007-FE done)
+**Current sprint:** 23
+**Status:** In progress — 25 of 37 stories complete (Phase A backend complete, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE done)
 
-**Next story to implement:** STORY-008-FE (Sprint 22)
-**Story file:** `docs/stories/EPIC-02-ingestion/STORY-008.md`
+**Next story to implement:** STORY-017 (Sprint 23 — Workstation UI)
+**Story file:** `docs/stories/EPIC-03-knowledge-graph/STORY-017.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-007-FE — IngestionProgress Component** (2026-03-30)
-Real-time SSE progress bar via useSSE hook, Progress/Skeleton, complete/error/connecting states, aria-live region, CheckCircle2/XCircle icons.
+**STORY-008-FE — Omnibar /ingest Command** (2026-03-30)
+Omnibar `/ingest [text]` command added to `components/domain/Omnibar.tsx`. Typing `/ingest [text]` + Enter calls `useApiFetch` → POST /v1/ingest/text with `{ content, profile_id, tags }`. Shows `toast.success("Captured to [ProfileName]")` on success. `/search` and `/generate` show `toast.info("Command not yet implemented")` instead of navigating.
 
 ---
 
 ## Context for Next Session
 
-STORY-007-FE complete. `hooks/use-sse.ts` updated to accept `progress_pct` fallback. `components/domain/IngestionProgress.tsx` created with real-time SSE progress bar (Progress + Skeleton), complete/error/connecting states, aria-live region, CheckCircle2/XCircle icons. Next story is STORY-008-FE (Sprint 22 — Omnibar text quick-capture UI).
+STORY-008-FE complete. Omnibar now supports text quick-capture via `/ingest` command. Component tests added in `components/__tests__/Omnibar.test.tsx` (6 tests). `@vitejs/plugin-react` v4 and `@testing-library/dom` added as dev deps for component testing. Next story is STORY-017 (Sprint 23 — Workstation UI).
 
 ---
 

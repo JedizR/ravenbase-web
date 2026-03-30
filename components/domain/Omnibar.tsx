@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner"
 import { useProfile } from "@/contexts/ProfileContext"
 import { useDebounce } from "@/hooks/use-debounce"
+import { useApiFetch } from "@/lib/api-client"
 import type { Profile } from "@/contexts/ProfileContext"
 
 // ---------------------------------------------------------------------------
@@ -83,11 +84,41 @@ interface OmnibarProps {
 export function Omnibar({ className }: OmnibarProps) {
   const router = useRouter()
   const { profiles, setActiveProfile, activeProfile } = useProfile()
+  const apiFetch = useApiFetch()
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("")
   const debouncedValue = useDebounce(value, 150)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleIngestText = useCallback(
+    async (text: string) => {
+      if (!text.trim()) {
+        toast.info("Type some text after /ingest")
+        return
+      }
+      try {
+        await apiFetch("/v1/ingest/text", {
+          method: "POST",
+          body: JSON.stringify({
+            content: text,
+            profile_id: activeProfile?.id ?? null,
+            tags: [],
+          }),
+        })
+        toast.success(
+          activeProfile ? `Captured to ${activeProfile.name}` : "Captured",
+          { duration: 3000 }
+        )
+        setOpen(false)
+        setValue("")
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Ingest failed"
+        toast.error("Ingest failed", { description: msg })
+      }
+    },
+    [apiFetch, activeProfile]
+  )
 
   // Global "/" key shortcut
   useEffect(() => {
@@ -178,6 +209,23 @@ export function Omnibar({ className }: OmnibarProps) {
               ref={inputRef}
               value={value}
               onValueChange={setValue}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault()
+                  const trimmed = value.trim()
+                  if (trimmed.startsWith("/ingest ")) {
+                    const text = trimmed.slice("/ingest ".length)
+                    handleIngestText(text)
+                  } else if (trimmed === "/ingest") {
+                    toast.info("Type some text after /ingest")
+                  } else if (
+                    trimmed.startsWith("/search") ||
+                    trimmed.startsWith("/generate")
+                  ) {
+                    toast.info("Command not yet implemented", { duration: 2000 })
+                  }
+                }
+              }}
               placeholder="Type /profile, /search, /ingest…"
               className="rounded-none border-0 border-b border-border"
             />
@@ -251,16 +299,6 @@ export function Omnibar({ className }: OmnibarProps) {
                       ◆
                     </span>
                     <span>Graph Explorer</span>
-                  </CommandItem>
-                  <CommandItem
-                    value="nav workstation"
-                    onSelect={() => handleSelectNav("/dashboard/workstation")}
-                    className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl"
-                  >
-                    <span className="text-xs font-mono text-muted-foreground w-16">
-                      ◆
-                    </span>
-                    <span>Workstation</span>
                   </CommandItem>
                   <CommandItem
                     value="nav sources"

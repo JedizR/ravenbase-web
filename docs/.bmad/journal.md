@@ -839,6 +839,26 @@ _No entries yet._
 
 ---
 
+### STORY-008-FE — Omnibar /ingest Command
+**Date:** 2026-03-30 | **Sprint:** 22 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 13 tests passing, 0 TypeScript errors
+**Commit:** `c5b7fe5`
+
+**What was built:**
+`/ingest` command added to `components/domain/Omnibar.tsx`. Typing `/ingest [text]` + Enter calls `useApiFetch` → POST /v1/ingest/text with `{ content, profile_id, tags }`. Shows `toast.success("Captured to [ProfileName]")` on success. `/search` and `/generate` show `toast.info("Command not yet implemented")` instead of navigating.
+
+**Key decisions:**
+- Used `useApiFetch` from `lib/api-client.ts` (not the generated `ingestTextV1IngestTextPost` from services.gen.ts) — follows CLAUDE.md RULE 3 pattern.
+- Enter keydown handled via `onKeyDown` on `CommandInput` — no `<form>` tag (RULE 1).
+
+**Gotchas:**
+- None.
+
+**Tech debt noted:**
+- None.
+
+---
+
 ## Sprint 22 — Graph Explorer UI
 
 > Cytoscape.js, node detail panel, first-run empty states.
