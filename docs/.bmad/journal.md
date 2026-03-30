@@ -744,14 +744,14 @@ _No entries yet._
 
 ---
 
-## Sprint 20 — Onboarding + Profile Switching
+## Sprint 21 — Onboarding + Profile Switching
 
 > 3-step wizard, GettingStartedChecklist, profile context.
-> Sprint 20 covers STORY-019 and STORY-020.
+> Sprint 21 covers STORY-019 and STORY-020.
 
 ### STORY-019 — Onboarding Wizard
 **Date:** 2026-03-30 | **Sprint:** 21 | **Phase:** B | **Repo:** ravenbase-web
-**Quality gate:** ✅ clean — 0 TypeScript errors, `npm run build` passes
+**Quality gate:** ✅ clean — 7 tests passing, 0 TypeScript errors
 **Commit:** `00dde32`
 
 **What was built:**
