@@ -9,7 +9,7 @@
 
 **Phase:** B — Frontend (Sprints 20–38)
 **Current sprint:** 26
-**Status:** In progress — 29 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-027, STORY-028-FE done)
+**Status:** In progress — 30 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011 done)
 
 **Next story to implement:** STORY-014 (Sprint 26 — Memory Inbox UI)
 **Story file:** `docs/stories/EPIC-04-conflict/STORY-014.md`
@@ -25,7 +25,7 @@ Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-f
 
 ## Context for Next Session
 
-STORY-028-FE complete. Sources page at /dashboard/sources with Import from AI Chat tab. Uses GeneratedPromptBox with Clipboard API copy (2s "Copied" feedback). Import calls POST /v1/ingest/text with {content, profile_id}. SSE-driven IngestionProgress replaces Import button after submit. `npm run build` passes. Next story is STORY-011 (Graph Explorer UI).
+STORY-011 complete. GraphExplorer uses Cytoscape.js with cytoscape-fcose layout, dynamically imported inside useEffect (cytoscape + cytoscape-fcose) and wrapped in next/dynamic (ssr: false). Client components use useApiFetch() from lib/api-client.ts. GraphNodePanel fetches 2-hop neighborhood via GET /v1/graph/neighborhood/{node_id}?hops=2. Mobile fallback ConceptList renders for screens < 768px. 47 tests passing, npm run build passes. Next story is STORY-014 (Memory Inbox UI).
 
 ---
 

@@ -955,8 +955,8 @@ _No entries yet._
 
 ### STORY-011 — Graph Explorer UI (Cytoscape.js)
 **Date:** 2026-03-31 | **Sprint:** 26 | **Phase:** B | **Repo:** ravenbase-web
-**Quality gate:** ✅ clean
-**Commit:** `6af4bcc`
+**Quality gate:** ✅ clean — 47 tests passing, 0 TypeScript errors
+**Commit:** `0373e4a`
 
 **What was built:**
 Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-fcose layout. Node types: concept (primary green #2d4a3e), memory (secondary #e8ebe6), source (accent #a8c4b2), conflict (amber #ffc00d with animate-pulse). Click-to-inspect node details with 2-hop neighborhood subgraph via GET /v1/graph/neighborhood/{node_id}. GraphFilters: profile selector, date range inputs, node type checkboxes (no form tags per CLAUDE.md RULE 1). Mobile fallback: ConceptList with search and type tabs for screens < 768px. Empty states: processing animation with pulsing logo, no sources empty state with upload CTA, no matching nodes with clear filters. GraphNodePanel: right-side Sheet with node details, type badge, connected nodes list, conflict warning card with "View in Inbox" button.
@@ -974,8 +974,6 @@ Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-f
 
 **Tech debt noted:**
 - Conflict node CSS pulse animation not yet working via Cytoscape stylesheet — needs DOM overlay approach or custom Cytoscape extension
-
-_No entries yet._
 
 ---
 
