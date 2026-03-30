@@ -12,7 +12,7 @@
 **Status:** In progress — 28 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-027, STORY-028-FE done)
 
 **Next story to implement:** STORY-011 (Sprint 25 — Graph Explorer UI)
-**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-011.md`
+**Story file:** `docs/stories/EPIC-03-graph/STORY-011.md`
 
 ---
 

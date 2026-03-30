@@ -804,15 +804,15 @@ Backend: `GET/POST/PATCH/DELETE /v1/profiles` CRUD endpoints (`src/api/routes/pr
 
 ---
 
-## Sprint 21 — Chat UI + Import Helper UI
+## Sprint 25 — AI Chat Import UI
 
-> Token streaming with cursor, citations, session sidebar.
-> Sprint 21 covers STORY-027 and STORY-028-FE.
+> Import helper tab on Sources page.
+> Sprint 25 covers STORY-028-FE.
 
 ### STORY-028-FE — AI Chat Import Helper UI
-**Date:** 2026-03-30 | **Sprint:** 21 | **Phase:** B | **Repo:** ravenbase-web
+**Date:** 2026-03-30 | **Sprint:** 25 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 5 tests passing, 0 TypeScript errors
-**Commit:** `dd0afab`
+**Commit:** `2add09a`
 
 **What was built:**
 Sources page at `/dashboard/sources` with two tabs (Upload Files + Import from AI Chat). Import tab has: profile selector (shadcn Select), personalized extraction prompt loaded from GET /v1/ingest/import-prompt via TanStack Query (falls back to generic prompt on error), GeneratedPromptBox with one-click Clipboard API copy + 2-second "Copied" feedback, collapsible numbered instructions on mobile, paste-back textarea (100k char limit, char counter), Import button calling POST /v1/ingest/text with SSE-driven IngestionProgress replacing the button on submit. State machine: idle → pending → streaming → complete → idle.
