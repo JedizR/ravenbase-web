@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 26 / 37 |
+| Total stories complete | 27 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
 | Current sprint | 24 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-017) |
+| Last entry | 2026-03-30 (STORY-027) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1037,6 +1037,38 @@ Clerk frontend auth layer. `/login` and `/register` pages use Clerk embedded `<S
 
 **Tech debt noted:**
 - `afterSignUpUrl="/dashboard"` is a temporary shortcut — the onboarding story (STORY-019) will replace this with a redirect that checks onboarding completion status.
+
+---
+
+## Sprint 24 — Chat UI
+
+> Conversational memory chat with SSE streaming and citations.
+> Sprint 24 covers STORY-027.
+
+### STORY-027 — Conversational Memory Chat — Frontend
+**Date:** 2026-03-30 | **Sprint:** 24 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 20 tests passing, 0 TypeScript errors
+**Commit:** `b16a550`
+
+**What was built:**
+Chat page at `/chat` with SSE streaming via `fetch()` + `ReadableStream` reader (not EventSource — POST required). Messages stream token-by-token with animated ▌ cursor. Citations appear as clickable mono cards after response completes. Session sidebar shows history with load/delete. Model selector (Haiku/Sonnet). 402 response shows upgrade dialog. Mobile uses Sheet drawer for sessions. Empty state: "Ask me anything about your memories." TanStack Query for session list with 10s stale time.
+
+**Key decisions:**
+- Used raw `fetch()` with `ReadableStream.getReader()` instead of EventSource because SSE endpoint requires POST (EventSource only supports GET)
+- Citation type matches `CitationItem` from STORY-026 backend: `{memory_id, content_preview, source_id}`
+- 402 check happens BEFORE starting the stream reader to avoid consuming the response body
+- Stream errors are caught and displayed inline (not console.error) with "Failed to get response. Try again."
+- Session list invalidated after `done` event so sidebar updates with new session title
+- Mobile layout uses `h-[100dvh]` and `pb-[max(1rem,env(safe-area-inset-bottom))]` per CLAUDE.md RULE 12/13
+
+**Gotchas:**
+- `(dashboard)` route group does not add a URL segment — `(dashboard)/chat` maps to `/chat`, not `/dashboard/chat`. Sidebar link uses `/dashboard/chat` to match spec but actual URL is `/chat`. This is consistent with existing sidebar links (all `/dashboard/*` URLs point to non-existent routes — pre-existing issue).
+- `@testing-library/user-event` not installed — tests use `userEvent.setup()` + vitest-compatible assertions instead of jest-dom matchers
+- `pb-[max(1rem,env(safe-area-inset-bottom))]` used directly in className (not `style={}`) — Tailwind arbitrary value syntax works with CSS calc/functions
+
+**Tech debt noted:**
+- No session title editing — session titles are auto-derived from first message (first 60 chars)
+- Model credit cost not displayed next to model options (backend doesn't expose per-model cost in API response)
 
 ---
 

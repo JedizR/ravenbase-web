@@ -9,23 +9,23 @@
 
 **Phase:** B — Frontend (Sprints 20–38)
 **Current sprint:** 24
-**Status:** In progress — 26 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE done)
+**Status:** In progress — 27 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-027 done)
 
-**Next story to implement:** STORY-027 (Sprint 24 — Chat UI)
-**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-027.md`
+**Next story to implement:** STORY-028 (Sprint 24 — Chat Context Import FE)
+**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-028.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-017 — Workstation UI (Sprint 23)** (2026-03-30)
-Workstation page at `/dashboard/workstation` with two-panel layout (history sidebar + editor). MetaDocEditor streams SSE tokens and renders Markdown progressively via `react-markdown` (dynamic import, SSR disabled). Auto-save status indicator per RULE 19. Export to .md via Blob, export to PDF via `window.print()`. Mobile collapses history into a Sheet.
+**STORY-027 — Conversational Memory Chat (Sprint 24)** (2026-03-30)
+Chat page at `/chat` with SSE streaming via fetch() + ReadableStream reader. Messages stream token-by-token with ▌ cursor. Citations rendered as clickable cards linking to Graph Explorer. Session sidebar with load/delete. Model selector (Haiku/Sonnet). 402 shows upgrade dialog. Mobile uses Sheet drawer for sessions. TanStack Query for session list with 10s stale time.
 
 ---
 
 ## Context for Next Session
 
-STORY-017 complete. Added `GET /v1/metadoc` backend endpoint for listing MetaDocuments (Phase 0). Created `hooks/use-sse-stream.ts` (separate from existing `useSSE` for ingestion). Frontend uses dynamic import for `react-markdown` per CLAUDE.md performance rules. `npm run build` passes with 0 TypeScript errors. Next story is STORY-027 (Chat UI).
+STORY-027 complete. Chat uses raw fetch() with streaming ReadableStream (not EventSource — POST required). Citation type: `{memory_id, content_preview, source_id}`. Session loading: GET /v1/chat/sessions/{id}. `npm run build` passes with 0 TypeScript errors. Next story is STORY-028 (Chat Context Import FE).
 
 ---
 
