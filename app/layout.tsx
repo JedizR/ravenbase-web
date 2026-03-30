@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { DM_Sans, Playfair_Display, JetBrains_Mono } from "next/font/google"
+import { ClerkProvider } from "@clerk/nextjs"
 import "./globals.css"
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" })
@@ -18,11 +19,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${dmSans.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
-    >
-      <body className="font-sans antialiased">{children}</body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang="en"
+        className={`${dmSans.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
+      >
+        <body className="font-sans antialiased">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:font-medium focus:text-sm"
+          >
+            Skip to main content
+          </a>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
