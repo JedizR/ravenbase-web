@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 23 / 37 |
+| Total stories complete | 24 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 21 |
+| Current sprint | 22 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-020) |
+| Last entry | 2026-03-30 (STORY-007-FE) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -810,6 +810,32 @@ Backend: `GET/POST/PATCH/DELETE /v1/profiles` CRUD endpoints (`src/api/routes/pr
 > Sprint 21 covers STORY-027 and STORY-028-FE.
 
 _No entries yet._
+
+---
+
+## Sprint 22 — SSE Progress + Omnibar UI
+
+> IngestionProgress SSE component, text quick-capture Omnibar UI.
+> Sprint 22 covers STORY-007-FE and STORY-008-FE.
+
+### STORY-007-FE — IngestionProgress Component
+**Date:** 2026-03-30 | **Sprint:** 22 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors
+**Commit:** `<commit-hash>` (run `git log --oneline -1` after final commit)
+
+**What was built:**
+`hooks/use-sse.ts` updated to accept `progress_pct` fallback alongside `progress` (backend sends `progress_pct` field name). `components/domain/IngestionProgress.tsx` created with real-time SSE progress bar using the existing `useSSE` hook, shadcn `Progress` + `Skeleton`, complete/error/connecting states, `aria-live="polite"` region, and `CheckCircle2`/`XCircle` lucide icons for terminal states.
+
+**Key decisions:**
+- Token fetched via `useAuth().getToken()` (Clerk frontend SDK) and passed to `useSSE` as query param — same pattern as `OnboardingWizard`.
+- `useSSE` hook handles `EventSource` lifecycle (mount → connect → message → cleanup) and auto-closes on `completed`/`failed` status.
+- Progress bar uses default `bg-primary` (forest green) for `processing` state; overridden to `bg-success` or `bg-destructive` for terminal states via `[&_[data-slot=progress-indicator]]` selector.
+
+**Gotchas:**
+- The `useSSE` hook's `SSEState` type expected `progress` field but backend SSE sends `progress_pct`. Added `data.progress_pct ?? prev.progress` fallback to fix field name mismatch at the hook level.
+
+**Tech debt noted:**
+- `IngestionProgress` is standalone; not yet wired into `IngestionDropzone` or the onboarding wizard — will be integrated in a future story.
 
 ---
 

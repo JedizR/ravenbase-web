@@ -48,12 +48,13 @@ export function useSSE(url: string | null, token: string | null): SSEState {
       try {
         const data = JSON.parse(event.data as string) as {
           progress?: number
+          progress_pct?: number
           message?: string
           entities?: string[]
           status?: string
         }
         setState((prev) => ({
-          progress: data.progress ?? prev.progress,
+          progress: data.progress ?? data.progress_pct ?? prev.progress,
           message: data.message ?? prev.message,
           entities: data.entities ?? prev.entities,
           status:

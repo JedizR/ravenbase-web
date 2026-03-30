@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 21
-**Status:** In progress — 23 of 37 stories complete (Phase A backend complete, STORY-019 + STORY-020 done)
+**Current sprint:** 22
+**Status:** In progress — 24 of 37 stories complete (Phase A backend complete, STORY-019, STORY-020, STORY-007-FE done)
 
-**Next story to implement:** STORY-007-FE (Sprint 22)
-**Story file:** `docs/stories/EPIC-02-ingestion/STORY-007-FE.md`
+**Next story to implement:** STORY-008-FE (Sprint 22)
+**Story file:** `docs/stories/EPIC-02-ingestion/STORY-008.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-020 — System Profile Switching** (2026-03-30)
-Profile switching via Omnibar `/profile [name]` command (fuzzy match), sidebar dropdown (shadcn DropdownMenu), `ProfileContext` (pure client state — no API call on switch), Settings → Profiles CRUD page (create/edit/delete), Settings → AI Model selector + Notification toggles. Build: 0 TypeScript errors. Backend: `GET/POST/PATCH/DELETE /v1/profiles` + `PATCH /v1/account/model-preference` + `PATCH /v1/account/notification-preferences`.
+**STORY-007-FE — IngestionProgress Component** (2026-03-30)
+Real-time SSE progress bar via useSSE hook, Progress/Skeleton, complete/error/connecting states, aria-live region, CheckCircle2/XCircle icons.
 
 ---
 
 ## Context for Next Session
 
-STORY-020 complete. Backend routes: `src/schemas/profile.py`, `src/api/routes/profiles.py`, `src/api/routes/account.py` (PATCH endpoints). Frontend: `contexts/ProfileContext.tsx`, `components/domain/ProfileSwitcher.tsx`, `components/domain/Sidebar.tsx`, `components/domain/MobileSidebar.tsx`, `components/domain/Omnibar.tsx`, `components/domain/DashboardHeader.tsx`, `app/(dashboard)/settings/page.tsx`, `app/(dashboard)/settings/profiles/page.tsx`. Omnibar uses cmdk Command; profile switching is pure `setActiveProfile()` with toast confirmation. Next story is STORY-007-FE (Sprint 22 — Omnibar UI + IngestionProgress component).
+STORY-007-FE complete. `hooks/use-sse.ts` updated to accept `progress_pct` fallback. `components/domain/IngestionProgress.tsx` created with real-time SSE progress bar (Progress + Skeleton), complete/error/connecting states, aria-live region, CheckCircle2/XCircle icons. Next story is STORY-008-FE (Sprint 22 — Omnibar text quick-capture UI).
 
 ---
 
