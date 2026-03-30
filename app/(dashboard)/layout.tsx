@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Toaster } from "sonner"
 import { Providers } from "@/app/providers"
 import { DashboardHeader } from "@/components/domain/DashboardHeader"
 import { MobileSidebar } from "@/components/domain/MobileSidebar"
@@ -33,6 +34,8 @@ export default function DashboardLayout({
             >
               {children}
             </main>
+            {/* Sonner toast notifications — richColors for semantic variants */}
+            <Toaster richColors position="bottom-right" />
           </div>
 
           {/* Mobile sidebar drawer */}

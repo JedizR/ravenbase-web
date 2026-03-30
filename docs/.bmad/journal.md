@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 29 / 37 |
+| Total stories complete | 30 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 26 |
+| Current sprint | 27 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-31 (STORY-011) |
+| Last entry | 2026-03-31 (STORY-014) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -983,6 +983,40 @@ Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-f
 > Sprint 27 covers STORY-031, STORY-032, and STORY-033.
 
 _No entries yet._
+
+---
+
+## Sprint 27 — Memory Inbox UI
+
+> Keyboard-driven triage, 3 flows (binary, conversational, auto-resolved).
+> Sprint 27 covers STORY-014.
+
+### STORY-014 — Memory Inbox UI (Keyboard Navigation + 3 Flows)
+**Date:** 2026-03-31 | **Sprint:** 27 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 66 tests passing, 0 TypeScript errors
+**Commit:** `283acc4`
+
+**What was built:**
+Keyboard-navigable conflict resolution interface with 3 flows: Binary Triage (J/K navigate cards, Enter accepts new, Backspace keeps old), Conversational (C opens chat mode, Enter submits custom resolution via CUSTOM action), Auto-resolved (TanStack Query optimistic updates with rollback on error). ShortcutOverlay modal triggered by ? key lists all keyboard shortcuts. Sidebar badge polls GET /v1/conflicts?status=pending every 30s. InboxEmptyState with animated SVG checkmark shown when all conflicts resolved. Sonner Toaster added to dashboard layout for rich toast notifications.
+
+**Key decisions:**
+- useKeyboardInbox hook uses window-level addEventListener (not element onKeyDown) — fires even when no card is focused
+- Ignores keyboard events when e.target is HTMLInputElement or HTMLTextAreaElement via instanceof checks
+- ConflictCard active state: border-2 border-primary; inactive: border border-border opacity-70
+- TanStack Query onMutate pattern: cancelQueries → snapshot previous → setQueryData (optimistic remove) → return context; onError rolls back via context.previous; onSettled invalidates
+- No `<form>` tags anywhere — ConflictChat uses div + controlled Textarea + onClick button per RULE 1
+- Mobile swipe via onTouchStart startX/endX delta detection (progressive enhancement)
+- Kbd component from shadcn (added via npx shadcn@latest add kbd --yes)
+
+**Gotchas:**
+- Tests require `// @vitest-environment happy-dom` at top of every test file — without it, "document is not defined"
+- happy-dom doesn't set e.target on window KeyboardEvent — used Object.defineProperty(event, "target", { value: textarea }) to mock it in input-ignoring tests
+- TanStack Query waitFor timeout issues in tests — replaced with `await new Promise(r => setTimeout(r, 100))` pattern for reliable async checking
+- Conflict card assertion looked for "MEMORY_INFLICT" but actual text was "MEMORY_CONFLICT" — typo in test fixed
+
+**Tech debt noted:**
+- Conflict card pulse animation on conflict nodes not yet implemented (deferred from STORY-011)
+- Credits balance in sidebar footer still static "— —" placeholder — not wired up in this story
 
 ---
 

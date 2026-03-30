@@ -1,5 +1,7 @@
 "use client"
 
+import { usePathname } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 import {
   Coins,
   FileText,
@@ -10,12 +12,12 @@ import {
   Sparkles,
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 
 import { RavenbaseLogo } from "@/components/brand"
 import { ProfileSwitcher } from "@/components/domain/ProfileSwitcher"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { listConflictsV1ConflictsGet } from "@/src/lib/api-client/services.gen"
 
 interface NavItem {
   href: string
@@ -25,42 +27,52 @@ interface NavItem {
   badge?: string | number
 }
 
-const NAV_ITEMS: NavItem[] = [
-  {
-    href: "/graph",
-    label: "Graph Explorer",
-    monoLabel: "◆ KNOWLEDGE_GRAPH",
-    icon: GitBranch,
-  },
-  {
-    href: "/chat",
-    label: "Chat",
-    monoLabel: "◆ MEMORY_CHAT",
-    icon: MessageSquare,
-  },
-  {
-    href: "/inbox",
-    label: "Memory Inbox",
-    monoLabel: "◆ MEMORY_INBOX",
-    icon: Inbox,
-    badge: undefined, // TODO: wire up conflict count
-  },
-  {
-    href: "/workstation",
-    label: "Workstation",
-    monoLabel: "◆ WORKSTATION",
-    icon: Sparkles,
-  },
-  {
-    href: "/sources",
-    label: "Sources",
-    monoLabel: "◆ SOURCE_FILES",
-    icon: FileText,
-  },
-]
-
 export function Sidebar() {
   const pathname = usePathname()
+
+  // Poll conflict count every 30 seconds (AC-5)
+  const { data: conflictData } = useQuery({
+    queryKey: ["conflicts", "pending"],
+    queryFn: () => listConflictsV1ConflictsGet({ status: "pending" }),
+    refetchInterval: 30_000,
+    staleTime: 30_000,
+  })
+
+  const pendingCount = conflictData?.items.length ?? 0
+
+  const navItems: NavItem[] = [
+    {
+      href: "/graph",
+      label: "Graph Explorer",
+      monoLabel: "◆ KNOWLEDGE_GRAPH",
+      icon: GitBranch,
+    },
+    {
+      href: "/chat",
+      label: "Chat",
+      monoLabel: "◆ MEMORY_CHAT",
+      icon: MessageSquare,
+    },
+    {
+      href: "/inbox",
+      label: "Memory Inbox",
+      monoLabel: "◆ MEMORY_INBOX",
+      icon: Inbox,
+      badge: pendingCount > 0 ? pendingCount : undefined,
+    },
+    {
+      href: "/workstation",
+      label: "Workstation",
+      monoLabel: "◆ WORKSTATION",
+      icon: Sparkles,
+    },
+    {
+      href: "/sources",
+      label: "Sources",
+      monoLabel: "◆ SOURCE_FILES",
+      icon: FileText,
+    },
+  ]
 
   return (
     <aside
@@ -77,7 +89,7 @@ export function Sidebar() {
 
       {/* Primary nav */}
       <nav className="flex-1 p-3 space-y-1" aria-label="Primary">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/")
           return (

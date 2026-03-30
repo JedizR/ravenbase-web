@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 26
-**Status:** In progress — 30 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011 done)
+**Current sprint:** 27
+**Status:** In progress — 31 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014 done)
 
-**Next story to implement:** STORY-014 (Sprint 26 — Memory Inbox UI)
+**Next story to implement:** STORY-030 (Sprint 27 — Natural Language Graph Query Frontend)
 **Story file:** `docs/stories/EPIC-04-conflict/STORY-014.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-011 — Graph Explorer UI (Sprint 26)** (2026-03-31)
-Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-fcose layout. Node types: concept (primary green), memory (secondary), source (accent), conflict (amber with pulse animation). Click-to-inspect node details with neighborhood subgraph via GET /v1/graph/neighborhood/{node_id}?hops=2. GraphFilters: profile selector, date range, node type checkboxes. Mobile fallback: ConceptList for screens < 768px. Empty states: processing animation, no sources, no matching nodes.
+**STORY-014 — Memory Inbox UI (Sprint 27)** (2026-03-31)
+Keyboard-navigable conflict resolution interface with 3 flows: Binary Triage (J/K navigate, Enter accept, Backspace reject), Conversational Chat (C opens chat, Enter submits custom resolution), Auto-resolved (optimistic updates with TanStack Query). ShortcutOverlay shown on ? key. Sidebar badge polls pending conflict count every 30s. 66 tests passing, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-STORY-011 complete. GraphExplorer uses Cytoscape.js with cytoscape-fcose layout, dynamically imported inside useEffect (cytoscape + cytoscape-fcose) and wrapped in next/dynamic (ssr: false). Client components use useApiFetch() from lib/api-client.ts. GraphNodePanel fetches 2-hop neighborhood via GET /v1/graph/neighborhood/{node_id}?hops=2. Mobile fallback ConceptList renders for screens < 768px. 47 tests passing, npm run build passes. Next story is STORY-014 (Memory Inbox UI).
+STORY-014 complete. MemoryInbox implements keyboard-driven conflict triage with 3 flows. useKeyboardInbox hook handles window-level key events (J/K navigate, Enter/Backspace resolve, C chat, ? help). TanStack Query optimistic updates with rollback on error. ShortcutOverlay modal lists all shortcuts. Sidebar badge polls GET /v1/conflicts?status=pending every 30s. ConflictCard renders active (border-2 border-primary) vs inactive (opacity-70) states. 66 tests passing, npm run build passes. Next story is STORY-030 (Natural Language Graph Query Frontend).
 
 ---
 
