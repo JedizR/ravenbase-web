@@ -5,6 +5,7 @@ import {
   FileText,
   GitBranch,
   Inbox,
+  MessageSquare,
   Settings,
   Sparkles,
 } from "lucide-react"
@@ -30,6 +31,12 @@ const NAV_ITEMS: NavItem[] = [
     label: "Graph Explorer",
     monoLabel: "◆ KNOWLEDGE_GRAPH",
     icon: GitBranch,
+  },
+  {
+    href: "/dashboard/chat",
+    label: "Chat",
+    monoLabel: "◆ MEMORY_CHAT",
+    icon: MessageSquare,
   },
   {
     href: "/dashboard/inbox",
