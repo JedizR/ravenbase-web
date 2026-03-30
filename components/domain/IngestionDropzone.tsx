@@ -37,7 +37,8 @@ export function IngestionDropzone({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: ACCEPTED_TYPES,
-    maxFiles: 1,
+    multiple: true,
+    maxFiles: 10,
     maxSize: MAX_SIZE,
   })
 
@@ -71,7 +72,7 @@ export function IngestionDropzone({
           <p className="font-mono text-xs text-muted-foreground tracking-wider">
             ◆ DROP_TO_UPLOAD
           </p>
-          <p className="text-sm text-foreground">Release to add file</p>
+          <p className="text-sm text-foreground">Release to add files</p>
         </div>
       ) : (
         <div className="space-y-2">
