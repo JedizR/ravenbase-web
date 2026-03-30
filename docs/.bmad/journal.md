@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 27 / 37 |
+| Total stories complete | 28 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 24 |
+| Current sprint | 25 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-027) |
+| Last entry | 2026-03-30 (STORY-028-FE) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -809,7 +809,27 @@ Backend: `GET/POST/PATCH/DELETE /v1/profiles` CRUD endpoints (`src/api/routes/pr
 > Token streaming with cursor, citations, session sidebar.
 > Sprint 21 covers STORY-027 and STORY-028-FE.
 
-_No entries yet._
+### STORY-028-FE — AI Chat Import Helper UI
+**Date:** 2026-03-30 | **Sprint:** 21 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 5 tests passing, 0 TypeScript errors
+**Commit:** `dd0afab`
+
+**What was built:**
+Sources page at `/dashboard/sources` with two tabs (Upload Files + Import from AI Chat). Import tab has: profile selector (shadcn Select), personalized extraction prompt loaded from GET /v1/ingest/import-prompt via TanStack Query (falls back to generic prompt on error), GeneratedPromptBox with one-click Clipboard API copy + 2-second "Copied" feedback, collapsible numbered instructions on mobile, paste-back textarea (100k char limit, char counter), Import button calling POST /v1/ingest/text with SSE-driven IngestionProgress replacing the button on submit. State machine: idle → pending → streaming → complete → idle.
+
+**Key decisions:**
+- Used `vi.hoisted()` for mock functions in tests — required because vitest hoists `vi.mock()` calls before module evaluation, making `mockGetImportPrompt` unavailable to the factory without hoisting.
+- `id="profile-select"` placed on `SelectTrigger` (not `Select` root) since shadcn Select doesn't forward `id` to its root element.
+- Mobile instructions use manual `hidden md:block` toggle via `useState` instead of shadcn `Collapsible` — avoids adding a new shadcn dependency.
+- Import button is `disabled={!pastedText.trim()}` when idle (prevents empty submit) rather than allowing click with toast error.
+
+**Gotchas:**
+- `vitest` in this project doesn't have `@testing-library/jest-dom` installed — all assertions use vanilla vitest Chai API: `toHaveProperty()` instead of `toHaveValue()`, `toBeTruthy()` instead of `toBeInTheDocument()`, `hasAttribute("disabled")` instead of `toBeDisabled()`.
+- The `Select` component from shadcn doesn't forward `id` to its root — resolved by placing `id` on `SelectTrigger` child instead.
+- `toast.error` not called when Import clicked with empty textarea because button is disabled — test 4 verifies disabled state instead of error toast.
+
+**Tech debt noted:**
+- GeneratedPromptBox has no error state — always shows the provided promptText. If promptText is empty string, textarea shows empty content.
 
 ---
 

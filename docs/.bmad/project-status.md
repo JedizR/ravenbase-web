@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 24
-**Status:** In progress — 27 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-027 done)
+**Current sprint:** 25
+**Status:** In progress — 28 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-027, STORY-028-FE done)
 
-**Next story to implement:** STORY-028 (Sprint 24 — Chat Context Import FE)
-**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-028.md`
+**Next story to implement:** STORY-011 (Sprint 25 — Graph Explorer UI)
+**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-011.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-027 — Conversational Memory Chat (Sprint 24)** (2026-03-30)
-Chat page at `/chat` with SSE streaming via fetch() + ReadableStream reader. Messages stream token-by-token with ▌ cursor. Citations rendered as clickable cards linking to Graph Explorer. Session sidebar with load/delete. Model selector (Haiku/Sonnet). 402 shows upgrade dialog. Mobile uses Sheet drawer for sessions. TanStack Query for session list with 10s stale time.
+**STORY-028-FE — AI Chat Import Helper UI (Sprint 25)** (2026-03-30)
+Sources page at `/dashboard/sources` with two tabs (Upload Files + Import from AI Chat). Import tab: profile selector, personalized extraction prompt textarea with one-click Clipboard copy, collapsible numbered instructions, paste-back textarea (100k char limit), Import button calling POST /v1/ingest/text. SSE-driven ingestion progress via IngestionProgress. Mobile responsive. 5 unit tests pass.
 
 ---
 
 ## Context for Next Session
 
-STORY-027 complete. Chat uses raw fetch() with streaming ReadableStream (not EventSource — POST required). Citation type: `{memory_id, content_preview, source_id}`. Session loading: GET /v1/chat/sessions/{id}. `npm run build` passes with 0 TypeScript errors. Next story is STORY-028 (Chat Context Import FE).
+STORY-028-FE complete. Sources page at /dashboard/sources with Import from AI Chat tab. Uses GeneratedPromptBox with Clipboard API copy (2s "Copied" feedback). Import calls POST /v1/ingest/text with {content, profile_id}. SSE-driven IngestionProgress replaces Import button after submit. `npm run build` passes. Next story is STORY-011 (Graph Explorer UI).
 
 ---
 
