@@ -752,7 +752,7 @@ _No entries yet._
 ### STORY-019 — Onboarding Wizard
 **Date:** 2026-03-30 | **Sprint:** 21 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 0 TypeScript errors, `npm run build` passes
-**Commit:** `TBD`
+**Commit:** `00dde32`
 
 **What was built:**
 3-step onboarding wizard at `/onboarding`: Step 1 (role grid + auto-filled profile name with blur-debounce validation), Step 2 (IngestionDropzone + textarea paste with file/text upload), Step 3 (SSE progress bar via `useSSE` hook with auto-advance to `/dashboard?first_run=true`). Register page now redirects new users to `/onboarding` instead of `/dashboard`. Completion calls `POST /v1/users/me/complete-onboarding` (graceful error if backend not yet deployed). Returning users who already completed onboarding are redirected to `/dashboard` via `GET /v1/users/me` check on mount.
