@@ -800,6 +800,36 @@ export const ImportPromptResponseSchema = {
     title: 'ImportPromptResponse'
 } as const;
 
+export const MetaDocSummarySchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        original_prompt: {
+            type: 'string',
+            title: 'Original Prompt'
+        },
+        credits_consumed: {
+            type: 'integer',
+            title: 'Credits Consumed'
+        },
+        generated_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Generated At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'title', 'original_prompt', 'credits_consumed', 'generated_at'],
+    title: 'MetaDocSummary'
+} as const;
+
 export const ModelPreferenceUpdateSchema = {
     properties: {
         preferred_model: {
@@ -946,6 +976,37 @@ export const PaginatedResponse_ConflictResponse_Schema = {
     type: 'object',
     required: ['items', 'total', 'page', 'page_size', 'has_more'],
     title: 'PaginatedResponse[ConflictResponse]'
+} as const;
+
+export const PaginatedResponse_MetaDocSummary_Schema = {
+    properties: {
+        items: {
+            items: {
+                '$ref': '#/components/schemas/MetaDocSummary'
+            },
+            type: 'array',
+            title: 'Items'
+        },
+        total: {
+            type: 'integer',
+            title: 'Total'
+        },
+        page: {
+            type: 'integer',
+            title: 'Page'
+        },
+        page_size: {
+            type: 'integer',
+            title: 'Page Size'
+        },
+        has_more: {
+            type: 'boolean',
+            title: 'Has More'
+        }
+    },
+    type: 'object',
+    required: ['items', 'total', 'page', 'page_size', 'has_more'],
+    title: 'PaginatedResponse[MetaDocSummary]'
 } as const;
 
 export const ProfileCreateSchema = {

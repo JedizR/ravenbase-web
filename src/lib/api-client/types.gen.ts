@@ -186,6 +186,14 @@ export type ImportPromptResponse = {
     detected_concepts: Array<(string)>;
 };
 
+export type MetaDocSummary = {
+    id: string;
+    title: string;
+    original_prompt: string;
+    credits_consumed: number;
+    generated_at: string;
+};
+
 export type ModelPreferenceUpdate = {
     preferred_model: string;
 };
@@ -214,6 +222,14 @@ export type PaginatedResponse_ChatSessionSummary_ = {
 
 export type PaginatedResponse_ConflictResponse_ = {
     items: Array<ConflictResponse>;
+    total: number;
+    page: number;
+    page_size: number;
+    has_more: boolean;
+};
+
+export type PaginatedResponse_MetaDocSummary_ = {
+    items: Array<MetaDocSummary>;
     total: number;
     page: number;
     page_size: number;
@@ -426,6 +442,14 @@ export type GenerateMetaDocumentV1MetadocGeneratePostData = {
 };
 
 export type GenerateMetaDocumentV1MetadocGeneratePostResponse = (GenerateResponse);
+
+export type ListMetaDocumentsV1MetadocGetData = {
+    authorization?: (string | null);
+    page?: number;
+    pageSize?: number;
+};
+
+export type ListMetaDocumentsV1MetadocGetResponse = (PaginatedResponse_MetaDocSummary_);
 
 export type StreamMetaDocumentV1MetadocStreamJobIdGetData = {
     jobId: string;
