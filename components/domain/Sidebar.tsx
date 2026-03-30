@@ -27,32 +27,32 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
-    href: "/dashboard/graph",
+    href: "/graph",
     label: "Graph Explorer",
     monoLabel: "◆ KNOWLEDGE_GRAPH",
     icon: GitBranch,
   },
   {
-    href: "/dashboard/chat",
+    href: "/chat",
     label: "Chat",
     monoLabel: "◆ MEMORY_CHAT",
     icon: MessageSquare,
   },
   {
-    href: "/dashboard/inbox",
+    href: "/inbox",
     label: "Memory Inbox",
     monoLabel: "◆ MEMORY_INBOX",
     icon: Inbox,
     badge: undefined, // TODO: wire up conflict count
   },
   {
-    href: "/dashboard/workstation",
+    href: "/workstation",
     label: "Workstation",
     monoLabel: "◆ WORKSTATION",
     icon: Sparkles,
   },
   {
-    href: "/dashboard/sources",
+    href: "/sources",
     label: "Sources",
     monoLabel: "◆ SOURCE_FILES",
     icon: FileText,

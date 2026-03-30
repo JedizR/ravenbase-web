@@ -5,6 +5,7 @@ import {
   FileText,
   GitBranch,
   Inbox,
+  MessageSquare,
   Settings,
   Sparkles,
   X,
@@ -26,10 +27,11 @@ interface MobileSidebarProps {
 }
 
 const NAV_ITEMS = [
-  { href: "/dashboard/graph", label: "Graph Explorer", monoLabel: "◆ KNOWLEDGE_GRAPH", icon: GitBranch },
-  { href: "/dashboard/inbox", label: "Memory Inbox", monoLabel: "◆ MEMORY_INBOX", icon: Inbox },
-  { href: "/dashboard/workstation", label: "Workstation", monoLabel: "◆ WORKSTATION", icon: Sparkles },
-  { href: "/dashboard/sources", label: "Sources", monoLabel: "◆ SOURCE_FILES", icon: FileText },
+  { href: "/graph", label: "Graph Explorer", monoLabel: "◆ KNOWLEDGE_GRAPH", icon: GitBranch },
+  { href: "/chat", label: "Chat", monoLabel: "◆ MEMORY_CHAT", icon: MessageSquare },
+  { href: "/inbox", label: "Memory Inbox", monoLabel: "◆ MEMORY_INBOX", icon: Inbox },
+  { href: "/workstation", label: "Workstation", monoLabel: "◆ WORKSTATION", icon: Sparkles },
+  { href: "/sources", label: "Sources", monoLabel: "◆ SOURCE_FILES", icon: FileText },
 ]
 
 export function MobileSidebar({ open, onClose }: MobileSidebarProps) {

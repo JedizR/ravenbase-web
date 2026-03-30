@@ -49,7 +49,8 @@
       "Bash(ls app/\\\\\\(dashboard\\\\\\)/)",
       "Bash(ls \"app/\\(dashboard\\)/\")",
       "Bash(ls \"app/\\(dashboard\\)/chat/\")",
-      "Bash(curl -s http://localhost:3002/chat)"
+      "Bash(curl -s http://localhost:3002/chat)",
+      "Bash(ls vitest.config.*)"
     ],
     "additionalDirectories": [
       "/Users/admin/destination/ravenbase/ravenbase-api/src/schemas",
