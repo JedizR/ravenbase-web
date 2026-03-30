@@ -11,7 +11,7 @@
 **Current sprint:** 28
 **Status:** In progress — 31 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030 done)
 
-**Next story to implement:** STORY-021 (Sprint 30 — Landing Page)
+**Next story to implement:** STORY-021 (Sprint 29 — Landing Page)
 **Story file:** `docs/stories/EPIC-07-marketing/STORY-021.md`
 
 ---
