@@ -821,7 +821,7 @@ _No entries yet._
 ### STORY-007-FE — IngestionProgress Component
 **Date:** 2026-03-30 | **Sprint:** 22 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 0 TypeScript errors
-**Commit:** `<commit-hash>` (run `git log --oneline -1` after final commit)
+**Commit:** `8d767cb`
 
 **What was built:**
 `hooks/use-sse.ts` updated to accept `progress_pct` fallback alongside `progress` (backend sends `progress_pct` field name). `components/domain/IngestionProgress.tsx` created with real-time SSE progress bar using the existing `useSSE` hook, shadcn `Progress` + `Skeleton`, complete/error/connecting states, `aria-live="polite"` region, and `CheckCircle2`/`XCircle` lucide icons for terminal states.
