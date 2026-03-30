@@ -842,7 +842,7 @@ _No entries yet._
 ### STORY-008-FE — Omnibar /ingest Command
 **Date:** 2026-03-30 | **Sprint:** 22 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 13 tests passing, 0 TypeScript errors
-**Commit:** `c5b7fe5`
+**Commit:** `0588f06`
 
 **What was built:**
 `/ingest` command added to `components/domain/Omnibar.tsx`. Typing `/ingest [text]` + Enter calls `useApiFetch` → POST /v1/ingest/text with `{ content, profile_id, tags }`. Shows `toast.success("Captured to [ProfileName]")` on success. `/search` and `/generate` show `toast.info("Command not yet implemented")` instead of navigating.
@@ -852,10 +852,21 @@ _No entries yet._
 - Enter keydown handled via `onKeyDown` on `CommandInput` — no `<form>` tag (RULE 1).
 
 **Gotchas:**
-- None.
+- Component testing required two additional dev dependencies:
+  `@vitejs/plugin-react` v4 (for vitest JSX transformation) and
+  `@testing-library/dom` — neither was in the original scaffold.
+  Without these, vitest cannot render React components.
+- Stale `.next` cache caused 404s on layout.css and main-app.js
+  after STORY-007-FE changes. Fixed by clearing cache with
+  `rm -rf .next` before starting dev server.
 
 **Tech debt noted:**
-- None.
+- `/search` and `/generate` commands are stubbed with
+  "not yet implemented" toasts. Full implementations are
+  deferred: /search to the NL graph query story (STORY-030),
+  /generate to the Workstation story (STORY-017).
+- Credits balance in sidebar footer is still static "— —" —
+  deferred to a future story wiring GET /v1/credits/balance.
 
 ---
 

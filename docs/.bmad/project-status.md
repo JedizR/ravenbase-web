@@ -12,7 +12,7 @@
 **Status:** In progress — 25 of 37 stories complete (Phase A backend complete, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE done)
 
 **Next story to implement:** STORY-017 (Sprint 23 — Workstation UI)
-**Story file:** `docs/stories/EPIC-03-knowledge-graph/STORY-017.md`
+**Story file:** `docs/stories/EPIC-05-metadoc/STORY-017.md`
 
 ---
 
