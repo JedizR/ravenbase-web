@@ -135,14 +135,19 @@ uv run pytest tests/integration/api/test_onboarding.py -v
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-019: Onboarding Wizard.
 
 Read first:
 1. CLAUDE.md (architecture rules)
-2. docs/design/CLAUDE_FRONTEND.md (no form tags, Tailwind only, apiFetch)
-3. docs/design/03-screen-flows.md (Onboarding Wizard 3-step layout diagram)
-4. docs/architecture/02-database-schema.md (User model — add has_completed_onboarding)
-5. docs/stories/EPIC-06-auth-profiles/STORY-019.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (no form tags, Tailwind only, apiFetch)
+6. docs/design/03-screen-flows.md (Onboarding Wizard 3-step layout diagram)
+7. docs/architecture/02-database-schema.md (User model — add has_completed_onboarding)
+8. docs/stories/EPIC-06-auth-profiles/STORY-019.md (this file)
 
 Key constraints:
 - No <form> tags. Use div + onClick handlers.

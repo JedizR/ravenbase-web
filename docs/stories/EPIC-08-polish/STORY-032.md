@@ -314,13 +314,18 @@ asyncio.run(EmailService().send_welcome('test@test.com', 'Test'))
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-032: Transactional Email System.
 
 Read first:
 1. CLAUDE.md (architecture rules — RULE 6: heavy imports lazy, RULE 7: no print)
-2. docs/architecture/05-security-privacy.md (PII rules)
-3. docs/stories/EPIC-06-auth-profiles/STORY-018.md (webhook handler to extend)
-4. docs/stories/EPIC-08-polish/STORY-032.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/architecture/05-security-privacy.md (PII rules)
+6. docs/stories/EPIC-06-auth-profiles/STORY-018.md (webhook handler to extend)
+7. docs/stories/EPIC-08-polish/STORY-032.md (this file)
 
 Key constraints:
 - resend import is LAZY (inside function body)

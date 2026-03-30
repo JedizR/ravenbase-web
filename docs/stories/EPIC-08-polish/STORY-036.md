@@ -177,14 +177,18 @@ Show plan first. Do not implement yet.
 ## Frontend Agent Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-036 frontend: Admin Dashboard UI.
 Complete ONLY after backend STORY-036 endpoints are deployed and tested.
 
 Read first:
 1. CLAUDE.md (for CLAUDE_FRONTEND.md — all 19 rules)
-2. docs/design/01-design-system.md (design tokens, shadcn/ui components)
-3. docs/architecture/03-api-contract.md (admin endpoint shapes)
-4. docs/stories/EPIC-08-polish/STORY-036.md (this file, frontend ACs 7-12)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/architecture/03-api-contract.md (admin endpoint shapes)
+6. docs/stories/EPIC-08-polish/STORY-036.md (this file, frontend ACs 7-12)
 
 Key:
 - Admin layout must redirect non-admins to /dashboard silently

@@ -218,13 +218,18 @@ curl http://localhost:3000 | grep "/privacy"
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-033: Legal Pages (Privacy Policy, Terms of Service, Cookie Consent).
 
 Read first:
 1. CLAUDE.md (frontend rules — especially RULE 5: route groups, RULE 15: metadata export)
-2. docs/design/CLAUDE_FRONTEND.md (SEO spec, semantic HTML rules)
-3. docs/stories/EPIC-07-marketing/STORY-021.md (marketing layout and footer to extend)
-4. docs/stories/EPIC-08-polish/STORY-033.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (SEO spec, semantic HTML rules)
+6. docs/stories/EPIC-07-marketing/STORY-021.md (marketing layout and footer to extend)
+7. docs/stories/EPIC-08-polish/STORY-033.md (this file)
 
 Key constraints:
 - Both pages must be SSG (no async data fetching) — pure static content

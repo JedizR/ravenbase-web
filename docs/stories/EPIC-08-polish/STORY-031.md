@@ -175,13 +175,17 @@ npm run build
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-031: Dark Mode Toggle.
 
 Read first:
 1. CLAUDE.md (frontend rules — especially RULE 9: no forced color mode)
-2. docs/design/01-design-system.md (complete CSS token system for both modes)
-3. docs/design/CLAUDE_FRONTEND.md (RULE 9: no className="dark" on route layouts)
-4. docs/stories/EPIC-08-polish/STORY-031.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (RULE 9: no className="dark" on route layouts)
+6. docs/stories/EPIC-08-polish/STORY-031.md (this file)
 
 Key constraints:
 - Implement with localStorage + classList, NOT next-themes package

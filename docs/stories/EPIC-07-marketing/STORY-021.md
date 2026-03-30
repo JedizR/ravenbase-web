@@ -255,15 +255,18 @@ npx lighthouse http://localhost:3000 --only-categories=performance,accessibility
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-021: Landing Page.
 
 Read first:
 1. CLAUDE.md (architecture rules)
-2. docs/design/CLAUDE_FRONTEND.md (Tailwind only, no form tags)
-3. docs/design/00-brand-identity.md (brand identity, tagline, tone)
-4. docs/design/01-design-system.md (font tokens, mono label pattern, color tokens)
-5. docs/design/03-screen-flows.md (landing page section layout)
-6. docs/stories/EPIC-07-marketing/STORY-021.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (Tailwind only, no form tags)
+6. docs/design/03-screen-flows.md (landing page section layout)
+7. docs/stories/EPIC-07-marketing/STORY-021.md (this file)
 
 Key constraints:
 - Install: npm install framer-motion

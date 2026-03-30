@@ -180,14 +180,18 @@ asyncio.run(check())
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-022: Pricing Page + Stripe Checkout.
 
 Read first:
 1. CLAUDE.md (architecture rules)
-2. docs/design/CLAUDE_FRONTEND.md (frontend rules)
-3. docs/design/01-design-system.md (card styles, light mode tokens)
-4. docs/prd/05-monetization.md (tier details and pricing)
-5. docs/stories/EPIC-07-marketing/STORY-022.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (frontend rules)
+6. docs/prd/05-monetization.md (tier details and pricing)
+7. docs/stories/EPIC-07-marketing/STORY-022.md (this file)
 
 Key constraints:
 - Pricing page is (marketing)/ route group — light mode, no auth required

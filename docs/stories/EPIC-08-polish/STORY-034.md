@@ -136,14 +136,19 @@ async def award_referrer_on_first_upload(referee_id: uuid.UUID, db: AsyncSession
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-034: Referral System.
 
 Read first:
 1. CLAUDE.md
-2. docs/prd/05-monetization.md (referral rules, reward amounts, caps)
-3. docs/architecture/02-database-schema.md (referral_code, ReferralTransaction)
-4. docs/stories/EPIC-08-polish/STORY-023.md (credit transaction patterns)
-5. docs/stories/EPIC-08-polish/STORY-034.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/prd/05-monetization.md (referral rules, reward amounts, caps)
+6. docs/architecture/02-database-schema.md (referral_code, ReferralTransaction)
+7. docs/stories/EPIC-08-polish/STORY-023.md (credit transaction patterns)
+8. docs/stories/EPIC-08-polish/STORY-034.md (this file)
 
 Key constraints:
 - Referrer reward triggers on FIRST UPLOAD, not signup — use referral_reward_claimed

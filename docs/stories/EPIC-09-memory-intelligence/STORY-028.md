@@ -270,14 +270,19 @@ Show plan first. Do not implement yet.
 ## Frontend Agent Brief (for ravenbase-web/ session — after backend Part 1 merged)
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-028 Part 2 (Frontend): AI Chat Import Helper UI.
 Backend endpoint is deployed. Run npm run generate-client first.
 
 Read first:
 1. CLAUDE.md (frontend rules in this repo root)
-2. docs/design/CLAUDE_FRONTEND.md (useApiFetch, no form tags, approved packages)
-3. docs/design/02-component-library.md (Tabs, Textarea, Button, Badge components)
-4. docs/stories/EPIC-09-memory-intelligence/STORY-028.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (useApiFetch, no form tags, approved packages)
+6. docs/design/02-component-library.md (Tabs, Textarea, Button, Badge components)
+7. docs/stories/EPIC-09-memory-intelligence/STORY-028.md (this file)
 
 Key constraints:
 - Add Tabs to /dashboard/sources/page.tsx (Upload Files | Import from AI Chat)

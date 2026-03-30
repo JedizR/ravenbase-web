@@ -247,15 +247,19 @@ npm run build
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-027: Conversational Memory Chat — Frontend.
 Backend is complete. Run npm run generate-client first.
 
 Read first:
 1. CLAUDE.md (frontend rules in this repo root)
-2. docs/design/CLAUDE_FRONTEND.md (useApiFetch hook, no form tags, approved packages)
-3. docs/design/01-design-system.md (dark mode dashboard tokens)
-4. docs/stories/EPIC-02-ingestion/STORY-007.md (SSE streaming pattern reference)
-5. docs/stories/EPIC-09-memory-intelligence/STORY-027.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (useApiFetch hook, no form tags, approved packages)
+6. docs/stories/EPIC-02-ingestion/STORY-007.md (SSE streaming pattern reference)
+7. docs/stories/EPIC-09-memory-intelligence/STORY-027.md (this file)
 
 Key constraints:
 - "use client" on MemoryChat.tsx — uses state, EventSource, useAuth

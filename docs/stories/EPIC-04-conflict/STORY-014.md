@@ -203,14 +203,19 @@ npm run build
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-014: Memory Inbox UI (Keyboard Navigation + 3 Flows).
 
 Read first:
 1. CLAUDE.md (architecture rules)
-2. docs/design/CLAUDE_FRONTEND.md (no form tags, apiFetch, Tailwind only)
-3. docs/prd/03-feature-specs/F3-memory-inbox.md (3 flows: Binary Triage, Conversational, Auto-resolved)
-4. docs/design/04-ux-patterns.md (keyboard navigation patterns)
-5. docs/stories/EPIC-04-conflict/STORY-014.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (no form tags, apiFetch, Tailwind only)
+6. docs/prd/03-feature-specs/F3-memory-inbox.md (3 flows: Binary Triage, Conversational, Auto-resolved)
+7. docs/design/04-ux-patterns.md (keyboard navigation patterns)
+8. docs/stories/EPIC-04-conflict/STORY-014.md (this file)
 
 Key constraints:
 - No <form> tags — ConflictChat uses div + onClick + controlled input

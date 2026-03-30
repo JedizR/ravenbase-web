@@ -177,14 +177,19 @@ npm run build
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-017: Workstation UI (Streaming + Markdown + Export).
 
 Read first:
 1. CLAUDE.md (architecture rules)
-2. docs/design/CLAUDE_FRONTEND.md (no form tags, apiFetch, Tailwind only)
-3. docs/design/03-screen-flows.md (Workstation layout — history panel + editor + prompt input)
-4. docs/architecture/03-api-contract.md (POST /v1/metadoc/generate + stream spec)
-5. docs/stories/EPIC-05-metadoc/STORY-017.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/design/CLAUDE_FRONTEND.md (no form tags, apiFetch, Tailwind only)
+6. docs/design/03-screen-flows.md (Workstation layout — history panel + editor + prompt input)
+7. docs/architecture/03-api-contract.md (POST /v1/metadoc/generate + stream spec)
+8. docs/stories/EPIC-05-metadoc/STORY-017.md (this file)
 
 Key constraints:
 - Install: npm install react-markdown remark-gfm

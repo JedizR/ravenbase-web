@@ -92,14 +92,19 @@ take my knowledge graph elsewhere or simply have a backup.
 ## Agent Implementation Brief
 
 ```
+EXECUTION MODE: When implementing this story, execute ALL tasks inline in this session. Do NOT use subagent-driven development. Do NOT spawn subagents per task. Work through tasks sequentially in this conversation.
+
 Implement STORY-035: Data Export / Right to Portability.
 
 Read first:
 1. CLAUDE.md
-2. docs/architecture/02-database-schema.md
-3. docs/stories/EPIC-08-polish/STORY-024.md (same multi-store delete → export pattern)
-4. docs/stories/EPIC-08-polish/STORY-032.md (email for completion notification)
-5. docs/stories/EPIC-08-polish/STORY-035.md (this file)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
+3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+4. docs/design/01-design-system.md — all color tokens, typography
+5. docs/architecture/02-database-schema.md
+6. docs/stories/EPIC-08-polish/STORY-024.md (same multi-store delete → export pattern)
+7. docs/stories/EPIC-08-polish/STORY-032.md (email for completion notification)
+8. docs/stories/EPIC-08-polish/STORY-035.md (this file)
 
 Key: Partial failures are non-fatal. Never include vectors. Filter by tenant_id everywhere.
 Show plan first.
