@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 20 / 37 |
-| Current phase | Phase A — Backend (Sprints 1–19) — COMPLETE |
-| Current sprint | 19 |
-| Active repo | ravenbase-api |
+| Total stories complete | 21 / 37 |
+| Current phase | Phase B — Frontend (Sprints 20–38) |
+| Current sprint | 20 |
+| Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-29 (STORY-037) |
+| Last entry | 2026-03-30 (STORY-018-FE) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -878,6 +878,35 @@ _No entries yet._
 **Tech debt noted:**
 - `ActivityTrackingMiddleware` currently reads `request.state.user_id` which is set by other middleware/dependencies; relies on execution order being correct. Should add explicit guard logging if `user_id` is missing.
 - Qdrant and Neo4j deletion counts are hardcoded to 0 in `DataRetentionLog` (AC-13) — the adapters don't return row counts. Consider returning counts from adapters in a future story if audit precision is needed.
+
+---
+
+## Sprint 20 — Auth Frontend
+
+> Clerk auth pages, middleware, API fetch wrappers.
+> Sprint 20 covers STORY-018-FE.
+
+### STORY-018-FE — Clerk Auth Pages + Middleware
+**Date:** 2026-03-30 | **Sprint:** 20 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 7 tests passing, 0 TypeScript errors
+**Commit:** `24354c8`
+
+**What was built:**
+Clerk frontend auth layer. `/login` and `/register` pages use Clerk embedded `<SignIn />` / `<SignUp />` components with brand lockup above. Root `middleware.ts` intercepts all requests and redirects unauthenticated `/dashboard/*` visitors to `/login`. `ClerkProvider` added to root layout. `apiFetch` (server component wrapper) and `useApiFetch`/`useApiUpload` (client hooks) attach Clerk JWT to every API call. `QueryClientProvider` added to dashboard layout — prerequisite for all future TanStack Query usage. Brand components (`RavenbaseLogo`, `RavenbaseLockup`) updated: `color` prop added to Lockup, default size changed to `lg`, `aria-label` replaced with `aria-hidden="true"`. Also created `vitest.config.ts` with `@/` path alias — was missing from scaffold.
+
+**Key decisions:**
+- Skip link lives in root layout only — not duplicated in individual auth pages (root layout wraps all routes including `(auth)/`).
+- Brand lockup uses `text-primary` wrapper class on auth pages — `currentColor` inherits foreground color, which on cream background reads correctly as forest green.
+- `happy-dom` chosen over `jsdom` for vitest browser environment — `jsdom` has a CJS/ESM conflict with `@exodus/bytes` / `html-encoding-sniffer` that prevents test collection.
+- `vitest.config.ts` created at project root to wire `@/` alias — Next.js configures this via tsconfig `paths` but vitest needs it explicitly in its vite config.
+
+**Gotchas:**
+- In Clerk v6 (`@clerk/nextjs ^6.0.0` resolving to `6.23.x`), `auth()` inside `clerkMiddleware` is **async**, not synchronous. The plan stated it was synchronous; TypeScript rejected `const { userId } = auth()` with "Property 'userId' does not exist on type 'Promise<...>'". Fixed by making the middleware callback `async` and adding `await auth()`.
+- `jsdom` package conflicts with `@exodus/bytes` (ESM-only package required by `html-encoding-sniffer`). Use `happy-dom` instead — same API surface, no conflicts.
+- vitest needs its own path alias config even though tsconfig already declares `@/*` paths.
+
+**Tech debt noted:**
+- `afterSignUpUrl="/dashboard"` is a temporary shortcut — the onboarding story (STORY-019) will replace this with a redirect that checks onboarding completion status.
 
 ---
 

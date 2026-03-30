@@ -8,26 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 20
-**Status:** In progress — 20 of 37 stories complete (Phase A backend complete)
+**Current sprint:** 21
+**Status:** In progress — 21 of 37 stories complete (Phase A backend complete, STORY-018-FE done)
 
-**Next story to implement:** STORY-018-FE
-**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-018.md`
+**Next story to implement:** STORY-019
+**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-019.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-037 — Cold Data Lifecycle** (2026-03-29)
-`ActivityTrackingMiddleware` updates `last_active_at` (Redis-debounced, once/day); `ColdDataService` runs two-phase CRON: Phase 1 warns Free users inactive 150–179 days (email via `EmailService`, dedup via `DataRetentionLog`); Phase 2 purges data for users inactive ≥180 days (Storage→Qdrant→Neo4j→Postgres content rows, sets `is_archived=True`, zeros `credits_balance`). ARQ CRON fires Sundays 02:00 UTC.
+**STORY-018-FE — Clerk Auth Pages + Middleware** (2026-03-30)
+`middleware.ts` protects all `/dashboard/*` routes (async Clerk v6 `auth()`). `/login` and `/register` pages use Clerk embedded `<SignIn />` / `<SignUp />` with brand lockup. `lib/api.ts` server wrapper and `lib/api-client.ts` hooks (`useApiFetch`, `useApiUpload`) attach Clerk JWT. `QueryClientProvider` added to dashboard layout. 7 vitest tests passing, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-Phase B has started. All 20 backend stories are merged to ravenbase-api main.
-STORY-018-FE is the first frontend story — Clerk auth pages + middleware.
-Backend require_user and webhook handler are already live from Phase A.
+Phase B is underway. STORY-018-FE complete. Auth layer is fully wired: middleware gates `/dashboard/*`, `apiFetch`/`useApiFetch`/`useApiUpload` attach Clerk JWT to all API calls, `QueryClientProvider` is available to all dashboard pages. Next story is STORY-019 (onboarding wizard).
 
 ---
 
