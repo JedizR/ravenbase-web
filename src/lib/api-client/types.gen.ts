@@ -186,6 +186,24 @@ export type ImportPromptResponse = {
     detected_concepts: Array<(string)>;
 };
 
+export type ModelPreferenceUpdate = {
+    preferred_model: string;
+};
+
+export type NotificationPreferencesUpdate = {
+    notify_welcome?: (boolean | null);
+    notify_low_credits?: (boolean | null);
+    notify_ingestion_complete?: (boolean | null);
+};
+
+export type PaginatedProfileResponse = {
+    items: Array<ProfileResponse>;
+    total: number;
+    page?: number;
+    page_size?: number;
+    has_more?: boolean;
+};
+
 export type PaginatedResponse_ChatSessionSummary_ = {
     items: Array<ChatSessionSummary>;
     total: number;
@@ -200,6 +218,32 @@ export type PaginatedResponse_ConflictResponse_ = {
     page: number;
     page_size: number;
     has_more: boolean;
+};
+
+export type ProfileCreate = {
+    name: string;
+    description?: (string | null);
+    icon?: (string | null);
+    color?: (string | null);
+    is_default?: boolean;
+};
+
+export type ProfileResponse = {
+    id: string;
+    name: string;
+    description?: (string | null);
+    icon?: (string | null);
+    color?: (string | null);
+    is_default?: boolean;
+    created_at: string;
+};
+
+export type ProfileUpdate = {
+    name?: (string | null);
+    description?: (string | null);
+    icon?: (string | null);
+    color?: (string | null);
+    is_default?: (boolean | null);
 };
 
 export type ResolveAction = 'ACCEPT_NEW' | 'KEEP_OLD' | 'CUSTOM';
@@ -410,6 +454,24 @@ export type DeleteAccountV1AccountDeleteData = {
 
 export type DeleteAccountV1AccountDeleteResponse = (AccountDeleteResponse);
 
+export type UpdateModelPreferenceV1AccountModelPreferencePatchData = {
+    authorization?: (string | null);
+    requestBody: ModelPreferenceUpdate;
+};
+
+export type UpdateModelPreferenceV1AccountModelPreferencePatchResponse = ({
+    [key: string]: unknown;
+});
+
+export type UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData = {
+    authorization?: (string | null);
+    requestBody: NotificationPreferencesUpdate;
+};
+
+export type UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse = ({
+    [key: string]: unknown;
+});
+
 export type SendMessageV1ChatMessagePostData = {
     authorization?: (string | null);
     requestBody: ChatMessageRequest;
@@ -438,3 +500,31 @@ export type DeleteSessionV1ChatSessionsSessionIdDeleteData = {
 };
 
 export type DeleteSessionV1ChatSessionsSessionIdDeleteResponse = (void);
+
+export type ListProfilesV1ProfilesGetData = {
+    authorization?: (string | null);
+};
+
+export type ListProfilesV1ProfilesGetResponse = (PaginatedProfileResponse);
+
+export type CreateProfileV1ProfilesPostData = {
+    authorization?: (string | null);
+    requestBody: ProfileCreate;
+};
+
+export type CreateProfileV1ProfilesPostResponse = (ProfileResponse);
+
+export type UpdateProfileV1ProfilesProfileIdPatchData = {
+    authorization?: (string | null);
+    profileId: string;
+    requestBody: ProfileUpdate;
+};
+
+export type UpdateProfileV1ProfilesProfileIdPatchResponse = (ProfileResponse);
+
+export type DeleteProfileV1ProfilesProfileIdDeleteData = {
+    authorization?: (string | null);
+    profileId: string;
+};
+
+export type DeleteProfileV1ProfilesProfileIdDeleteResponse = (void);

@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/admin/destination/ravenbase/ravenbase-api/**)",
+      "Bash(docker compose:*)",
+      "Bash(npm run:*)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(curl -s http://127.0.0.1:8000/openapi.json)",
+      "Bash(npx openapi-ts:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(find /Users/admin/destination/ravenbase/ravenbase-web -type d -name \"app\" -o -type d -name \"\\(auth\\)\" -o -type d -name \"\\(dashboard\\)\" -o -type d -name \"\\(marketing\\)\")",
+      "Bash(npx vitest:*)",
+      "Bash(npm install:*)",
+      "Bash(ls -la /Users/admin/destination/ravenbase/ravenbase-web/app/\\\\\\(dashboard\\\\\\)/)",
+      "Bash(grep -r onboarding /Users/admin/destination/ravenbase/ravenbase-web --include=*.ts --include=*.tsx --include=*.json)",
+      "Bash(find /Users/admin/destination/ravenbase/ravenbase-web -type f -name middleware.ts -o -name api.ts -o -name *api*)",
+      "Bash(ls -la /Users/admin/destination/ravenbase/ravenbase-web/app/\\\\\\(auth\\\\\\)/)",
+      "Bash(grep -l \"onboard\" /Users/admin/destination/ravenbase/ravenbase-web/docs/stories/EPIC-*/STORY-*.md)",
+      "Bash(ls -la /Users/admin/destination/ravenbase/ravenbase-web/app/\\\\\\(auth\\\\\\)/login/)",
+      "Bash(ls -la /Users/admin/destination/ravenbase/ravenbase-web/app/\\\\\\(auth\\\\\\)/register/)",
+      "Bash(npx shadcn@latest add progress --yes)",
+      "Bash(git -C /Users/admin/destination/ravenbase/ravenbase-web log --oneline -1)",
+      "Bash(wait)",
+      "Bash(ls /Users/admin/destination/ravenbase/ravenbase-web/app/\\\\\\(dashboard\\\\\\)/settings/)",
+      "Bash(make quality:*)",
+      "Bash(grep -n \"await db.commit\\\\|await db.add\\\\|await db.delete\\\\|await db.refresh\" src/api/routes/*.py)",
+      "Bash(uv run:*)",
+      "Bash(sed -n '93,100p' src/api/routes/account.py)",
+      "Bash(sed -n '128,134p' src/api/routes/account.py)",
+      "Bash(make test:*)",
+      "Bash(pkill -f \"uvicorn src.api.main:app\")",
+      "Bash(npx shadcn@latest add dropdown-menu switch badge dialog input textarea select --yes)",
+      "Bash(npx shadcn@latest add sheet alert-dialog separator skeleton --yes)",
+      "Bash(npx shadcn@latest add command --yes)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); paths=d.get\\(''''paths'''',{}\\); [print\\(f''''{p}: {list\\(v.keys\\(\\)\\)}''''\\) for p,v in paths.items\\(\\)]\")",
+      "Bash(npx tsc:*)",
+      "Bash(sed -n '60,65p' /Users/admin/destination/ravenbase/ravenbase-web/app/\\\\\\(dashboard\\\\\\)/settings/profiles/page.tsx)",
+      "Bash(sed -n '3,8p' /Users/admin/destination/ravenbase/ravenbase-web/hooks/use-debounce.ts)"
+    ],
+    "additionalDirectories": [
+      "/Users/admin/destination/ravenbase/ravenbase-api/src/schemas",
+      "/Users/admin/destination/ravenbase/ravenbase-api/src/api/routes",
+      "/Users/admin/destination/ravenbase/ravenbase-api/src/api"
+    ]
+  }
+}

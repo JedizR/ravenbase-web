@@ -9,23 +9,23 @@
 
 **Phase:** B — Frontend (Sprints 20–38)
 **Current sprint:** 21
-**Status:** In progress — 22 of 37 stories complete (Phase A backend complete, STORY-019 done)
+**Status:** In progress — 23 of 37 stories complete (Phase A backend complete, STORY-019 + STORY-020 done)
 
-**Next story to implement:** STORY-020
-**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-020.md`
+**Next story to implement:** STORY-007-FE (Sprint 22)
+**Story file:** `docs/stories/EPIC-02-ingestion/STORY-007-FE.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-019 — Onboarding Wizard** (2026-03-30)
-3-step onboarding wizard at `/onboarding`: StepProfile (role + profile name), StepUpload (IngestionDropzone + textarea paste), StepProgress (SSE stream via `useSSE` hook). Register page now redirects to `/onboarding` after sign-up. Build: 0 TypeScript errors.
+**STORY-020 — System Profile Switching** (2026-03-30)
+Profile switching via Omnibar `/profile [name]` command (fuzzy match), sidebar dropdown (shadcn DropdownMenu), `ProfileContext` (pure client state — no API call on switch), Settings → Profiles CRUD page (create/edit/delete), Settings → AI Model selector + Notification toggles. Build: 0 TypeScript errors. Backend: `GET/POST/PATCH/DELETE /v1/profiles` + `PATCH /v1/account/model-preference` + `PATCH /v1/account/notification-preferences`.
 
 ---
 
 ## Context for Next Session
 
-STORY-019 complete. Onboarding wizard fully wired: `app/(auth)/onboarding/page.tsx`, `components/domain/OnboardingWizard.tsx`, `components/domain/IngestionDropzone.tsx`, `hooks/use-sse.ts`. SSE connects to `/v1/ingest/stream/{source_id}?token=` (backend STORY-007-BE). Backend `POST /v1/users/me/complete-onboarding` and `GET /v1/users/me` endpoints are called with graceful error handling if not yet deployed. Next story is STORY-020.
+STORY-020 complete. Backend routes: `src/schemas/profile.py`, `src/api/routes/profiles.py`, `src/api/routes/account.py` (PATCH endpoints). Frontend: `contexts/ProfileContext.tsx`, `components/domain/ProfileSwitcher.tsx`, `components/domain/Sidebar.tsx`, `components/domain/MobileSidebar.tsx`, `components/domain/Omnibar.tsx`, `components/domain/DashboardHeader.tsx`, `app/(dashboard)/settings/page.tsx`, `app/(dashboard)/settings/profiles/page.tsx`. Omnibar uses cmdk Command; profile switching is pure `setActiveProfile()` with toast confirmation. Next story is STORY-007-FE (Sprint 22 — Omnibar UI + IngestionProgress component).
 
 ---
 

@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 22 / 37 |
+| Total stories complete | 23 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
 | Current sprint | 21 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-019) |
+| Last entry | 2026-03-30 (STORY-020) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -772,6 +772,35 @@ _No entries yet._
 **Tech debt noted:**
 - AC-7 (skip onboarding for returning users) depends on `GET /v1/users/me` returning `has_completed_onboarding` — backend User model needs the field added plus Alembic migration (ravenbase-api scope). Frontend guard is wired but silently fails if endpoint returns 404.
 - Backend `POST /v1/users/me/complete-onboarding` endpoint not yet deployed — onboarding flag is not persisted until ravenbase-api adds this route.
+
+---
+
+### STORY-020 — System Profile Switching
+**Date:** 2026-03-30 | **Sprint:** 21 | **Phase:** B | **Repo:** ravenbase-web + ravenbase-api
+**Quality gate:** ✅ clean — 333 backend tests passing, 0 TypeScript errors
+**Commit:** `d3e4fee`
+
+**What was built:**
+Backend: `GET/POST/PATCH/DELETE /v1/profiles` CRUD endpoints (`src/api/routes/profiles.py`), `PATCH /v1/account/model-preference` and `PATCH /v1/account/notification-preferences` (`src/api/routes/account.py`), `ProfileResponse`/`ProfileCreate`/`ProfileUpdate` Pydantic schemas (`src/schemas/profile.py`). Frontend: `ProfileContext` (pure client state, no API call on switch), `ProfileSwitcher` (shadcn DropdownMenu with color badge), `Sidebar` (forest green, desktop), `MobileSidebar` (shadcn Sheet, mobile), `Omnibar` (cmdk Command with `/profile` fuzzy match), `DashboardHeader`, Settings → Profiles CRUD page, Settings → AI Model + Notification toggles. Build: 0 TypeScript errors, all routes rendered in `next build`.
+
+**Key decisions:**
+- Profile switching is pure client `setActiveProfile()` — no API call, instant (< 50ms) per AC-4.
+- `ProfileContext` fetches `GET /v1/profiles` once on mount and caches in React state; CRUD helpers (`createProfile`, `updateProfile`, `deleteProfile`) live in context for easy access.
+- Omnibar `/profile [name]` uses cmdk Command component (shadcn `CommandInput`/`CommandList`/`CommandGroup`), fuzzy matches via simple character-in-order check against all profile names.
+- `useRef<ReturnType<typeof setTimeout> | undefined>(undefined)` pattern used in all hooks — `useRef<T>()` without initial value is invalid in strict TypeScript.
+- `PATCH /v1/profiles/{id}` uses `exclude_unset=True` for partial updates; setting `is_default=True` unsets other defaults in a separate query first.
+- Settings page uses `useApiFetch` (client hook) not `apiFetch` (server-only) — `apiFetch` from `@/lib/api` cannot be imported in `"use client"` components (contains `@clerk/nextjs/server`).
+- `db.add()` and `db.add_all()` are synchronous in SQLModel async session — no `await` prefix (pyright caught this).
+
+**Gotchas:**
+- `await db.add()` and `await db.add_all()` are wrong — `db.add()` is synchronous in SQLModel async sessions. Correct: `db.add(profile)` without `await` (pyright error: "None is not awaitable").
+- `apiFetch` from `@/lib/api` contains `import 'server-only'` making it server-only — client components MUST use `useApiFetch` from `@/lib/api-client`.
+- Omnibar is rendered in the header area with `position: absolute; bottom-full` so it pops up above the input — works on both mobile and desktop layouts.
+
+**Tech debt noted:**
+- `GET /v1/users/me` endpoint not in OpenAPI spec — Settings page falls back to defaults if the call fails. Backend should add this endpoint (or wire existing `POST /v1/users/me/complete-onboarding` as GET too).
+- No cross-profile search toggle (AC-6) implemented yet — Omnibar `/search` command is a nav stub; full cross-profile search is deferred to a future story.
+- Credits balance in sidebar footer is a static `— —` placeholder — wire up via `GET /v1/credits/balance` in a future story.
 
 ---
 

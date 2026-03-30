@@ -800,6 +800,92 @@ export const ImportPromptResponseSchema = {
     title: 'ImportPromptResponse'
 } as const;
 
+export const ModelPreferenceUpdateSchema = {
+    properties: {
+        preferred_model: {
+            type: 'string',
+            title: 'Preferred Model'
+        }
+    },
+    type: 'object',
+    required: ['preferred_model'],
+    title: 'ModelPreferenceUpdate'
+} as const;
+
+export const NotificationPreferencesUpdateSchema = {
+    properties: {
+        notify_welcome: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Notify Welcome'
+        },
+        notify_low_credits: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Notify Low Credits'
+        },
+        notify_ingestion_complete: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Notify Ingestion Complete'
+        }
+    },
+    type: 'object',
+    title: 'NotificationPreferencesUpdate'
+} as const;
+
+export const PaginatedProfileResponseSchema = {
+    properties: {
+        items: {
+            items: {
+                '$ref': '#/components/schemas/ProfileResponse'
+            },
+            type: 'array',
+            title: 'Items'
+        },
+        total: {
+            type: 'integer',
+            title: 'Total'
+        },
+        page: {
+            type: 'integer',
+            title: 'Page',
+            default: 1
+        },
+        page_size: {
+            type: 'integer',
+            title: 'Page Size',
+            default: 50
+        },
+        has_more: {
+            type: 'boolean',
+            title: 'Has More',
+            default: false
+        }
+    },
+    type: 'object',
+    required: ['items', 'total'],
+    title: 'PaginatedProfileResponse'
+} as const;
+
 export const PaginatedResponse_ChatSessionSummary_Schema = {
     properties: {
         items: {
@@ -860,6 +946,184 @@ export const PaginatedResponse_ConflictResponse_Schema = {
     type: 'object',
     required: ['items', 'total', 'page', 'page_size', 'has_more'],
     title: 'PaginatedResponse[ConflictResponse]'
+} as const;
+
+export const ProfileCreateSchema = {
+    properties: {
+        name: {
+            type: 'string',
+            maxLength: 100,
+            minLength: 1,
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        icon: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Icon'
+        },
+        color: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Color'
+        },
+        is_default: {
+            type: 'boolean',
+            title: 'Is Default',
+            default: false
+        }
+    },
+    type: 'object',
+    required: ['name'],
+    title: 'ProfileCreate'
+} as const;
+
+export const ProfileResponseSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        name: {
+            type: 'string',
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        icon: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Icon'
+        },
+        color: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Color'
+        },
+        is_default: {
+            type: 'boolean',
+            title: 'Is Default',
+            default: false
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'name', 'created_at'],
+    title: 'ProfileResponse'
+} as const;
+
+export const ProfileUpdateSchema = {
+    properties: {
+        name: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 100,
+                    minLength: 1
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Name'
+        },
+        description: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 500
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Description'
+        },
+        icon: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Icon'
+        },
+        color: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Color'
+        },
+        is_default: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Is Default'
+        }
+    },
+    type: 'object',
+    title: 'ProfileUpdate'
 } as const;
 
 export const ResolveActionSchema = {

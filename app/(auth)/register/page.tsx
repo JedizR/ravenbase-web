@@ -19,7 +19,7 @@ export default function RegisterPage() {
       <SignUp
         path="/register"
         signInUrl="/login"
-        afterSignUpUrl="/dashboard"
+        afterSignUpUrl="/onboarding"
       />
     </main>
   )

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse } from './types.gen';
+import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
 
 /**
  * Health Check
@@ -570,6 +570,58 @@ export const deleteAccountV1AccountDelete = (data: DeleteAccountV1AccountDeleteD
 };
 
 /**
+ * Update Model Preference
+ * Update the user's preferred model for generation tasks.
+ *
+ * Valid values: claude-haiku-4-5-20251001, claude-sonnet-4-6
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @param data.authorization
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const updateModelPreferenceV1AccountModelPreferencePatch = (data: UpdateModelPreferenceV1AccountModelPreferencePatchData): CancelablePromise<UpdateModelPreferenceV1AccountModelPreferencePatchResponse> => {
+    return __request(OpenAPI, {
+        method: 'PATCH',
+        url: '/v1/account/model-preference',
+        headers: {
+            authorization: data.authorization
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Update Notification Preferences
+ * Update the user's notification preference flags.
+ *
+ * All fields are optional — only provided fields are updated.
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @param data.authorization
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const updateNotificationPreferencesV1AccountNotificationPreferencesPatch = (data: UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData): CancelablePromise<UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse> => {
+    return __request(OpenAPI, {
+        method: 'PATCH',
+        url: '/v1/account/notification-preferences',
+        headers: {
+            authorization: data.authorization
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
  * Send Message
  * Stream a chat response grounded in the user's memory base.
  *
@@ -668,6 +720,104 @@ export const deleteSessionV1ChatSessionsSessionIdDelete = (data: DeleteSessionV1
         url: '/v1/chat/sessions/{session_id}',
         path: {
             session_id: data.sessionId
+        },
+        headers: {
+            authorization: data.authorization
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * List Profiles
+ * List all profiles for the authenticated user.
+ * @param data The data for the request.
+ * @param data.authorization
+ * @returns PaginatedProfileResponse Successful Response
+ * @throws ApiError
+ */
+export const listProfilesV1ProfilesGet = (data: ListProfilesV1ProfilesGetData = {}): CancelablePromise<ListProfilesV1ProfilesGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/v1/profiles',
+        headers: {
+            authorization: data.authorization
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Create Profile
+ * Create a new profile for the authenticated user.
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @param data.authorization
+ * @returns ProfileResponse Successful Response
+ * @throws ApiError
+ */
+export const createProfileV1ProfilesPost = (data: CreateProfileV1ProfilesPostData): CancelablePromise<CreateProfileV1ProfilesPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/v1/profiles',
+        headers: {
+            authorization: data.authorization
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Update Profile
+ * Partially update a profile. All fields are optional.
+ * @param data The data for the request.
+ * @param data.profileId
+ * @param data.requestBody
+ * @param data.authorization
+ * @returns ProfileResponse Successful Response
+ * @throws ApiError
+ */
+export const updateProfileV1ProfilesProfileIdPatch = (data: UpdateProfileV1ProfilesProfileIdPatchData): CancelablePromise<UpdateProfileV1ProfilesProfileIdPatchResponse> => {
+    return __request(OpenAPI, {
+        method: 'PATCH',
+        url: '/v1/profiles/{profile_id}',
+        path: {
+            profile_id: data.profileId
+        },
+        headers: {
+            authorization: data.authorization
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Delete Profile
+ * Delete a profile. Cannot delete the last remaining profile.
+ * @param data The data for the request.
+ * @param data.profileId
+ * @param data.authorization
+ * @returns void Successful Response
+ * @throws ApiError
+ */
+export const deleteProfileV1ProfilesProfileIdDelete = (data: DeleteProfileV1ProfilesProfileIdDeleteData): CancelablePromise<DeleteProfileV1ProfilesProfileIdDeleteResponse> => {
+    return __request(OpenAPI, {
+        method: 'DELETE',
+        url: '/v1/profiles/{profile_id}',
+        path: {
+            profile_id: data.profileId
         },
         headers: {
             authorization: data.authorization
