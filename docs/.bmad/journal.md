@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 28 / 37 |
+| Total stories complete | 29 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 25 |
+| Current sprint | 26 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-028-FE) |
+| Last entry | 2026-03-31 (STORY-011) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -948,10 +948,32 @@ _No entries yet._
 
 ---
 
-## Sprint 26 — Graph Query Bar
+## Sprint 26 — Graph Explorer UI
 
-> NL query bar in Graph Explorer, amber node highlighting.
-> Sprint 26 covers STORY-030.
+> Cytoscape.js force-directed graph, node detail panel, mobile degradation.
+> Sprint 26 covers STORY-011.
+
+### STORY-011 — Graph Explorer UI (Cytoscape.js)
+**Date:** 2026-03-31 | **Sprint:** 26 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean
+**Commit:** `6af4bcc`
+
+**What was built:**
+Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-fcose layout. Node types: concept (primary green #2d4a3e), memory (secondary #e8ebe6), source (accent #a8c4b2), conflict (amber #ffc00d with animate-pulse). Click-to-inspect node details with 2-hop neighborhood subgraph via GET /v1/graph/neighborhood/{node_id}. GraphFilters: profile selector, date range inputs, node type checkboxes (no form tags per CLAUDE.md RULE 1). Mobile fallback: ConceptList with search and type tabs for screens < 768px. Empty states: processing animation with pulsing logo, no sources empty state with upload CTA, no matching nodes with clear filters. GraphNodePanel: right-side Sheet with node details, type badge, connected nodes list, conflict warning card with "View in Inbox" button.
+
+**Key decisions:**
+- Cytoscape instance stored in useRef, not React state — prevents infinite re-render loop
+- cytoscape and cytoscape-fcose dynamically imported inside useEffect — keeps heavy libs out of initial bundle
+- GraphExplorer wrapped in next/dynamic with ssr:false — no SSR for browser-only Cytoscape
+- Client components use useApiFetch() from lib/api-client.ts, not server-only apiFetch()
+- ProfileContext passed as props to avoid context issues in dynamically imported components
+
+**Gotchas:**
+- @types/cytoscape NOT installed — Cytoscape v3.30 ships its own TypeScript types; installing @types/cytoscape separately causes duplicate declaration errors
+- Tailwind v4 has no tailwind.config.js — graph container height set via className on the div ref container
+
+**Tech debt noted:**
+- Conflict node CSS pulse animation not yet working via Cytoscape stylesheet — needs DOM overlay approach or custom Cytoscape extension
 
 _No entries yet._
 

@@ -45,7 +45,7 @@
 |---|---|---|---|---|
 | STORY-009 | Entity extraction (Claude Haiku) + Neo4j writer | P0 | Large | ✅ |
 | STORY-010 | Graph API endpoints (nodes + neighborhood) | P0 | Medium | ✅ |
-| STORY-011 | Graph Explorer UI (Cytoscape.js, node click panel) | P1 | Large | 🔲 |
+| STORY-011 | Graph Explorer UI (Cytoscape.js, node click panel) | P1 | Large | ✅ |
 
 ---
 

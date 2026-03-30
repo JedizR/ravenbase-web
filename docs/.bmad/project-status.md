@@ -8,18 +8,18 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 25
-**Status:** In progress — 28 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-027, STORY-028-FE done)
+**Current sprint:** 26
+**Status:** In progress — 29 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-027, STORY-028-FE done)
 
-**Next story to implement:** STORY-011 (Sprint 25 — Graph Explorer UI)
-**Story file:** `docs/stories/EPIC-03-graph/STORY-011.md`
+**Next story to implement:** STORY-014 (Sprint 26 — Memory Inbox UI)
+**Story file:** `docs/stories/EPIC-04-conflict/STORY-014.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-028-FE — AI Chat Import Helper UI (Sprint 25)** (2026-03-30)
-Sources page at `/dashboard/sources` with two tabs (Upload Files + Import from AI Chat). Import tab: profile selector, personalized extraction prompt textarea with one-click Clipboard copy, collapsible numbered instructions, paste-back textarea (100k char limit), Import button calling POST /v1/ingest/text. SSE-driven ingestion progress via IngestionProgress. Mobile responsive. 5 unit tests pass.
+**STORY-011 — Graph Explorer UI (Sprint 26)** (2026-03-31)
+Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-fcose layout. Node types: concept (primary green), memory (secondary), source (accent), conflict (amber with pulse animation). Click-to-inspect node details with neighborhood subgraph via GET /v1/graph/neighborhood/{node_id}?hops=2. GraphFilters: profile selector, date range, node type checkboxes. Mobile fallback: ConceptList for screens < 768px. Empty states: processing animation, no sources, no matching nodes.
 
 ---
 
