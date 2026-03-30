@@ -108,7 +108,7 @@ export function ProfileSwitcher({ variant = "sidebar" }: ProfileSwitcherProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            window.location.href = "/dashboard/settings/profiles"
+            window.location.href = "/settings/profiles"
           }}
           className="cursor-pointer text-muted-foreground focus:text-foreground"
         >

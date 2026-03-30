@@ -370,7 +370,7 @@ export function MemoryChat() {
             >
               Close
             </Button>
-            <Button onClick={() => router.push("/dashboard/settings")}>
+            <Button onClick={() => router.push("/settings")}>
               Upgrade
             </Button>
           </div>

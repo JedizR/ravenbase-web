@@ -166,7 +166,7 @@ describe("CitationCard", () => {
     }
     render(<CitationCard citation={citation} />)
     fireEvent.click(screen.getByText("↗ src-456"))
-    expect(mockPush).toHaveBeenCalledWith("/dashboard/graph?node=mem-123")
+    expect(mockPush).toHaveBeenCalledWith("/graph?node=mem-123")
   })
 
   it("does not navigate when memory_id is null", () => {

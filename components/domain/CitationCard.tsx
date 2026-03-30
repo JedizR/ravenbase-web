@@ -18,7 +18,7 @@ export function CitationCard({ citation }: CitationCardProps) {
     <button
       onClick={() => {
         if (citation.memory_id) {
-          router.push(`/dashboard/graph?node=${citation.memory_id}`)
+          router.push(`/graph?node=${citation.memory_id}`)
         }
       }}
       className="text-xs font-mono text-muted-foreground border border-border rounded px-2 py-0.5

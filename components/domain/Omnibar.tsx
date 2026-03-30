@@ -282,7 +282,7 @@ export function Omnibar({ className }: OmnibarProps) {
                 <CommandGroup heading="NAVIGATION" className="p-2">
                   <CommandItem
                     value="nav inbox"
-                    onSelect={() => handleSelectNav("/dashboard/inbox")}
+                    onSelect={() => handleSelectNav("/inbox")}
                     className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl"
                   >
                     <span className="text-xs font-mono text-muted-foreground w-16">
@@ -292,7 +292,7 @@ export function Omnibar({ className }: OmnibarProps) {
                   </CommandItem>
                   <CommandItem
                     value="nav graph"
-                    onSelect={() => handleSelectNav("/dashboard/graph")}
+                    onSelect={() => handleSelectNav("/graph")}
                     className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl"
                   >
                     <span className="text-xs font-mono text-muted-foreground w-16">
@@ -302,7 +302,7 @@ export function Omnibar({ className }: OmnibarProps) {
                   </CommandItem>
                   <CommandItem
                     value="nav sources"
-                    onSelect={() => handleSelectNav("/dashboard/sources")}
+                    onSelect={() => handleSelectNav("/sources")}
                     className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl"
                   >
                     <span className="text-xs font-mono text-muted-foreground w-16">
@@ -312,7 +312,7 @@ export function Omnibar({ className }: OmnibarProps) {
                   </CommandItem>
                   <CommandItem
                     value="nav settings"
-                    onSelect={() => handleSelectNav("/dashboard/settings")}
+                    onSelect={() => handleSelectNav("/settings")}
                     className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-xl"
                   >
                     <span className="text-xs font-mono text-muted-foreground w-16">

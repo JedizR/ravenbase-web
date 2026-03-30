@@ -96,11 +96,11 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         {/* Settings */}
         <div className="p-3 space-y-1">
           <Link
-            href="/dashboard/settings"
+            href="/settings"
             onClick={onClose}
             className={cn(
               "flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors min-h-[44px]",
-              pathname.startsWith("/dashboard/settings")
+              pathname.startsWith("/settings")
                 ? "bg-primary-foreground/15 text-primary-foreground font-medium"
                 : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
             )}
