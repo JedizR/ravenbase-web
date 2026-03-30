@@ -820,7 +820,7 @@ _No entries yet._
 
 ### STORY-007-FE — IngestionProgress Component
 **Date:** 2026-03-30 | **Sprint:** 22 | **Phase:** B | **Repo:** ravenbase-web
-**Quality gate:** ✅ clean — 0 TypeScript errors
+**Quality gate:** ✅ clean — 7 tests passing, 0 TypeScript errors
 **Commit:** `8d767cb`
 
 **What was built:**
