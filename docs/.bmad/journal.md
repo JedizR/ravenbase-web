@@ -888,14 +888,14 @@ _No entries yet._
 
 ---
 
-## Sprint 24 — Workstation UI
+## Sprint 23 — Workstation UI
 
 > Streaming Markdown, export, auto-save ◆ status indicator.
-> Sprint 24 covers STORY-017.
+> Sprint 23 covers STORY-017.
 
 ### STORY-017 — Workstation UI (SSE Streaming + Markdown + Export)
-**Date:** 2026-03-30 | **Sprint:** 24 | **Phase:** B | **Repo:** ravenbase-web
-**Quality gate:** ✅ clean — 0 TypeScript errors
+**Date:** 2026-03-30 | **Sprint:** 23 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 13 tests passing, 0 TypeScript errors
 **Commit:** `747c30b`
 
 **What was built:**

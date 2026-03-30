@@ -11,8 +11,8 @@
 **Current sprint:** 24
 **Status:** In progress — 26 of 37 stories complete (Phase A backend complete, STORY-017, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE done)
 
-**Next story to implement:** STORY-027 (Sprint 21 — Chat UI)
-**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-027.md`
+**Next story to implement:** STORY-027 (Sprint 24 — Chat UI)
+**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-027.md`
 
 ---
 
