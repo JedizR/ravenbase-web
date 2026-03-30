@@ -10,8 +10,10 @@ import { GraphFilters } from "@/components/domain/GraphFilters"
 import { GraphNodePanel } from "@/components/domain/GraphNodePanel"
 import { GraphEmptyState } from "@/components/domain/GraphEmptyState"
 import { ConceptList } from "@/components/domain/ConceptList"
+import { GraphQueryBar } from "@/components/domain/GraphQueryBar"
+import { GraphQueryResults } from "@/components/domain/GraphQueryResults"
 import { Skeleton } from "@/components/ui/skeleton"
-import type { GraphNode, GraphEdge, GraphResponse } from "@/src/lib/api-client/types.gen"
+import type { GraphResponse, GraphQueryResponse } from "@/src/lib/api-client/types.gen"
 
 const GraphExplorer = dynamic(
   () => import("@/components/domain/GraphExplorer").then((mod) => mod.GraphExplorer),
@@ -42,6 +44,9 @@ export function GraphPageClient() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
 
+  // Query results state
+  const [queryResults, setQueryResults] = useState<GraphQueryResponse | null>(null)
+
   // Build query string
   const profileId = activeProfile?.id ?? null
   const params = new URLSearchParams()
@@ -65,6 +70,11 @@ export function GraphPageClient() {
   ) ?? []
 
   const handleNodeSelect = useCallback((nodeId: string) => {
+    setSelectedNodeId(nodeId)
+    setIsPanelOpen(true)
+  }, [])
+
+  const handleResultCardClick = useCallback((nodeId: string) => {
     setSelectedNodeId(nodeId)
     setIsPanelOpen(true)
   }, [])
@@ -117,6 +127,12 @@ export function GraphPageClient() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Query bar */}
+      <GraphQueryBar
+        onResults={setQueryResults}
+        profileId={profileId}
+      />
+
       {/* Filters */}
       <GraphFilters
         profileId={profileId}
@@ -147,11 +163,23 @@ export function GraphPageClient() {
                 isLoading={isLoading}
                 error={error ? "Failed to load graph" : null}
                 onNodeSelect={handleNodeSelect}
+                queryResults={queryResults}
+                onResultCardClick={handleResultCardClick}
               />
             )}
           </>
         )}
       </div>
+
+      {/* Query results panel */}
+      {queryResults && !isMobile && (
+        <div className="w-80 border-l border-border bg-card p-4 overflow-y-auto">
+          <GraphQueryResults
+            queryResults={queryResults}
+            onResultCardClick={handleResultCardClick}
+          />
+        </div>
+      )}
 
       {/* Node detail panel */}
       <GraphNodePanel

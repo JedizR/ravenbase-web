@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 30 / 37 |
+| Total stories complete | 31 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 27 |
+| Current sprint | 28 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-31 (STORY-014) |
+| Last entry | 2026-03-31 (STORY-030) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -974,6 +974,36 @@ Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-f
 
 **Tech debt noted:**
 - Conflict node CSS pulse animation not yet working via Cytoscape stylesheet — needs DOM overlay approach or custom Cytoscape extension
+
+---
+
+## Sprint 28 — Natural Language Graph Query UI
+
+> NL query bar, amber node highlights, results panel.
+> Sprint 28 covers STORY-030.
+
+### STORY-030 — Natural Language Graph Query Frontend
+**Date:** 2026-03-31 | **Sprint:** 28 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 78 tests passing, 0 TypeScript errors
+**Commit:** `TBD` (pending — commit with implementation)
+
+**What was built:**
+GraphQueryBar component above the filter bar with example query chips (clicking fills input without submitting). POST /v1/graph/query via useApiFetch with {query, profile_id, limit:20}. GraphExplorer adds .query-match class to matched nodes with amber highlight (#ffc00d bg, #d97706 border, z-index 999) via Cytoscape. GraphQueryResults panel slides in from right with memory cards (content preview first 150 chars, source_name, confidence badge), collapsible "Show Cypher" section, empty state for zero results.
+
+**Key decisions:**
+- Example chips: clicking sets input value only, does NOT submit (per spec AC-7)
+- GraphExplorer tap handler checks onResultCardClick prop: if provided uses it (query mode), else falls back to onNodeSelect (explore mode)
+- GraphQueryResults only renders on desktop (isMobile check in GraphPageClient)
+- Import path is @/src/lib/api-client/types.gen (NOT @/lib/...) — api-client lives under src/
+
+**Gotchas:**
+- Original plan had wrong import path (@/lib/api-client) — corrected to @/src/lib/api-client
+- toHaveValue/toBeDisabled are Jest-dom matchers not available in vitest — used .value property checks and .disabled attribute instead
+- shadcn Collapsible component needed: ran npx shadcn@latest add collapsible --yes
+
+**Tech debt noted:**
+- GraphQueryResults panel does not have a close button — user must clear the query to dismiss
+- Confidence badge only shown when confidence property exists on node
 
 ---
 

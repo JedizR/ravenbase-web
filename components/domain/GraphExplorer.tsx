@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { GraphNode, GraphEdge } from "@/src/lib/api-client/types.gen"
+import type { GraphNode, GraphEdge, GraphQueryResponse } from "@/src/lib/api-client/types.gen"
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface GraphExplorerProps {
@@ -10,6 +10,8 @@ interface GraphExplorerProps {
   isLoading: boolean
   error: string | null
   onNodeSelect: (nodeId: string) => void
+  queryResults?: GraphQueryResponse | null
+  onResultCardClick?: (nodeId: string) => void
 }
 
 const NODE_COLORS: Record<string, string> = {
@@ -25,6 +27,8 @@ export function GraphExplorer({
   isLoading,
   error,
   onNodeSelect,
+  queryResults,
+  onResultCardClick,
 }: GraphExplorerProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const cyRef = useRef<cytoscape.Core | null>(null)
@@ -128,6 +132,15 @@ export function GraphExplorer({
                 "curve-style": "bezier",
               },
             },
+            {
+              selector: ".query-match",
+              style: {
+                "background-color": "#ffc00d",
+                "border-width": 3,
+                "border-color": "#d97706",
+                "z-index": 999,
+              },
+            },
           ],
           layout: {
             name: "fcose",
@@ -142,7 +155,11 @@ export function GraphExplorer({
 
         cy.on("tap", "node", (evt) => {
           const nodeId = evt.target.id()
-          onNodeSelect(nodeId)
+          if (onResultCardClick) {
+            onResultCardClick(nodeId)
+          } else {
+            onNodeSelect(nodeId)
+          }
         })
 
         cyRef.current = cy
@@ -160,7 +177,26 @@ export function GraphExplorer({
         cyRef.current = null
       }
     }
-  }, [nodes, edges, onNodeSelect])
+  }, [nodes, edges, onNodeSelect, onResultCardClick])
+
+  // Query result highlighting
+  useEffect(() => {
+    if (!cyRef.current) return
+    const cy = cyRef.current
+
+    cy.elements().removeClass("query-match")
+
+    if (!queryResults) return
+
+    const matchedIds = queryResults.results.nodes.map((n) => n.id)
+    matchedIds.forEach((id) => {
+      cy.getElementById(id).addClass("query-match")
+    })
+
+    if (matchedIds.length > 0) {
+      cy.fit(cy.elements(".query-match"), 80)
+    }
+  }, [queryResults])
 
   if (isLoading) {
     return <Skeleton className="w-full h-[600px] rounded-2xl" />

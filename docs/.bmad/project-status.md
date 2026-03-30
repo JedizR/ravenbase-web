@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 27
-**Status:** In progress — 30 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014 done)
+**Current sprint:** 28
+**Status:** In progress — 31 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030 done)
 
-**Next story to implement:** STORY-030 (Sprint 28 — Natural Language Graph Query Frontend)
-**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-030.md`
+**Next story to implement:** STORY-021 (Sprint 30 — Landing Page)
+**Story file:** `docs/stories/EPIC-07-marketing/STORY-021.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-014 — Memory Inbox UI (Sprint 27)** (2026-03-31)
-Keyboard-navigable conflict resolution interface with 3 flows: Binary Triage (J/K navigate, Enter accept, Backspace reject), Conversational Chat (C opens chat, Enter submits custom resolution), Auto-resolved (optimistic updates with TanStack Query). ShortcutOverlay shown on ? key. Sidebar badge polls pending conflict count every 30s. 66 tests passing, 0 TypeScript errors.
+**STORY-030 — Natural Language Graph Query Frontend (Sprint 28)** (2026-03-31)
+NL query bar above the graph filter bar with example chips. POST /v1/graph/query via useApiFetch, amber node highlighting via Cytoscape .query-match class, results panel with memory cards showing content preview + source + confidence badge, collapsible "Show Cypher" reveal. GraphQueryResults panel slides in from right on results. 78 tests passing, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-STORY-014 complete. MemoryInbox implements keyboard-driven conflict triage with 3 flows. useKeyboardInbox hook handles window-level key events (J/K navigate, Enter/Backspace resolve, C chat, ? help). TanStack Query optimistic updates with rollback on error. ShortcutOverlay modal lists all shortcuts. Sidebar badge polls GET /v1/conflicts?status=pending every 30s. ConflictCard renders active (border-2 border-primary) vs inactive (opacity-70) states. 66 tests passing, npm run build passes. Next story is STORY-030 (Natural Language Graph Query Frontend).
+STORY-030 complete. GraphQueryBar with example chips fills input without submitting. Search calls POST /v1/graph/query with {query, profile_id, limit:20}. GraphExplorer highlights matched nodes in amber (#ffc00d) via cy.elements().removeClass() + cy.getElementById(id).addClass("query-match"). GraphQueryResults shows memory cards from queryResults.results.nodes with content preview, source_name, confidence badge. "Show Cypher" collapsible reveals generated Cypher. npm run build passes. Next story is STORY-021 (Landing Page).
 
 ---
 
