@@ -138,6 +138,34 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 - [ ] `make quality && make test` passes (backend)
 - [ ] `npm run build` passes (frontend)
 
+## Final Localhost Verification (mandatory before marking complete)
+
+After `make quality && make test` (backend) and `npm run build` (frontend) pass, verify the running application works:
+
+**Step 1 — Start backend dev server:**
+```bash
+cd ravenbase-api && make run
+```
+
+**Step 2 — Clear frontend cache and start dev server:**
+```bash
+rm -rf .next && npm run dev
+```
+
+**Step 3 — Verify no runtime errors:**
+- Open http://localhost:3000 in the browser
+- Log in as admin user, navigate to `/admin`
+- Confirm NO "Internal Server Error" or webpack runtime errors
+- Confirm CSS loads correctly (no unstyled content)
+- Open browser DevTools → Console tab
+- Confirm no red errors (yellow warnings acceptable)
+
+**Step 4 — Report one of:**
+- ✅ `localhost verified` — admin dashboard renders correctly
+- ⚠️ `Issue found: [describe issue]` — fix before committing docs
+
+Only commit the docs update (epics.md, story-counter, project-status, journal) AFTER localhost verification passes.
+
 ## Testing This Story
 
 ```bash

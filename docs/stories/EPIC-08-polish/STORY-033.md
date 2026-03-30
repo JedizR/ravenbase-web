@@ -188,6 +188,35 @@ export function CookieConsent() {
 - [ ] `npm run build` passes (0 TypeScript errors)
 - [ ] Lighthouse: Accessibility > 95 on both pages
 
+## Final Localhost Verification (mandatory before marking complete)
+
+After `npm run build` passes and all tests pass, verify the running application works:
+
+**Step 1 — Clear stale cache:**
+```bash
+rm -rf .next
+```
+
+**Step 2 — Start dev server:**
+```bash
+npm run dev
+```
+
+**Step 3 — Verify no runtime errors:**
+- Open http://localhost:3000 in the browser
+- Navigate to `/privacy` — confirm page renders correctly
+- Navigate to `/terms` — confirm page renders correctly
+- Confirm NO "Internal Server Error" or webpack runtime errors
+- Confirm CSS loads correctly (no unstyled content)
+- Open browser DevTools → Console tab
+- Confirm no red errors (yellow warnings acceptable)
+
+**Step 4 — Report one of:**
+- ✅ `localhost verified` — pages render correctly
+- ⚠️ `Issue found: [describe issue]` — fix before committing docs
+
+Only commit the docs update (epics.md, story-counter, project-status, journal) AFTER localhost verification passes.
+
 ## Testing This Story
 
 ```bash

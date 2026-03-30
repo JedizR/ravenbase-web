@@ -114,6 +114,26 @@ async def award_referrer_on_first_upload(referee_id: uuid.UUID, db: AsyncSession
 - [ ] Settings → Referrals page with copy button
 - [ ] `make quality && make test` passes
 
+## Final Localhost Verification (mandatory before marking complete)
+
+After `make quality && make test` passes, verify the running application works:
+
+**Step 1 — Start dev server:**
+```bash
+cd ravenbase-api && make run
+```
+
+**Step 2 — Verify no runtime errors:**
+- Test the referral endpoints with curl or a tool like Postman
+- Confirm no unhandled exceptions in server logs
+- Confirm structlog output is clean
+
+**Step 3 — Report one of:**
+- ✅ `localhost verified` — referral system runs correctly
+- ⚠️ `Issue found: [describe issue]` — fix before committing docs
+
+Only commit the docs update (epics.md, story-counter, project-status, journal) AFTER localhost verification passes.
+
 ## Testing This Story
 
 ```bash

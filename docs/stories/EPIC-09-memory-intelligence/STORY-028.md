@@ -220,6 +220,36 @@ Both tabs work at 375px. The generated prompt textarea needs height cap on mobil
 - [ ] `make quality` + `make test` pass (backend)
 - [ ] `npm run build` passes (frontend)
 
+## Final Localhost Verification (mandatory before marking complete)
+
+After `npm run build` passes and all tests pass, verify the running application works:
+
+**Step 1 — Clear stale cache:**
+```bash
+rm -rf .next
+```
+
+**Step 2 — Start dev server:**
+```bash
+npm run dev
+```
+
+**Step 3 — Verify no runtime errors:**
+- Open http://localhost:3000 in the browser
+- Sign in if redirected to /login
+- Navigate to `/dashboard/sources`
+- Click "Import from AI Chat" tab
+- Confirm NO "Internal Server Error" or webpack runtime errors
+- Confirm CSS loads correctly (no unstyled content)
+- Open browser DevTools → Console tab
+- Confirm no red errors (yellow warnings acceptable)
+
+**Step 4 — Report one of:**
+- ✅ `localhost verified` — page renders correctly
+- ⚠️ `Issue found: [describe issue]` — fix before committing docs
+
+Only commit the docs update (epics.md, story-counter, project-status, journal) AFTER localhost verification passes.
+
 ## Testing This Story
 
 ```bash
