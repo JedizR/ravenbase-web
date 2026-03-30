@@ -994,7 +994,7 @@ _No entries yet._
 ### STORY-014 — Memory Inbox UI (Keyboard Navigation + 3 Flows)
 **Date:** 2026-03-31 | **Sprint:** 27 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 66 tests passing, 0 TypeScript errors
-**Commit:** `283acc4`
+**Commit:** `93709c8`
 
 **What was built:**
 Keyboard-navigable conflict resolution interface with 3 flows: Binary Triage (J/K navigate cards, Enter accepts new, Backspace keeps old), Conversational (C opens chat mode, Enter submits custom resolution via CUSTOM action), Auto-resolved (TanStack Query optimistic updates with rollback on error). ShortcutOverlay modal triggered by ? key lists all keyboard shortcuts. Sidebar badge polls GET /v1/conflicts?status=pending every 30s. InboxEmptyState with animated SVG checkmark shown when all conflicts resolved. Sonner Toaster added to dashboard layout for rich toast notifications.

@@ -9,10 +9,10 @@
 
 **Phase:** B — Frontend (Sprints 20–38)
 **Current sprint:** 27
-**Status:** In progress — 31 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014 done)
+**Status:** In progress — 30 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014 done)
 
-**Next story to implement:** STORY-030 (Sprint 27 — Natural Language Graph Query Frontend)
-**Story file:** `docs/stories/EPIC-04-conflict/STORY-014.md`
+**Next story to implement:** STORY-030 (Sprint 28 — Natural Language Graph Query Frontend)
+**Story file:** `docs/stories/EPIC-09-memory-intelligence/STORY-030.md`
 
 ---
 
