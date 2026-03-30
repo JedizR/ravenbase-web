@@ -896,7 +896,7 @@ _No entries yet._
 ### STORY-017 — Workstation UI (SSE Streaming + Markdown + Export)
 **Date:** 2026-03-30 | **Sprint:** 24 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 0 TypeScript errors
-**Commit:** `TBD` ← fill after committing
+**Commit:** `747c30b`
 
 **What was built:**
 Workstation page at `/dashboard/workstation` with two-panel layout (history sidebar + editor). MetaDocEditor streams SSE tokens and renders Markdown progressively via `react-markdown` (dynamic import, SSR disabled). Auto-save status indicator per RULE 19 (`◆ GENERATING` / `◆ SAVED_JUST_NOW` / `◆ SAVED_2_MIN_AGO`). Export to .md via Blob anchor download, export to PDF via `window.print()` with `@media print` CSS. Mobile collapses history into a shadcn Sheet. `useSSEStream` hook created as separate from existing `useSSE` (ingestion) for token accumulation.
