@@ -7,9 +7,9 @@ const isPublicRoute = createRouteMatcher([
   "/register(.*)",
 ])
 
-export default clerkMiddleware((auth, request) => {
+export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
-    const { userId } = auth()
+    const { userId } = await auth()
     if (!userId) {
       return NextResponse.redirect(new URL("/login", request.url))
     }
