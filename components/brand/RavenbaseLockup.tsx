@@ -11,15 +11,19 @@ const TEXT_SIZE_MAP: Record<LogoSize, string> = {
 
 interface RavenbaseLockupProps {
   size?: LogoSize
+  color?: string
   className?: string
 }
 
-export function RavenbaseLockup({ size = "md", className }: RavenbaseLockupProps) {
+export function RavenbaseLockup({ size = "lg", color = "currentColor", className }: RavenbaseLockupProps) {
   return (
-    <div className={`flex items-center gap-2 ${className ?? ""}`}>
-      <RavenbaseLogo size={size} />
+    <div
+      className={`flex items-center gap-2${className ? ` ${className}` : ""}`}
+      style={{ color }}
+    >
+      <RavenbaseLogo size={size} color="currentColor" />
       <span
-        className={`font-sans font-extrabold tracking-wider uppercase text-foreground ${TEXT_SIZE_MAP[size]}`}
+        className={`font-sans font-extrabold tracking-wider uppercase ${TEXT_SIZE_MAP[size]}`}
         style={{ lineHeight: 1 }}
       >
         RAVENBASE
