@@ -83,7 +83,7 @@
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
 | STORY-018 | Clerk auth integration (FE + BE webhook) | P0 | Medium | ✅ |
-| STORY-019 | Onboarding wizard (profile creation + first upload) | P0 | Medium | 🔲 |
+| STORY-019 | Onboarding wizard (profile creation + first upload) | P0 | Medium | ✅ |
 | STORY-020 | System Profile switching (Omnibar /profile command) | P1 | Small | 🔲 |
 
 ---

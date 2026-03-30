@@ -9,23 +9,23 @@
 
 **Phase:** B — Frontend (Sprints 20–38)
 **Current sprint:** 21
-**Status:** In progress — 21 of 37 stories complete (Phase A backend complete, STORY-018-FE done)
+**Status:** In progress — 22 of 37 stories complete (Phase A backend complete, STORY-019 done)
 
-**Next story to implement:** STORY-019
-**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-019.md`
+**Next story to implement:** STORY-020
+**Story file:** `docs/stories/EPIC-06-auth-profiles/STORY-020.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-018-FE — Clerk Auth Pages + Middleware** (2026-03-30)
-`middleware.ts` protects all `/dashboard/*` routes (async Clerk v6 `auth()`). `/login` and `/register` pages use Clerk embedded `<SignIn />` / `<SignUp />` with brand lockup. `lib/api.ts` server wrapper and `lib/api-client.ts` hooks (`useApiFetch`, `useApiUpload`) attach Clerk JWT. `QueryClientProvider` added to dashboard layout. 7 vitest tests passing, 0 TypeScript errors.
+**STORY-019 — Onboarding Wizard** (2026-03-30)
+3-step onboarding wizard at `/onboarding`: StepProfile (role + profile name), StepUpload (IngestionDropzone + textarea paste), StepProgress (SSE stream via `useSSE` hook). Register page now redirects to `/onboarding` after sign-up. Build: 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-Phase B is underway. STORY-018-FE complete. Auth layer is fully wired: middleware gates `/dashboard/*`, `apiFetch`/`useApiFetch`/`useApiUpload` attach Clerk JWT to all API calls, `QueryClientProvider` is available to all dashboard pages. Next story is STORY-019 (onboarding wizard).
+STORY-019 complete. Onboarding wizard fully wired: `app/(auth)/onboarding/page.tsx`, `components/domain/OnboardingWizard.tsx`, `components/domain/IngestionDropzone.tsx`, `hooks/use-sse.ts`. SSE connects to `/v1/ingest/stream/{source_id}?token=` (backend STORY-007-BE). Backend `POST /v1/users/me/complete-onboarding` and `GET /v1/users/me` endpoints are called with graceful error handling if not yet deployed. Next story is STORY-020.
 
 ---
 

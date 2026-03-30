@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 21 / 37 |
+| Total stories complete | 22 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 20 |
+| Current sprint | 21 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-30 (STORY-018-FE) |
+| Last entry | 2026-03-30 (STORY-019) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -749,7 +749,29 @@ _No entries yet._
 > 3-step wizard, GettingStartedChecklist, profile context.
 > Sprint 20 covers STORY-019 and STORY-020.
 
-_No entries yet._
+### STORY-019 — Onboarding Wizard
+**Date:** 2026-03-30 | **Sprint:** 21 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors, `npm run build` passes
+**Commit:** `TBD`
+
+**What was built:**
+3-step onboarding wizard at `/onboarding`: Step 1 (role grid + auto-filled profile name with blur-debounce validation), Step 2 (IngestionDropzone + textarea paste with file/text upload), Step 3 (SSE progress bar via `useSSE` hook with auto-advance to `/dashboard?first_run=true`). Register page now redirects new users to `/onboarding` instead of `/dashboard`. Completion calls `POST /v1/users/me/complete-onboarding` (graceful error if backend not yet deployed). Returning users who already completed onboarding are redirected to `/dashboard` via `GET /v1/users/me` check on mount.
+
+**Key decisions:**
+- `useSSE` hook uses `?token=` query param (not Authorization header) — EventSource is browser-native and cannot set custom headers; backend reads token via `verify_token_query_param` dependency.
+- `completeOnboarding()` is best-effort (try/catch swallows backend errors) — wizard always navigates to dashboard regardless of API availability, so onboarding UX works even before backend `POST /v1/users/me/complete-onboarding` is deployed.
+- Role grid pre-fills profile name via `ROLE_DEFAULTS` map but only if the user hasn't manually touched the field (`profileNameTouched` guard) — avoids overwriting intentional edits.
+- Text ingestion uses `{ content: pastedText }` body field (not `{ text }`) per TextIngestRequest schema from STORY-008-BE.
+- SSE endpoint path: `/v1/ingest/stream/{source_id}` — upload response returns `source_id`, not `job_id`.
+- `Providers` (QueryClientProvider) wraps the wizard in `page.tsx` — onboarding is under `(auth)/` which has no provider by default.
+
+**Gotchas:**
+- `useRef<ReturnType<typeof setTimeout>>()` is invalid in strict TypeScript (requires initial argument) — must use `useRef<ReturnType<typeof setTimeout> | undefined>(undefined)`.
+- Tailwind v4 canonical class for `min-height: 100dvh` is `min-h-dvh` (not `min-h-[100dvh]`) — IDE lint flagged the arbitrary value.
+
+**Tech debt noted:**
+- AC-7 (skip onboarding for returning users) depends on `GET /v1/users/me` returning `has_completed_onboarding` — backend User model needs the field added plus Alembic migration (ravenbase-api scope). Frontend guard is wired but silently fails if endpoint returns 404.
+- Backend `POST /v1/users/me/complete-onboarding` endpoint not yet deployed — onboarding flag is not persisted until ravenbase-api adds this route.
 
 ---
 
