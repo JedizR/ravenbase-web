@@ -95,7 +95,7 @@
 
 | Story | Title | Priority | Complexity | Status |
 |---|---|---|---|---|
-| STORY-021 | Landing page (hero + features + workflow + CTA) | P1 | Large | 🔲 |
+| STORY-021 | Landing page (hero + features + workflow + CTA) | P1 | Large | ✅ |
 | STORY-022 | Pricing page + Stripe checkout integration | P1 | Medium | 🔲 |
 
 ---

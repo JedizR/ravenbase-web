@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 31 / 37 |
+| Total stories complete | 32 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 28 |
+| Current sprint | 29 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-31 (STORY-030) |
+| Last entry | 2026-03-31 (STORY-021) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -974,6 +974,35 @@ Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-f
 
 **Tech debt noted:**
 - Conflict node CSS pulse animation not yet working via Cytoscape stylesheet — needs DOM overlay approach or custom Cytoscape extension
+
+---
+
+## Sprint 29 — Landing Page
+
+> Full marketing landing page with 9 sections and animations.
+> Sprint 29 covers STORY-021.
+
+### STORY-021 — Landing Page (Hero + Features + Workflow + CTA)
+**Date:** 2026-03-31 | **Sprint:** 29 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors, build passes
+**Commit:** `e176d60`
+
+**What was built:**
+Full 9-section marketing landing page at app/(marketing)/page.tsx: Hero with animated headline, SocialProof logos strip, HowItWorks 3-step workflow, FeatureGrid with 6 feature cards, GraphPreview with animated SVG knowledge graph, UseCases tabbed panel, Testimonials carousel, FAQ accordion (shadcn), and FinalCTA. Framer Motion scroll-triggered animations throughout. JSON-LD SoftwareApplication schema added. robots.ts, sitemap.ts, and middleware.ts updated to handle marketing vs dashboard route split.
+
+**Key decisions:**
+- Used Framer Motion `useInView` + `variants` for scroll-triggered animations rather than CSS-only to match the animation spec
+- AnimatedSVG graph preview uses hardcoded demo nodes/edges — no real API call on the marketing page
+- JSON-LD injected via Next.js `<Script>` with `dangerouslySetInnerHTML` per Google's recommended pattern (structured data, not rendered HTML)
+- Middleware updated to allow unauthenticated access to all `(marketing)` routes while protecting `(dashboard)` routes
+
+**Gotchas:**
+- `framer-motion` requires `"use client"` on any component that uses motion hooks — marketing page is a Client Component as a result
+- shadcn Accordion needed: `npx shadcn@latest add accordion --yes`
+
+**Tech debt noted:**
+- Testimonials section uses placeholder copy — real testimonials needed before launch
+- GraphPreview SVG is static demo — could be replaced with a live read-only Cytoscape embed in a future polish story
 
 ---
 

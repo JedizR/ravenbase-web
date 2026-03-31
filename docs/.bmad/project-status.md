@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 28
-**Status:** In progress — 31 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030 done)
+**Current sprint:** 29
+**Status:** In progress — 32 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021 done)
 
-**Next story to implement:** STORY-021 (Sprint 29 — Landing Page)
-**Story file:** `docs/stories/EPIC-07-marketing/STORY-021.md`
+**Next story to implement:** STORY-022 (Sprint 30 — Pricing + Stripe checkout)
+**Story file:** `docs/stories/EPIC-07-marketing/STORY-022.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-030 — Natural Language Graph Query Frontend (Sprint 28)** (2026-03-31)
-NL query bar above the graph filter bar with example chips. POST /v1/graph/query via useApiFetch, amber node highlighting via Cytoscape .query-match class, results panel with memory cards showing content preview + source + confidence badge, collapsible "Show Cypher" reveal. GraphQueryResults panel slides in from right on results. 78 tests passing, 0 TypeScript errors.
+**STORY-021 — Landing Page (Sprint 29)** (2026-03-31)
+Full 9-section marketing landing page with Framer Motion scroll animations, shadcn Accordion FAQ, animated SVG knowledge graph, JSON-LD structured data, and updated sitemap/robots/middleware. Build passes, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-STORY-030 complete. GraphQueryBar with example chips fills input without submitting. Search calls POST /v1/graph/query with {query, profile_id, limit:20}. GraphExplorer highlights matched nodes in amber (#ffc00d) via cy.elements().removeClass() + cy.getElementById(id).addClass("query-match"). GraphQueryResults shows memory cards from queryResults.results.nodes with content preview, source_name, confidence badge. "Show Cypher" collapsible reveals generated Cypher. npm run build passes. Next story is STORY-021 (Landing Page).
+STORY-021 complete. Landing page at app/(marketing)/page.tsx with 9 sections: Hero, SocialProof, HowItWorks, FeatureGrid, GraphPreview, UseCases, Testimonials, FAQ, and FinalCTA. Framer Motion used for scroll-triggered animations. JSON-LD SoftwareApplication schema added. robots.ts, sitemap.ts, and middleware.ts updated to exclude dashboard routes from crawlers. npm run build passes. Next story is STORY-022 (Pricing + Stripe checkout).
 
 ---
 
