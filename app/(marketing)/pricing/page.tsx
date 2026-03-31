@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     title: "Pricing | Ravenbase",
     description: "Free, Pro ($15/mo), Team ($49/mo). Start building your knowledge graph today.",
   },
+  robots: { index: true, follow: true },
 }
 
 const jsonLd = {
