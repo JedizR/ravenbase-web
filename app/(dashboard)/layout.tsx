@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { Toaster } from "sonner"
 import { Providers } from "@/app/providers"
 import { DashboardHeader } from "@/components/domain/DashboardHeader"
 import { MobileSidebar } from "@/components/domain/MobileSidebar"
 import { ProfileContextProvider } from "@/contexts/ProfileContext"
 import { Sidebar } from "@/components/domain/Sidebar"
+import { CheckoutSuccessHandler } from "@/components/dashboard/CheckoutSuccessHandler"
 
 export default function DashboardLayout({
   children,
@@ -32,6 +33,9 @@ export default function DashboardLayout({
               className="flex-1 overflow-y-auto"
               tabIndex={-1}
             >
+              <Suspense fallback={null}>
+                <CheckoutSuccessHandler />
+              </Suspense>
               {children}
             </main>
             {/* Sonner toast notifications — richColors for semantic variants */}
