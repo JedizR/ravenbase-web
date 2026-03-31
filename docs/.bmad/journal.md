@@ -984,11 +984,11 @@ Force-directed knowledge graph visualization using Cytoscape.js with cytoscape-f
 
 ### STORY-021 — Landing Page (Hero + Features + Workflow + CTA)
 **Date:** 2026-03-31 | **Sprint:** 29 | **Phase:** B | **Repo:** ravenbase-web
-**Quality gate:** ✅ clean — 0 TypeScript errors, build passes
-**Commit:** `e176d60`
+**Quality gate:** ✅ clean — 78 tests passing, 0 TypeScript errors, build passes
+**Commit:** `4d88549`
 
 **What was built:**
-Full 9-section marketing landing page at app/(marketing)/page.tsx: Hero with animated headline, SocialProof logos strip, HowItWorks 3-step workflow, FeatureGrid with 6 feature cards, GraphPreview with animated SVG knowledge graph, UseCases tabbed panel, Testimonials carousel, FAQ accordion (shadcn), and FinalCTA. Framer Motion scroll-triggered animations throughout. JSON-LD SoftwareApplication schema added. robots.ts, sitemap.ts, and middleware.ts updated to handle marketing vs dashboard route split.
+Full 9-section marketing landing page at app/(marketing)/page.tsx, replacing the old root redirect (app/page.tsx deleted). Components: Header (sticky scroll + mobile hamburger), HeroSection (Framer Motion entrance animations + AnimatedGraph.tsx SVG with 24 nodes/36 edges), WorkflowSection (3-step Upload→Structure→Generate cards, anchor id="how-it-works"), FeaturesSection (staggered whileInView scroll animations on 3 feature cards), FeatureDeepDive (alternating layout with Memory Inbox and Meta-Document styled mockups), TestimonialsSection (3 REF-XXXX placeholder cards), FAQSection (shadcn Accordion using radix-ui import pattern, 4 Q&As), CTASection (decorative corner icons, single CTA), Footer (mono status bar, legal + product nav). JSON-LD SoftwareApplication schema injected via next/script. robots.ts, sitemap.ts, and middleware.ts updated for marketing/dashboard route split.
 
 **Key decisions:**
 - Used Framer Motion `useInView` + `variants` for scroll-triggered animations rather than CSS-only to match the animation spec
