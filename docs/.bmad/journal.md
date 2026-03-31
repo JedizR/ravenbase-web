@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 32 / 37 |
+| Total stories complete | 33 / 37 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 29 |
+| Current sprint | 30 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-31 (STORY-021) |
+| Last entry | 2026-03-31 (STORY-022) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -939,12 +939,37 @@ Workstation page at `/dashboard/workstation` with two-panel layout (history side
 
 ---
 
-## Sprint 25 — Landing Page + Pricing + Stripe
+## Sprint 30 — Pricing Page + Stripe Checkout
 
-> 9-section marketing page, Stripe Checkout, webhook idempotency.
-> Sprint 25 covers STORY-021 and STORY-022.
+> Public pricing page, Stripe Checkout session, Redis-idempotent webhook tier upgrade.
+> Sprint 30 covers STORY-022.
 
-_No entries yet._
+### STORY-022 — Pricing Page + Stripe Checkout
+**Date:** 2026-03-31 | **Sprint:** 30 | **Phase:** B | **Repo:** ravenbase-web + ravenbase-api
+**Quality gate:** ✅ clean — backend: make quality + make test passing; frontend: 0 TypeScript errors, build passes
+**Commit:** `4f606bf`
+
+**What was built:**
+Public `/pricing` page (Server Component, SSG) with Free/Pro/Team tier cards, monthly/annual billing toggle, and feature comparison table. Stripe Checkout sessions created server-side via `POST /v1/billing/create-checkout-session`; the frontend never touches Stripe directly. Backend webhook handler upgraded with Redis idempotency (`stripe:event:{event_id}`, 24h TTL), tier upgrade routing via `session_type` metadata, and `customer.subscription.deleted` → revert tier to free. Settings → Billing page at `/settings/billing` with Stripe Customer Portal link. Checkout success toast shown via `CheckoutSuccessHandler` on redirect back to `/chat?checkout=success`.
+
+**Key decisions:**
+- Distinguished tier upgrades from credit top-ups using `session_type` metadata in the Checkout session — avoids breaking changes to existing credit top-up flow which routes on the same `checkout.session.completed` event type.
+- `stripe.api_key` set at module level in `billing_service.py`, not in `__init__` — prevents invisible coupling where webhooks would fail if BillingService was never instantiated.
+- Used `with_for_update()` on the Stripe customer lookup to prevent TOCTOU race that would create duplicate Stripe customers under concurrent requests.
+- `handled = False` flag in webhook handler ensures `redis.setex` is only called when an event type is actually processed — prevents permanent suppression of unknown event types.
+- `(dashboard)` route group does NOT add a `/dashboard/` URL segment — success_url points to `/chat?checkout=success`, return_url to `/settings/billing`.
+- Alembic migration for `stripe_customer_id` created manually (not autogenerate) — autogenerate picked up unrelated model diffs and produced destructive DROP TABLE operations.
+- Added `index=True` to `stripe_customer_id` field after code quality review because `_handle_subscription_deleted` queries users by this column.
+- Marketing layout added `QueryClientProvider` wrapping — `PricingSection` uses `useQuery` which requires a QueryClient; the layout previously had none, causing a "No QueryClient set" build failure.
+
+**Gotchas:**
+- Alembic `--autogenerate` was attempted first and produced a migration with DROP TABLE for unrelated tables (`chat_sessions`, `data_retention_logs`) — had to roll back, delete the bad file, and write the migration manually.
+- Hardcoded Postgres credentials were added to `alembic/env.py` during a bad implementer run — reverted via `git restore` to use `settings.DATABASE_URL`.
+- Stripe SDK async methods: `stripe.Customer.create_async()` not `stripe.Customer.create()` — synchronous variants block the event loop in async FastAPI routes.
+- `useSearchParams()` in Next.js 15 requires a `<Suspense>` boundary in the parent layout — without it `npm run build` fails with a missing Suspense boundary error.
+
+**Tech debt noted:**
+- None introduced.
 
 ---
 
