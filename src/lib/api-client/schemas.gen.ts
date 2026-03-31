@@ -406,6 +406,18 @@ export const ChatSessionSummarySchema = {
     title: 'ChatSessionSummary'
 } as const;
 
+export const CheckoutSessionResponseSchema = {
+    properties: {
+        checkout_url: {
+            type: 'string',
+            title: 'Checkout Url'
+        }
+    },
+    type: 'object',
+    required: ['checkout_url'],
+    title: 'CheckoutSessionResponse'
+} as const;
+
 export const ConflictResponseSchema = {
     properties: {
         id: {
@@ -477,6 +489,24 @@ export const ConflictResponseSchema = {
     type: 'object',
     required: ['id', 'incumbent_content', 'challenger_content', 'ai_classification', 'ai_proposed_resolution', 'confidence_score', 'incumbent_source_id', 'challenger_source_id', 'status', 'created_at'],
     title: 'ConflictResponse'
+} as const;
+
+export const CreateCheckoutSessionRequestSchema = {
+    properties: {
+        tier: {
+            type: 'string',
+            enum: ['pro', 'team'],
+            title: 'Tier'
+        },
+        period: {
+            type: 'string',
+            enum: ['monthly', 'annual'],
+            title: 'Period'
+        }
+    },
+    type: 'object',
+    required: ['tier', 'period'],
+    title: 'CreateCheckoutSessionRequest'
 } as const;
 
 export const CreditAdjustRequestSchema = {
@@ -1007,6 +1037,18 @@ export const PaginatedResponse_MetaDocSummary_Schema = {
     type: 'object',
     required: ['items', 'total', 'page', 'page_size', 'has_more'],
     title: 'PaginatedResponse[MetaDocSummary]'
+} as const;
+
+export const PortalSessionResponseSchema = {
+    properties: {
+        portal_url: {
+            type: 'string',
+            title: 'Portal Url'
+        }
+    },
+    type: 'object',
+    required: ['portal_url'],
+    title: 'PortalSessionResponse'
 } as const;
 
 export const ProfileCreateSchema = {

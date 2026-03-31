@@ -91,6 +91,10 @@ export type ChatSessionSummary = {
     message_count: number;
 };
 
+export type CheckoutSessionResponse = {
+    checkout_url: string;
+};
+
 export type ConflictResponse = {
     id: string;
     incumbent_content: string;
@@ -103,6 +107,15 @@ export type ConflictResponse = {
     status: string;
     created_at: string;
 };
+
+export type CreateCheckoutSessionRequest = {
+    tier: 'pro' | 'team';
+    period: 'monthly' | 'annual';
+};
+
+export type tier = 'pro' | 'team';
+
+export type period = 'monthly' | 'annual';
 
 export type CreditAdjustRequest = {
     user_id: string;
@@ -234,6 +247,10 @@ export type PaginatedResponse_MetaDocSummary_ = {
     page: number;
     page_size: number;
     has_more: boolean;
+};
+
+export type PortalSessionResponse = {
+    portal_url: string;
 };
 
 export type ProfileCreate = {
@@ -463,6 +480,19 @@ export type GetCreditsBalanceV1CreditsBalanceGetData = {
 };
 
 export type GetCreditsBalanceV1CreditsBalanceGetResponse = (BalanceResponse);
+
+export type CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData = {
+    authorization?: (string | null);
+    requestBody: CreateCheckoutSessionRequest;
+};
+
+export type CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse = (CheckoutSessionResponse);
+
+export type CreatePortalSessionV1BillingCreatePortalSessionPostData = {
+    authorization?: (string | null);
+};
+
+export type CreatePortalSessionV1BillingCreatePortalSessionPostResponse = (PortalSessionResponse);
 
 export type ClerkWebhookWebhooksClerkPostResponse = ({
     [key: string]: unknown;

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, ListMetaDocumentsV1MetadocGetData, ListMetaDocumentsV1MetadocGetResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
+import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, ListMetaDocumentsV1MetadocGetData, ListMetaDocumentsV1MetadocGetResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse, CreatePortalSessionV1BillingCreatePortalSessionPostData, CreatePortalSessionV1BillingCreatePortalSessionPostResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
 
 /**
  * Health Check
@@ -537,6 +537,57 @@ export const getCreditsBalanceV1CreditsBalanceGet = (data: GetCreditsBalanceV1Cr
 };
 
 /**
+ * Create Checkout Session
+ * Create a Stripe Checkout session for a tier subscription.
+ *
+ * Returns a checkout_url — the frontend must redirect the user there.
+ * Session is created server-side to keep STRIPE_SECRET_KEY off the client.
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @param data.authorization
+ * @returns CheckoutSessionResponse Successful Response
+ * @throws ApiError
+ */
+export const createCheckoutSessionV1BillingCreateCheckoutSessionPost = (data: CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData): CancelablePromise<CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/v1/billing/create-checkout-session',
+        headers: {
+            authorization: data.authorization
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Create Portal Session
+ * Create a Stripe Customer Portal session.
+ *
+ * Returns portal_url — the frontend must redirect the user there.
+ * Only meaningful for users who have an active Stripe subscription.
+ * @param data The data for the request.
+ * @param data.authorization
+ * @returns PortalSessionResponse Successful Response
+ * @throws ApiError
+ */
+export const createPortalSessionV1BillingCreatePortalSessionPost = (data: CreatePortalSessionV1BillingCreatePortalSessionPostData = {}): CancelablePromise<CreatePortalSessionV1BillingCreatePortalSessionPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/v1/billing/create-portal-session',
+        headers: {
+            authorization: data.authorization
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
  * Clerk Webhook
  * Receive Clerk webhook events and react to user lifecycle changes.
  *
@@ -556,11 +607,14 @@ export const clerkWebhookWebhooksClerkPost = (): CancelablePromise<ClerkWebhookW
 
 /**
  * Stripe Webhook
- * Receive Stripe webhook events for credit top-ups.
+ * Receive Stripe webhook events.
  *
- * Validates Stripe signature via stripe.Webhook.construct_event().
- * Handles: checkout.session.completed → add credits to user balance.
- * All other event types are silently acknowledged.
+ * Handles:
+ * - checkout.session.completed: tier upgrade OR credit top-up (by session_type metadata)
+ * - customer.subscription.deleted: revert User.tier to 'free'
+ *
+ * Idempotency: checks Redis key stripe:event:{event_id} before processing.
+ * Sets the key ONLY after a successful DB write (AC-11, AC-12).
  * @returns unknown Successful Response
  * @throws ApiError
  */
