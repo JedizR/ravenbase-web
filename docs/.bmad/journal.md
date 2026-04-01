@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 35 / 38 |
+| Total stories complete | 36 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 32 |
+| Current sprint | 33 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-02 (STORY-032: Transactional email via Resend — backend EmailService + API endpoints + frontend /settings/notifications page) |
+| Last entry | 2026-04-02 (STORY-033: Legal Pages — /privacy, /terms, CookieConsent all verified complete via existing implementation) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1143,9 +1143,6 @@ _No entries yet._
 
 ## Sprint 32 — Transactional Email
 
-> Resend email service, notification preferences API, settings page.
-> Sprint 32 covers STORY-032.
-
 ### STORY-032 — Transactional Email via Resend
 **Date:** 2026-04-02 | **Sprint:** 32 | **Phase:** B | **Repo:** ravenbase-web
 **Quality gate:** ✅ clean — 350 tests passing, 0 ruff errors, 0 pyright errors, 0 TypeScript errors
@@ -1166,6 +1163,32 @@ Backend: `EmailService` with `send_welcome`, `send_low_credits`, `send_ingestion
 **Tech debt noted:**
 - `email_service.py` test coverage is 34% — EmailService methods were added but not fully tested in this story.
 - Email templates hardcode brand colors in HTML inline styles — consider using CSS variables in a future template system.
+
+---
+
+## Sprint 33 — Legal Pages
+
+> Privacy Policy, Terms of Service, Cookie Consent.
+> Sprint 33 covers STORY-033.
+
+### STORY-033 — Legal Pages
+**Date:** 2026-04-02 | **Sprint:** 33 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors, build passes (both pages SSG)
+**Commit:** `b962e38`
+
+**What was built:**
+All legal pages and cookie consent were built in prior sprints as part of STORY-021 and other marketing work. Verified all 8 acceptance criteria are met: `/privacy` and `/terms` render as static routes with correct semantic HTML (`<main>`, `<article>`, logical heading order), metadata exports (`robots: { index: true, follow: true }`), and sitemap inclusion. Footer has `<nav aria-label="Legal navigation">` with `/privacy` and `/terms` links. CookieConsent component (`components/marketing/CookieConsent.tsx`) conditionally shows if `NEXT_PUBLIC_POSTHOG_KEY` is set, stores consent in localStorage key `ravenbase-cookie-consent`, and has Accept/Decline buttons with Privacy Policy link.
+
+**Key decisions:**
+- CookieConsent uses full-width fixed bottom banner style (not modal) — never blocks page interaction
+- No PostHog integration exists yet — CookieConsent is future-proofed and will gate PostHog when added
+- Legal pages use `prose prose-stone max-w-none` for consistent prose styling
+
+**Gotchas:**
+- PostHog not yet integrated — CookieConsent is ready but has nothing to gate yet
+
+**Tech debt noted:**
+- Placeholder legal copy needs human review before launch
 
 ---
 

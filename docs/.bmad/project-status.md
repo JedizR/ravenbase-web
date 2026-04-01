@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 32
-**Status:** In progress — 35 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032 done)
+**Current sprint:** 33
+**Status:** In progress — 36 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033 done)
 
-**Next story to implement:** STORY-033 (Sprint 33 — Legal pages: Privacy Policy, Terms of Service, Cookie Consent)
-**Story file:** `docs/stories/EPIC-08-polish/STORY-033.md`
+**Next story to implement:** STORY-034 (Sprint 34 — Referral system: code gen, reward on first upload, Settings → Referrals)
+**Story file:** `docs/stories/EPIC-08-polish/STORY-034.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-032 — Transactional Email via Resend (Sprint 32)** (2026-04-02)
-Backend: EmailService with send_welcome, send_low_credits, send_ingestion_complete methods + HTML email templates. API endpoints: GET /v1/account/notification-preferences, POST /v1/account/notification-prefs/test/{type}. Frontend: dedicated /settings/notifications page with ToggleRow and EmailPreviewCard components. Build passes, 0 TypeScript errors.
+**STORY-033 — Legal Pages (Sprint 33)** (2026-04-02)
+All legal pages and cookie consent were built in prior sprints as part of STORY-021 and other marketing work. Privacy Policy (`/privacy`) and Terms of Service (`/terms`) render at static routes with correct semantic HTML structure, metadata exports, and sitemap inclusion. Footer has `<nav aria-label="Legal navigation">` with links to both pages. CookieConsent component (`components/marketing/CookieConsent.tsx`) conditionally shows if `NEXT_PUBLIC_POSTHOG_KEY` is set, stores consent in localStorage, and has Accept/Decline buttons with Privacy Policy link. Build passes, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-STORY-032 complete. Backend: EmailService + notification-preferences API endpoints. Frontend: /settings/notifications page with TanStack Query mutations. MetaDocHistory fix for direct list response. Next: STORY-033 (legal pages: Privacy Policy, Terms of Service, Cookie Consent).
+STORY-033 complete (verified all 8 ACs met by existing implementation). CookieConsent future-proofed for PostHog integration. No code changes needed. Next: STORY-034 (referral system).
 
 ---
 
