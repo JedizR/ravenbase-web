@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 33
-**Status:** In progress — 36 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033 done)
+**Current sprint:** 34
+**Status:** In progress — 37 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033, STORY-034 done)
 
-**Next story to implement:** STORY-034 (Sprint 34 — Referral system: code gen, reward on first upload, Settings → Referrals)
-**Story file:** `docs/stories/EPIC-08-polish/STORY-034.md`
+**Next story to implement:** STORY-035 (Sprint 35 — Data export: multi-store ZIP, email link, Settings → Data)
+**Story file:** `docs/stories/EPIC-08-polish/STORY-035.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-033 — Legal Pages (Sprint 33)** (2026-04-02)
-All legal pages and cookie consent were built in prior sprints as part of STORY-021 and other marketing work. Privacy Policy (`/privacy`) and Terms of Service (`/terms`) render at static routes with correct semantic HTML structure, metadata exports, and sitemap inclusion. Footer has `<nav aria-label="Legal navigation">` with links to both pages. CookieConsent component (`components/marketing/CookieConsent.tsx`) conditionally shows if `NEXT_PUBLIC_POSTHOG_KEY` is set, stores consent in localStorage, and has Accept/Decline buttons with Privacy Policy link. Build passes, 0 TypeScript errors.
+**STORY-034 — Referral System (Sprint 34)** (2026-04-02)
+Backend: ReferralTransaction model, ReferralService with apply_referral_code and award_referrer_on_first_upload, two new API endpoints (GET /v1/account/referral, POST /v1/account/apply-referral), ARQ task integration for awarding referrers on first source upload, monthly cap of 50. Frontend: Settings → Referrals page already existed. Migration created for referral_transactions table with merge of two diverging branches.
 
 ---
 
 ## Context for Next Session
 
-STORY-033 complete (verified all 8 ACs met by existing implementation). CookieConsent future-proofed for PostHog integration. No code changes needed. Next: STORY-034 (referral system).
+STORY-034 complete. Backend quality passes (0 ruff, 0 pyright), 350 tests pass. Frontend build passes. API client regenerated. Next: STORY-035 (data export).
 
 ---
 

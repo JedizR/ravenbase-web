@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 36 / 38 |
+| Total stories complete | 37 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 33 |
+| Current sprint | 34 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-02 (STORY-033: Legal Pages — /privacy, /terms, CookieConsent all verified complete via existing implementation) |
+| Last entry | 2026-04-02 (STORY-034: Referral System — backend ReferralService, two API endpoints, ARQ integration, monthly cap of 50, migration merge) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1192,12 +1192,37 @@ All legal pages and cookie consent were built in prior sprints as part of STORY-
 
 ---
 
-## Sprint 34 — Admin Dashboard
+## Sprint 34 — Referral System
 
-> Frontend: admin UI with user management, credit adjustment, and stats dashboard.
-> Sprint 34 covers STORY-036-FE.
+> Referral codes, signup bonus, first-upload reward, Settings → Referrals page.
+> Sprint 34 covers STORY-034.
 
-_No entries yet._
+### STORY-034 — Referral System
+**Date:** 2026-04-02 | **Sprint:** 34 | **Phase:** B | **Repo:** ravenbase-api + ravenbase-web
+**Quality gate:** ✅ clean — 350 tests passing, 0 ruff errors, 0 pyright errors
+**Commit (backend):** `bda8cd3`
+**Commit (migration):** `60e6686`
+**Commit (frontend client):** `748b8df`
+
+**What was built:**
+Referral system with auto-generated referral codes (8 hex chars uppercase from UUID), +200 signup bonus for referees on code application, +200 first-upload reward for referrers, monthly cap of 50, and Settings → Referrals page with copy button and milestone timeline. ReferralTransaction model tracks all reward events. Two new API endpoints: GET /v1/account/referral (stats) and POST /v1/account/apply-referral (apply code). award_referrer_on_first_upload called synchronously inside parse_document and ingest_text for atomicity.
+
+**Key decisions:**
+- award_referrer_on_first_upload called synchronously inside parse_document (not a separate ARQ task) — ensures atomicity with source completion
+- apply_referral_code silently ignores invalid codes (not an error to user) per AC-2
+- Referral code lookup is case-insensitive (normalized to uppercase before DB query) per AC-10
+- Monthly cap checked before awarding (prevents awarding then skipping)
+- Migration is a merge of two diverging alembic branches (tuple down_revision)
+
+**Gotchas:**
+- Frontend Settings → Referrals page already existed before this story — only backend was built
+- Pyright required `# type: ignore[attr-defined]` on `User.id.in_()` call (SQLAlchemy operator not recognized on typed str column)
+- Pyright required datetime comparison fix: month_start changed from string to datetime object for SQLAlchemy comparison
+
+**Tech debt noted:**
+- No dedicated referral tests written yet (coverage 30%)
+
+---
 
 ## Sprint 19 — Cold Data Lifecycle
 
