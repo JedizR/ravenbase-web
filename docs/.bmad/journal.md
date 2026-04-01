@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 34 / 38 |
+| Total stories complete | 35 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 31 |
+| Current sprint | 32 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-01 (docs: UX quality gates added to STORY-031–036, STORY-038 created) |
+| Last entry | 2026-04-02 (STORY-032: Transactional email via Resend — backend EmailService + API endpoints + frontend /settings/notifications page) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1138,6 +1138,34 @@ _No entries yet._
 > Sprint 31 covers STORY-035.
 
 _No entries yet._
+
+---
+
+## Sprint 32 — Transactional Email
+
+> Resend email service, notification preferences API, settings page.
+> Sprint 32 covers STORY-032.
+
+### STORY-032 — Transactional Email via Resend
+**Date:** 2026-04-02 | **Sprint:** 32 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 350 tests passing, 0 ruff errors, 0 pyright errors, 0 TypeScript errors
+**Commit:** `0615cff`
+
+**What was built:**
+Backend: `EmailService` with `send_welcome`, `send_low_credits`, `send_ingestion_complete` methods using Resend API and brand-styled HTML email templates. API endpoints: `GET /v1/account/notification-preferences`, `POST /v1/account/notification-prefs/test/{type}` in account.py; `get_notification_preferences()` in `UserSettingsService`. Also added `GET /v1/metadoc` endpoint to fix pre-existing frontend error in `MetaDocHistory.tsx`. Frontend: dedicated `/settings/notifications` page with `ToggleRow` and `EmailPreviewCard` components using TanStack Query for notification preference mutations and test email sending. Removed inline notification section from `/settings/page.tsx`.
+
+**Key decisions:**
+- `column("generated_at")` used instead of `MetaDocument.generated_at` in `order_by(desc())` — pyright couldn't resolve `generated_at` as a SQLAlchemy column expression due to SQLModel type stubs.
+- Email methods are non-fatal (try/except with structlog error, no re-raise) per RULE 1 compliance.
+- MetaDocHistory fix: backend returns list directly not paginated response, so `res.items` changed to `res` directly.
+
+**Gotchas:**
+- pyright error "Argument of type datetime cannot be assigned to parameter column" — SQLModel field `generated_at: datetime` typed as Python `datetime` class not SQLAlchemy `Column`. Fixed with `column("generated_at")` string-based column reference.
+- `res.items` property doesn't exist on API response — backend returns list directly.
+
+**Tech debt noted:**
+- `email_service.py` test coverage is 34% — EmailService methods were added but not fully tested in this story.
+- Email templates hardcode brand colors in HTML inline styles — consider using CSS variables in a future template system.
 
 ---
 

@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 31
-**Status:** In progress — 34 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031 done)
+**Current sprint:** 32
+**Status:** In progress — 35 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032 done)
 
-**Next story to implement:** STORY-032 (Sprint 32 — Transactional email via Resend)
-**Story file:** `docs/stories/EPIC-08-polish/STORY-032.md`
+**Next story to implement:** STORY-033 (Sprint 33 — Legal pages: Privacy Policy, Terms of Service, Cookie Consent)
+**Story file:** `docs/stories/EPIC-08-polish/STORY-033.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-031 — Dark Mode Toggle (Sprint 31)** (2026-04-01)
-Dark/light mode toggle implemented with `.dark` class on `<html>`, localStorage persistence via `ravenbase-theme` key, and no-flash blocking script. ThemeToggle button in dashboard header with Moon/Sun icons. Marketing pages respect stored preference. Build passes, 0 TypeScript errors.
+**STORY-032 — Transactional Email via Resend (Sprint 32)** (2026-04-02)
+Backend: EmailService with send_welcome, send_low_credits, send_ingestion_complete methods + HTML email templates. API endpoints: GET /v1/account/notification-preferences, POST /v1/account/notification-prefs/test/{type}. Frontend: dedicated /settings/notifications page with ToggleRow and EmailPreviewCard components. Build passes, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-STORY-031 complete. Created `hooks/use-theme.ts` (useTheme hook with localStorage + classList.toggle) and `components/domain/ThemeToggle.tsx` (Moon/Sun icon toggle with 44px touch target). Added no-flash blocking script to `app/layout.tsx`. Added smooth transition CSS to `app/globals.css`. ThemeToggle added to `DashboardHeader`. No forced `.dark` or `.light` in any layout. Next: STORY-032 (transactional email).
+STORY-032 complete. Backend: EmailService + notification-preferences API endpoints. Frontend: /settings/notifications page with TanStack Query mutations. MetaDocHistory fix for direct list response. Next: STORY-033 (legal pages: Privacy Policy, Terms of Service, Cookie Consent).
 
 ---
 

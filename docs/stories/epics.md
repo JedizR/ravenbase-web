@@ -111,7 +111,7 @@
 | STORY-024 | GDPR account deletion cascade | P1 | Medium | ✅ |
 | STORY-025 | PII masking in production + Presidio config | P1 | Medium | ✅ |
 | STORY-031 | Dark mode toggle (localStorage + .dark class) | P1 | Small | ✅ |
-| STORY-032 | Transactional email (welcome, low-credits, ingestion complete via Resend) | P1 | Medium | 🔲 |
+| STORY-032 | Transactional email (welcome, low-credits, ingestion complete via Resend) | P1 | Medium | ✅ |
 | STORY-033 | Legal pages (Privacy Policy, Terms of Service, Cookie Consent) | P0 | Small | 🔲 |
 | STORY-034 | Referral system (code gen, reward on first upload, Settings → Referrals) | P1 | Medium | 🔲 |
 | STORY-035 | Data export / portability (multi-store ZIP, email link, Settings → Data) | P1 | Medium | 🔲 |
