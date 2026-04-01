@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react"
 import { Omnibar } from "@/components/domain/Omnibar"
+import { ThemeToggle } from "@/components/domain/ThemeToggle"
 
 interface DashboardHeaderProps {
   /** Called to open the mobile sidebar */
@@ -27,6 +28,9 @@ export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
       <div className="flex-1 max-w-md">
         <Omnibar />
       </div>
+
+      {/* Theme toggle — right side, visible on all screen sizes */}
+      <ThemeToggle />
     </header>
   )
 }

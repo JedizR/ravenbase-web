@@ -35,14 +35,14 @@
   --chart-4: #c9a03a;
   --chart-5: #9b6eaa;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #f5f3ee;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #2d4a3e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8ebe6;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #d1d5db;
+  --sidebar-ring: #2d4a3e;
 }
 
 .dark {
@@ -87,9 +87,9 @@
 }
 
 @theme inline {
-  --font-sans: "DM Sans", "Geist Fallback", sans-serif;
-  --font-serif: "Playfair Display", "Georgia", serif;
-  --font-mono: "JetBrains Mono", "Geist Mono", monospace;
+  --font-sans: var(--font-dm-sans), "DM Sans", "Geist Fallback", sans-serif;
+  --font-serif: var(--font-playfair-display), "Playfair Display", "Georgia", serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", "Geist Mono", monospace;
 }
 
 @layer base {
@@ -117,12 +117,265 @@
   to   { opacity: 1; stroke-dashoffset: 0; }
 }
 
+@keyframes dash-march {
+  0%   { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -20; }
+}
+
+@keyframes slide-out-to-bottom-4 {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(80px) scale(0.5); }
+}
+
+@keyframes entity-enter {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes tooltip-in {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dropdown-in {
+  0%   { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slide-in-from-right-4 {
+  0%   { opacity: 0; transform: translateX(16px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
 .card-enter {
   animation: fade-in 0.2s ease-out, slide-in-from-bottom-2 0.2s ease-out;
 }
 
 .card-exit {
   animation: fade-out 0.15s ease-in, slide-out-to-right-4 0.15s ease-in;
+}
+
+/* ============================================================
+   GLOBAL MICRO-INTERACTIONS — Ravenbase Design System
+   ============================================================ */
+
+/* ── Button interactions ─────────────────────────────────────── */
+
+.btn-primary {
+  transition: all 150ms ease;
+  box-shadow: 0 1px 2px rgba(45, 74, 62, 0.15);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 74, 62, 0.25);
+}
+.btn-primary:active {
+  transform: translateY(0px);
+  box-shadow: 0 1px 2px rgba(45, 74, 62, 0.15);
+}
+
+.btn-outline {
+  transition: all 150ms ease;
+}
+.btn-outline:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.btn-outline:active {
+  transform: translateY(0px);
+}
+
+.btn-ghost {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.btn-ghost:hover {
+  background-color: var(--secondary);
+}
+
+/* ── Card hover interactions ─────────────────────────────────── */
+
+.card-hover {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.card-hover:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card-interactive {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+  cursor: pointer;
+}
+.card-interactive:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+.card-interactive:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card-active {
+  border: 2px solid var(--primary);
+  transform: scale(1.01);
+  transition: transform 150ms ease, border-color 150ms ease;
+}
+
+/* ── Link interactions ───────────────────────────────────────── */
+
+.nav-link {
+  position: relative;
+  text-decoration: none;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--foreground);
+  transition: width 150ms ease;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.text-link {
+  transition: color 150ms ease;
+}
+.text-link:hover {
+  color: var(--primary);
+}
+
+/* ── Input focus states ─────────────────────────────────────── */
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(45, 74, 62, 0.15);
+}
+
+/* ── Sidebar nav items ───────────────────────────────────────── */
+
+.nav-item {
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.nav-item:hover .nav-icon {
+  transform: scale(1.1);
+  transition: transform 150ms ease;
+}
+.nav-item .nav-icon {
+  transition: transform 150ms ease;
+}
+
+.nav-item-active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.nav-item-active:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Sidebar profile switcher ────────────────────────────────── */
+
+.profile-pill {
+  transition: background-color 150ms ease;
+}
+.profile-pill:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Mono label hover ───────────────────────────────────────── */
+
+.mono-link {
+  transition: color 150ms ease;
+}
+.mono-link:hover {
+  color: var(--primary);
+}
+
+/* ── Tooltip ────────────────────────────────────────────────── */
+
+.tooltip {
+  animation: tooltip-in 150ms ease-out;
+}
+
+/* ── Dropdown / Menu open animation ─────────────────────────── */
+
+.dropdown-menu {
+  animation: dropdown-in 150ms ease-out;
+  transform-origin: top center;
+}
+
+/* ── Loading spinner ─────────────────────────────────────────── */
+
+.spinner-primary {
+  border-color: var(--primary);
+  border-top-color: transparent;
+}
+
+/* ── Progress bar ────────────────────────────────────────────── */
+
+.progress-bar-primary > div {
+  transition: width 300ms ease;
+}
+
+/* ── Toggle switch ───────────────────────────────────────────── */
+
+.toggle-on {
+  background-color: var(--primary) !important;
+}
+.toggle-on .toggle-thumb {
+  transform: translateX(100%);
+}
+
+/* ── Badge / chip ────────────────────────────────────────────── */
+
+.badge-interactive {
+  transition: background-color 150ms ease, transform 150ms ease;
+  cursor: pointer;
+}
+.badge-interactive:hover {
+  transform: scale(1.05);
+}
+
+/* ── Sticky note ─────────────────────────────────────────────── */
+
+.sticky-note {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.sticky-note:hover {
+  transform: rotate(0deg) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Keyboard shortcut hints ──────────────────────────────────── */
+
+kbd {
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+kbd:hover {
+  background-color: var(--secondary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Slide-in from right ─────────────────────────────────────── */
+
+.slide-in-right {
+  animation: slide-in-from-right-4 200ms ease-out;
+}
+
+/* ── Dropzone pulsing dashed border on drag-over ─────────────── */
+
+.border-dashed.border-primary {
+  animation: dash-march 0.8s linear infinite;
+}
+
+/* ── Entity chip entrance ────────────────────────────────────── */
+
+.animate-entity-enter {
+  animation: entity-enter 0.2s ease-out forwards;
 }
 
 /* Print styles for Meta-Document PDF export */
@@ -148,4 +401,11 @@
   .prose {
     font-family: var(--font-serif) !important;
   }
+}
+
+/* Smooth theme transition — activated by useTheme's .transitioning class */
+html.transitioning,
+html.transitioning * {
+  transition: background-color 200ms ease, border-color 200ms ease,
+              color 150ms ease !important;
 }
