@@ -53,13 +53,16 @@ After 37 stories of implementation, visual drift accumulates:
 
 This story corrects all of that in a single systematic pass.
 
-**What this story IS NOT:**
-- It is NOT a feature story — no new functionality is built
-- It is NOT a bug fix story — it doesn't address specific bug reports
-- It is NOT a performance optimization story — it doesn't refactor for speed
+**What this story IS:**
+- A **quality audit and surface correction pass**
+- Verifying that what was built matches the design system specification exactly
+- Fixing violations found during the audit
 
-It is a **quality audit and surface correction pass** — verifying that what was built
-matches the design system specification exactly.
+**What this story IS NOT:**
+- NOT a feature story — no new functionality is built
+- NOT a bug fix story — it doesn't address specific bug reports
+- NOT a performance optimization story — it doesn't refactor for speed
+- NOT adding new pages — all pages already exist from previous stories
 
 ---
 
@@ -97,32 +100,32 @@ Each item must be manually verified in browser at 1440px desktop:
 - [ ] AC-4a: Primary buttons: `hover:-translate-y-px active:translate-y-0` lift on hover, press down on click
 - [ ] AC-4b: Secondary buttons: `hover:bg-secondary` background color shift on hover
 - [ ] AC-4c: Cards: `hover:shadow-md transition-shadow` shadow increase on hover
-- [ ] AC-4d: Nav links in marketing header: underline grows from left on hover (`hover:bg-primary` is NOT a nav link style — use a bottom-border animation)
+- [ ] AC-4d: Nav links in marketing header: underline grows from left on hover
 - [ ] AC-4e: Sidebar nav items: `hover:scale-110` icon scale on hover
 - [ ] AC-4f: Inputs: `focus:ring-2 focus:ring-primary/30 focus:border-primary` forest green ring + border on focus
 - [ ] AC-4g: Dropdown menus: `animate-in fade-in zoom-in-95` scale+fade on open
-- [ ] AC-4h: Sonner toasts: `toast-swap` animation (built into sonner)
-- [ ] AC-4i: Conflict cards: `slide-out-right` animation on resolve (animate.css or tw-animate-css)
+- [ ] AC-4h: Sonner toasts: toast-swap animation (built into sonner)
+- [ ] AC-4i: Conflict cards: slide-out-right animation on resolve (tw-animate-css)
 - [ ] AC-4j: Progress bars: `transition-all duration-300 ease-out` width transition
 
 ### AC-5: Page-by-Page Functional Audit
 
 **/login:**
-- [ ] AC-5a: Clerk SignIn renders with Ravenbase brand lockup above (not generic Clerk styling)
-- [ ] AC-5b: Background is warm cream `bg-background` (#f5f3ee) — NOT white
-- [ ] AC-5c: After login → redirects to `/chat`
+- [ ] AC-5a: Clerk SignIn renders with Ravenbase brand lockup above
+- [ ] AC-5b: Background is warm cream `bg-background` (#f5f3ee)
+- [ ] AC-5c: After login redirects to `/chat`
 
 **/register:**
 - [ ] AC-5d: Clerk SignUp renders with Ravenbase brand lockup above
 - [ ] AC-5e: Background is warm cream `bg-background`
-- [ ] AC-5f: After register → redirects to `/onboarding`
+- [ ] AC-5f: After register redirects to `/onboarding`
 
 **/onboarding:**
 - [ ] AC-5g: Step indicator shows "Step X of 3" with time estimate
-- [ ] AC-5h: Role cards: `hover:-translate-y-1 hover:shadow-md` lift on hover, checkmark appears when selected
+- [ ] AC-5h: Role cards: `hover:-translate-y-1 hover:shadow-md` lift on hover
 - [ ] AC-5i: "Nice to meet you, [Name]!" appears after name entry
 - [ ] AC-5j: Step 3 progress bar: `bg-primary` forest green fill
-- [ ] AC-5k: Confetti animation on completion (framer-motion)
+- [ ] AC-5k: Confetti animation on completion
 - [ ] AC-5l: Redirects to `/chat?first_run=true` after completion
 
 **/chat:**
@@ -135,7 +138,7 @@ Each item must be manually verified in browser at 1440px desktop:
 - [ ] AC-5s: Input: Enter sends, Shift+Enter inserts newline
 
 **/graph:**
-- [ ] AC-5t: Cytoscape renders with forest green nodes (`#2d4a3e`)
+- [ ] AC-5t: Cytoscape renders with forest green nodes
 - [ ] AC-5u: Clicking a node opens GraphNodePanel Sheet from right
 - [ ] AC-5v: Filter bar: `bg-card rounded-2xl` container
 - [ ] AC-5w: NL query bar appears above filter bar
@@ -152,7 +155,7 @@ Each item must be manually verified in browser at 1440px desktop:
 - [ ] AC-5af: Mobile: history in Sheet drawer
 
 **/sources:**
-- [ ] AC-5ag: Upload Files tab: IngestionDropzone is functional (not a placeholder)
+- [ ] AC-5ag: Upload Files tab: IngestionDropzone is functional
 - [ ] AC-5ah: Dropzone: dashed border, changes on drag-over
 - [ ] AC-5ai: Import from AI Chat tab: prompt loads, copy button works
 - [ ] AC-5aj: Import submit shows IngestionProgress SSE bar
@@ -172,7 +175,7 @@ Each item must be manually verified in browser at 1440px desktop:
 - [ ] AC-5at: Profile CRUD: create/edit/delete all work
 
 **/settings/billing:**
-- [ ] AC-5au: Shows current tier (not just "Free")
+- [ ] AC-5au: Shows current tier
 - [ ] AC-5av: Pro/Team: "Manage subscription" opens Stripe portal
 - [ ] AC-5aw: Free: "Upgrade to Pro" links to `/#pricing`
 
@@ -191,7 +194,7 @@ Each item must be manually verified in browser at 1440px desktop:
 - [ ] AC-5be: Pricing section accessible via /#pricing anchor
 - [ ] AC-5bf: Scroll animations play on features section
 - [ ] AC-5bg: Header nav links scroll to correct sections
-- [ ] AC-5bh: CTA buttons link to `/register` (not `/dashboard`)
+- [ ] AC-5bh: CTA buttons link to `/register`
 - [ ] AC-5bi: Footer Privacy + Terms links work
 
 **/privacy and /terms:**
@@ -204,9 +207,9 @@ Each item must be manually verified in browser at 1440px desktop:
 - [ ] AC-6c: All interactive elements reachable via Tab key
 - [ ] AC-6d: No keyboard traps
 - [ ] AC-6e: aria-live regions on all streaming content
-- [ ] AC-6f: `npx axe-cli http://localhost:3000` → 0 critical violations
-- [ ] AC-6g: `npx axe-cli http://localhost:3000/onboarding` → 0 critical violations
-- [ ] AC-6h: `npx axe-cli http://localhost:3000/graph` → 0 critical violations
+- [ ] AC-6f: `npx axe-cli http://localhost:3000 --tags wcag2a,wcag2aa` → 0 critical violations
+- [ ] AC-6g: `npx axe-cli http://localhost:3000/onboarding --tags wcag2a,wcag2aa` → 0 critical violations
+- [ ] AC-6h: `npx axe-cli http://localhost:3000/graph --tags wcag2a,wcag2aa` → 0 critical violations
 
 ### AC-7: Performance Audit
 - [ ] AC-7a: `npm run build` passes: 0 TypeScript errors, 0 warnings
@@ -230,8 +233,8 @@ Each item must be manually verified in browser at 1440px desktop:
 ### Development Sequence
 
 **Phase 1: Global CSS and Brand Foundation (do FIRST)**
-1. Run `grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d\|#a8c4b2\|#1a1a1a" components/ app/ --include="*.tsx" --include="*.ts"` — document every hardcoded hex
-2. Fix all hardcoded hex colors: replace with CSS variable equivalents
+1. Run hardcoded hex audit — document every match
+2. Fix all hardcoded hex colors — replace with CSS variable equivalents
 3. Verify `app/globals.css` has complete `:root` and `.dark` token sets
 4. Run `npm run build` — confirm 0 TypeScript errors
 
@@ -256,49 +259,15 @@ If you find hardcoded hex values, replace with the correct CSS variable:
 
 | Hardcoded Value | Replace With | Context |
 |---|---|---|
-| `#2d4a3e` | `var(--primary)` or `bg-primary` | Forest green CTAs, sidebar |
-| `#f5f3ee` | `var(--background)` or `bg-background` | Page background |
-| `#e8ebe6` | `var(--secondary)` or `bg-secondary` | Hover surfaces |
-| `#a8c4b2` | `var(--accent)` or `bg-accent` | Accent highlights |
-| `#ffc00d` | `var(--warning)` or `bg-warning` | Conflict/warning badges |
-| `#1a1a1a` | `var(--foreground)` or `text-foreground` | Dark text |
-| `#ffffff` | `var(--card)` or `bg-card` | Card backgrounds |
-| `#333333` | (in dark mode contexts) `var(--border)` | Dark borders |
-| `#6b7280` | `var(--muted-foreground)` | Muted text |
-
-### Typography Verification
-
-Check every page's heading hierarchy:
-```
-grep -rn "text-4xl\|text-5xl\|text-3xl" app/ components/ --include="*.tsx" | grep -v "font-serif"
-```
-Any H1/H2 without `font-serif` must be fixed.
-
-Check mono labels:
-```
-grep -rn "◆ " app/ components/ --include="*.tsx" | grep -v "font-mono"
-```
-Any ◆ mono label without `font-mono` must be fixed.
-
-### Missing loading.tsx Audit
-
-Check all dashboard routes:
-```
-find app/\(dashboard\) -name "page.tsx" | while read p; do
-  dir=$(dirname "$p")
-  if [ ! -f "$dir/loading.tsx" ]; then
-    echo "MISSING: $dir/loading.tsx"
-  fi
-done
-```
-
-### Route Accessibility Audit
-
-Every page must have:
-1. Skip link as first focusable element
-2. `<main id="main-content">` wrapper
-3. `<header>` with `<nav>` for navigation
-4. Semantic heading hierarchy (no skipped levels)
+| `#2d4a3e` | `bg-primary` | Forest green CTAs, sidebar |
+| `#f5f3ee` | `bg-background` | Page background |
+| `#e8ebe6` | `bg-secondary` | Hover surfaces |
+| `#a8c4b2` | `bg-accent` | Accent highlights |
+| `#ffc00d` | `bg-warning` | Conflict/warning badges |
+| `#1a1a1a` | `text-foreground` or `bg-foreground` | Dark text |
+| `#ffffff` | `bg-card` | Card backgrounds |
+| `#333333` | `var(--border)` in dark mode | Dark borders |
+| `#6b7280` | `text-muted-foreground` | Muted text |
 
 ---
 
@@ -335,21 +304,21 @@ npm run dev
 ```
 
 **Step 3 — Full page audit (visit in order):**
-- [ ] http://localhost:3000/register → Clerk renders, cream background
-- [ ] http://localhost:3000/login → Clerk renders, cream background
-- [ ] http://localhost:3000/onboarding → Step indicator, role cards hover, confetti
-- [ ] http://localhost:3000/chat → Empty state chips, message rendering
-- [ ] http://localhost:3000/graph → Cytoscape renders, node panel opens
-- [ ] http://localhost:3000/workstation → Streaming output, auto-save indicator
-- [ ] http://localhost:3000/sources → Dropzone functional
-- [ ] http://localhost:3000/inbox → Conflict cards, keyboard nav
-- [ ] http://localhost:3000/settings → Toggles, profile CRUD
-- [ ] http://localhost:3000/settings/billing → Tier display
-- [ ] http://localhost:3000/settings/referrals → Copy button
-- [ ] http://localhost:3000/settings/data → Export + delete
-- [ ] http://localhost:3000/ → All sections, pricing anchor, footer links
-- [ ] http://localhost:3000/privacy → Header + Footer + content
-- [ ] http://localhost:3000/terms → Header + Footer + content
+- [ ] http://localhost:3000/register
+- [ ] http://localhost:3000/login
+- [ ] http://localhost:3000/onboarding
+- [ ] http://localhost:3000/chat
+- [ ] http://localhost:3000/graph
+- [ ] http://localhost:3000/workstation
+- [ ] http://localhost:3000/sources
+- [ ] http://localhost:3000/inbox
+- [ ] http://localhost:3000/settings
+- [ ] http://localhost:3000/settings/billing
+- [ ] http://localhost:3000/settings/referrals
+- [ ] http://localhost:3000/settings/data
+- [ ] http://localhost:3000/
+- [ ] http://localhost:3000/privacy
+- [ ] http://localhost:3000/terms
 
 **Step 4 — Browser DevTools Console (on each page):**
 Confirm no red errors on any page. Yellow warnings acceptable.
@@ -393,318 +362,446 @@ done
 npx axe-cli http://localhost:3000 --tags wcag2a,wcag2aa
 npx axe-cli http://localhost:3000/onboarding --tags wcag2a,wcag2aa
 npx axe-cli http://localhost:3000/graph --tags wcag2a,wcag2aa
-
-# Manual page walk-through (document results):
-# /register → /onboarding → /chat → /graph → /workstation → /sources → /inbox
-# /settings/billing → /settings/referrals → /settings/data → / → /privacy → /terms
 ```
 
 ---
 
 ## Frontend Agent Brief
 
-> **Skill Invocations — invoke each skill before the corresponding phase:**
+> **Skill Invocations — paste each skill call before starting that phase:**
 >
 > **Phase 1 (Read/Design):** `Use /frontend-design — enforce production-grade aesthetic compliance`
 > **Phase 2 (CSS/Tokens):** `Use /tailwindcss — for Tailwind CSS v4 token system`
 > **Phase 3 (Layout):** `Use /tailwindcss-advanced-layouts — for multi-page layout audit`
 > **Phase 4 (Accessibility):** `Use /tailwindcss-animations — for micro-interaction verification`
-> **Phase 5 (Verification):** `Use /superpowers:verification-before-completion — before claiming done`
+> **Phase 5 (Mobile):** `Use /tailwindcss-mobile-first — for responsive/mobile verification`
+> **Phase 6 (Final verification):** `Use /superpowers:verification-before-completion — before claiming done`
 
 ---
 
 ```
-🎯 Target: Claude Code / MiniMax-M2.7 — Ultra-detailed planning and implementation
-💡 Optimization: MiniMax-M2.7 directive — WRITE EVERYTHING IN MAXIMUM DETAIL.
-   Plans MUST be 2000-4000 lines for this story. It is the most complex.
-   Never short-circuit with "see existing files" or "grep to find". Actually run
-   every command. Actually verify every item. Report exact grep output for each.
+🎯 Target: Claude Code / MiniMax-M2.7 — Ultra-detailed audit implementation prompt
+💡 Optimized for: MiniMax-M2.7 — exact commands, exact output, exact fix map
+📋 Nature: QUALITY AUDIT + SURFACE CORRECTION PASS — not implementation
 
 ═══════════════════════════════════════════════════════════════════
 NATURE OF THIS STORY
 ═══════════════════════════════════════════════════════════════════
 
-This is a QUALITY AUDIT AND SURFACE CORRECTION PASS. No new features.
-No business logic changes. No refactoring.
+This is a QUALITY AUDIT AND SURFACE CORRECTION PASS.
 
 What you ARE doing:
-- Verifying every page uses correct brand colors (CSS variables, no hardcoded hex)
-- Verifying every page uses correct fonts (font-serif on headlines, font-mono on mono labels)
-- Verifying every page uses correct shapes (rounded-2xl on cards, rounded-full on CTAs)
-- Verifying every page has required micro-interactions
-- Verifying every page has skip link + main landmark + correct heading hierarchy
-- Fixing violations found during the audit
+- Running EVERY command exactly as specified
+- Recording EXACT output for each command
+- Fixing violations using the EXACT replace map provided
+- Creating an audit results document (STORY-038-AUDIT.md)
 
 What you are NOT doing:
 - NOT building new features
 - NOT changing business logic
-- NOT refactoring components for performance
-- NOT adding new pages
+- NOT refactoring components for performance (only fix what the audit finds)
 
 ═══════════════════════════════════════════════════════════════════
-READING ORDER
+READING ORDER (mandatory — read ALL before touching code)
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /frontend-design
 
 Read ALL files in this order. Write "✅ CONFIRMED READ: [filename]" after each:
 
-1. CLAUDE.md — all 19 rules. Study especially RULE 5, 10, 15, 16
+1. CLAUDE.md — all 19 rules. Study especially:
+   - RULE 5: no forced color mode in route groups
+   - RULE 10: every dashboard page must have loading.tsx
+   - RULE 15: metadata on marketing pages, noindex on dashboard
+   - RULE 16: skip link on every page
+   - RULE 18: blur-debounce validation pattern
+
 2. docs/design/AGENT_DESIGN_PREAMBLE.md — entire file, every anti-pattern
+   → Automatic rejection list (never ask before fixing):
+     ❌ Hardcoded hex in JSX
+     ❌ Rounded-lg on cards
+     ❌ Rounded-md on CTAs
+     ❌ font-sans on h1/h2
+     ❌ ◆ label without font-mono
+     ❌ Page without loading.tsx
+
 3. docs/design/00-brand-identity.md — exact hex values, mono label pattern ◆
+
 4. docs/design/01-design-system.md — all 18 CSS variables :root and .dark
+   → Read the entire file. You must know the EXACT hex values.
+
 5. docs/design/04-ux-patterns.md — micro-interaction specs, animation timings
-6. docs/stories/epics.md — confirm all 37 previous stories listed
-7. docs/stories/EPIC-08-polish/STORY-038.md (this file — all 8 AC categories)
+   → Read the entire file. You must know exact animation durations.
+
+6. docs/stories/epics.md — confirm all 37 previous stories listed as ✅
+
+7. docs/stories/EPIC-08-polish/STORY-038.md (this file)
+   → All 8 AC categories. Study each verification command.
+
+CONFIRMED READ: All 7 files read.
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 1 — HARDCODE HEX AUDIT
+PHASE 1 — HARDCODE HEX AUDIT (AC-1i)
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /tailwindcss
 
-Run this command and record EVERY match:
+Run this EXACT command and record EVERY match:
 
-grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d\|#a8c4b2\|#1a1a1a" \
-  components/ app/ --include="*.tsx" --include="*.ts"
+```bash
+grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d\|#a8c4b2\|#1a1a1a\|#ffffff\|#333333\|#6b7280" \
+  components/ app/ --include="*.tsx" --include="*.ts" \
+  | grep -v "\.css:" \
+  | grep -v "//.*#" \
+  | grep -v "cssVariable" \
+  | grep -v "PLACEHOLDER" \
+  | sort
+```
 
-For each match found, record:
-- File path
-- Line number
+For each match, record:
+- File path + line number
 - The actual line content
-- Whether it is in globals.css (OK) or in a component file (MUST FIX)
+- VIOLATION (in component file) or OK (in globals.css comment)
 
-IF ANY matches found in component files → fix immediately using this map:
-  #2d4a3e → bg-primary
-  #f5f3ee → bg-background
-  #e8ebe6 → bg-secondary
-  #a8c4b2 → bg-accent
-  #ffc00d → bg-warning
-  #1a1a1a → text-foreground
+If ANY violations found in component files → fix immediately using this map:
+
+| Hex Found | Replace With | Conditions |
+|---|---|---|
+| `#2d4a3e` | `bg-primary` | In className |
+| `#2d4a3e` | `text-primary` | In className (text color) |
+| `#f5f3ee` | `bg-background` | In className |
+| `#e8ebe6` | `bg-secondary` | In className |
+| `#a8c4b2` | `bg-accent` | In className |
+| `#ffc00d` | `bg-warning` | In className |
+| `#1a1a1a` | `text-foreground` | In className (text color) |
+| `#1a1a1a` | `bg-foreground` | In className (bg color) |
+| `#ffffff` | `bg-card` | In className |
+| `#333333` | `border-border` | In className (dark mode border) |
+| `#6b7280` | `text-muted-foreground` | In className |
+
+Verify fix: re-run the grep. Expected: 0 violations in component files.
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 2 — CSS VARIABLES VERIFICATION
+PHASE 2 — CSS VARIABLES VERIFICATION (prerequisite for all ACs)
 ═══════════════════════════════════════════════════════════════════
 
 Open app/globals.css. READ IT COMPLETELY.
 
-Confirm ALL of these exist in :root:
---background: #f5f3ee
---foreground: #1a1a1a
---primary: #2d4a3e
---primary-foreground: #ffffff
---secondary: #e8ebe6
---muted-foreground: #6b7280
---accent: #a8c4b2
---warning: #ffc00d
---warning-foreground: #78350f
---border: #d1d5db
---card: #ffffff
---card-foreground: #1a1a1a
---radius: 1rem
+Confirm ALL of these exist in :root (exact values required):
+--background: #f5f3ee        ✅ / ❌
+--foreground: #1a1a1a         ✅ / ❌
+--primary: #2d4a3e            ✅ / ❌
+--primary-foreground: #ffffff  ✅ / ❌
+--secondary: #e8ebe6          ✅ / ❌
+--muted-foreground: #6b7280   ✅ / ❌
+--accent: #a8c4b2              ✅ / ❌
+--warning: #ffc00d             ✅ / ❌
+--warning-foreground: #78350f  ✅ / ❌
+--border: #d1d5db              ✅ / ❌
+--card: #ffffff                ✅ / ❌
+--card-foreground: #1a1a1a    ✅ / ❌
+--radius: 1rem                 ✅ / ❌ (= rounded-2xl in Tailwind)
 
 Confirm ALL of these exist in .dark:
---background: #1a1a1a
---foreground: #f5f3ee
---primary: #3d6454
---primary-foreground: #f0f7f4
---secondary: #2a2a2a
---muted-foreground: #9ca3af
---border: #333333
---card: #242424
+--background: #1a1a1a          ✅ / ❌
+--foreground: #ededea          ✅ / ❌
+--primary: #3d6454             ✅ / ❌
+--primary-foreground: #f0f7f4  ✅ / ❌
+--secondary: #2e2e2e           ✅ / ❌
+--muted-foreground: #9a9a94   ✅ / ❌
+--border: #333333              ✅ / ❌
+--card: #242424                ✅ / ❌
 
-IF ANY MISSING OR WRONG → fix globals.css FIRST.
+IF ANY MISSING OR WRONG → fix globals.css FIRST before any other work.
+
+Confirm @theme inline maps fonts:
+@theme inline {
+  --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+  --font-serif: var(--font-playfair-display), "Playfair Display", Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+}
+Expected: all three font variables defined
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 3 — BRAND COLOR AUDIT (AC-1)
+PHASE 3 — AC-1 BRAND COLOR AUDIT (run ALL sub-commands)
 ═══════════════════════════════════════════════════════════════════
 
-For each of these items, run the verification command and record PASS or FAIL:
+AC-1a: Sidebar uses bg-primary in both light and dark mode
+Command:
+  grep -rn "bg-primary" app/\(dashboard\)/layout.tsx components/domain/Sidebar.tsx 2>/dev/null | head -10
+Expected: className contains "bg-primary" on sidebar container
+FAIL → document file:line and fix
 
-AC-1a: Sidebar uses bg-primary in both modes
-Command: grep -rn "bg-primary" app/\(dashboard\)/layout.tsx components/domain/Sidebar.tsx 2>/dev/null | head -5
-Expected: className contains "bg-primary"
-FAIL → add className="bg-primary" to sidebar nav container
+AC-1b: Page backgrounds use bg-background (not bg-white)
+Command:
+  grep -rn "bg-white\|bg-background" app/\(dashboard\)/ --include="*.tsx" | head -10
+Expected: bg-background used, no bg-white in component classNames
+FAIL → document and fix
 
-AC-1b: Page background uses bg-background
-Command: grep -rn "bg-background" app/\(dashboard\)/ | head -10
-Expected: pages use bg-background not bg-white
+AC-1c: CTA buttons use rounded-full (not rounded-md)
+Command:
+  grep -rn "bg-primary rounded-md\|bg-primary rounded-lg\|bg-primary rounded-xl" components/ app/ --include="*.tsx"
+Expected: 0 matches — all primary CTAs must be rounded-full
+FAIL → document each violation
 
-AC-1c: CTA buttons use rounded-full
-Command: grep -rn "bg-primary rounded-full" components/ app/ --include="*.tsx" | head -10
-Expected: all primary CTAs have rounded-full
-
-AC-1d: Cards use rounded-2xl
-Command: grep -rn "bg-card rounded-2xl" components/ app/ --include="*.tsx" | head -10
-Expected: all cards have rounded-2xl
+AC-1d: All cards use rounded-2xl (not rounded-lg, not rounded-xl)
+Command:
+  grep -rn "bg-card rounded-lg\|bg-card rounded-xl\|bg-card rounded-md" components/ app/ --include="*.tsx"
+Expected: 0 matches — all cards must be rounded-2xl
+FAIL → document each violation
 
 AC-1e: Active nav items use bg-primary-foreground/15
-Command: grep -rn "bg-primary-foreground/15" components/ --include="*.tsx" | head -5
+Command:
+  grep -rn "bg-primary-foreground/15\|bg-primary-foreground/10" components/ --include="*.tsx" | head -5
 Expected: active nav items have this class
+FAIL → document and fix
 
 AC-1f: Progress bars use bg-primary fill
-Command: grep -rn "\[&>div\]:bg-primary\|bg-primary.*rounded-full.*h-" components/ --include="*.tsx" | head -5
+Command:
+  grep -rn "\[&>div\]:bg-primary\|bg-primary.*rounded-full.*h-\|Progress.*bg-primary" components/ --include="*.tsx" | head -5
 Expected: progress bar fills use bg-primary
+FAIL → document and fix
 
 AC-1g: Focus rings use ring-primary/30
-Command: grep -rn "focus:ring-primary\|ring-primary/30" components/ --include="*.tsx" | head -5
+Command:
+  grep -rn "focus:ring-primary/30\|focus-visible:ring-primary/30\|ring-primary/30" components/ --include="*.tsx" | head -5
 Expected: focus states use forest green ring
+FAIL → document and fix
 
-AC-1h: Conflict badges use bg-warning text-[var(--warning-foreground)]
-Command: grep -rn "bg-warning" components/domain/ --include="*.tsx" | head -5
+AC-1h: Conflict/warning badges use bg-warning text-[var(--warning-foreground)]
+Command:
+  grep -rn "bg-warning\|text-warning-foreground" components/domain/ --include="*.tsx" | grep -v "text-muted" | head -10
 Expected: conflict/warning badges use bg-warning
+FAIL → document and fix
 
-AC-1i: Zero hardcoded hex in components (already verified in Phase 1)
+AC-1i: Zero hardcoded hex in component files (already done in Phase 1)
+
+AC-1 SUMMARY: Record PASS/FAIL for each sub-item. Fix all FAILs before proceeding.
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 4 — TYPOGRAPHY AUDIT (AC-2)
+PHASE 4 — AC-2 TYPOGRAPHY AUDIT (run ALL sub-commands)
 ═══════════════════════════════════════════════════════════════════
 
-AC-2a: All H1 use font-serif
-Command: grep -rn "text-[0-9]xl" app/\(marketing\)/ --include="*.tsx" | grep -v font-serif | head -10
-Expected: 0 matches (all headlines use font-serif)
+INVOKE: Use /tailwindcss
+
+AC-2a: All H1 use font-serif (not font-sans)
+Command:
+  grep -rn "text-[0-9]xl" app/\(marketing\)/ --include="*.tsx" | grep -v "font-serif" | head -20
+Expected: 0 matches — all H1 must have font-serif
+FAIL → document each violation
 
 AC-2b: All H2 use font-serif
-Command: grep -rn "font-serif text-2xl\|font-serif text-3xl" components/ app/ --include="*.tsx" | wc -l
-Expected: many matches (all section headings)
+Command:
+  grep -rn "text-2xl\|text-3xl" components/ app/ --include="*.tsx" | grep -v "font-serif" | head -20
+Expected: 0 matches — all H2 must have font-serif
+FAIL → document each violation
 
-AC-2c: All body text uses font-sans (default, no class needed)
-Command: grep -rn "className=.*font-sans" components/ app/ --include="*.tsx" | head -5
-Expected: only when explicitly needed
+AC-2c: All body text uses font-sans (default — no class needed, verify no font-serif on body)
+Command:
+  grep -rn "className.*font-serif.*text-base\|className.*font-serif.*text-sm" components/ app/ --include="*.tsx" | head -5
+Expected: body text does not use font-serif
+FAIL → document and fix
 
-AC-2d: All mono labels use font-mono
-Command: grep -rn "◆ " components/ app/ --include="*.tsx" | grep -v font-mono | head -10
-Expected: 0 matches (all ◆ labels are font-mono)
+AC-2d: All ◆ mono labels use font-mono (not font-sans)
+Command:
+  grep -rn "◆ " components/ app/ --include="*.tsx" | grep -v "font-mono" | head -20
+Expected: 0 matches — all ◆ labels must be font-mono
+FAIL → document each violation
 
-AC-2e: Status chips use font-mono
-Command: grep -rn "rounded-full.*font-mono\|font-mono.*rounded-full" components/ --include="*.tsx" | head -5
+AC-2e: All status chips use font-mono
+Command:
+  grep -rn "rounded-full.*text-xs\|rounded-full.*text-sm" components/ --include="*.tsx" | grep -v "font-mono" | head -10
 Expected: status chips have font-mono
+FAIL → document and fix
+
+AC-2f: All code blocks use font-mono
+Command:
+  grep -rn "bg-secondary.*font-mono\|font-mono.*bg-secondary" components/ --include="*.tsx" | head -5
+Expected: code blocks use font-mono
+FAIL → document and fix
+
+AC-2 SUMMARY: Record PASS/FAIL for each sub-item. Fix all FAILs before proceeding.
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 5 — SHAPE AUDIT (AC-3)
+PHASE 5 — AC-3 SHAPE/BORDER RADIUS AUDIT (run ALL sub-commands)
 ═══════════════════════════════════════════════════════════════════
 
-AC-3a: All cards rounded-2xl (not rounded-lg)
-Command: grep -rn "bg-card rounded-lg\|bg-card rounded-xl" components/ app/ --include="*.tsx"
-Expected: 0 matches — all cards must be rounded-2xl
+AC-3a: All cards use rounded-2xl (not rounded-lg, not rounded-xl)
+Command:
+  grep -rn "bg-card rounded-lg\|bg-card rounded-xl\|bg-card rounded-md" components/ app/ --include="*.tsx"
+Expected: 0 matches
+FAIL → document each violation
 
-AC-3b: All primary CTAs rounded-full (not rounded-md)
-Command: grep -rn "bg-primary rounded-md\|bg-primary rounded-lg" components/ app/ --include="*.tsx"
-Expected: 0 matches — all primary CTAs must be rounded-full
+AC-3b: All primary CTAs use rounded-full (not rounded-md, not rounded-lg)
+Command:
+  grep -rn "bg-primary rounded-md\|bg-primary rounded-lg\|bg-primary rounded-xl" components/ app/ --include="*.tsx"
+Expected: 0 matches
+FAIL → document each violation
 
-AC-3c: All dialog content rounded-2xl
-Command: grep -rn "DialogContent\|AlertDialogContent" components/ --include="*.tsx" | head -5
-Expected: shadcn Dialog content is rounded-2xl by default
+AC-3c: All dialog/modal content uses rounded-2xl
+Command:
+  grep -rn "DialogContent\|AlertDialogContent" components/ --include="*.tsx" | head -5
+Expected: shadcn Dialog content is rounded-2xl by default (verify)
+FAIL → document
 
-AC-3d: All inputs rounded-xl
-Command: grep -rn "rounded-lg.*border\|border.*rounded-lg" components/ --include="*.tsx" | head -5
+AC-3d: All inputs use rounded-xl (not rounded-lg, not rounded-md on border)
+Command:
+  grep -rn "border.*rounded-lg\|border.*rounded-md" components/ --include="*.tsx" | head -10
 Expected: input fields should be rounded-xl
+FAIL → document each violation
+
+AC-3 SUMMARY: Record PASS/FAIL for each sub-item. Fix all FAILs before proceeding.
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 6 — MICRO-INTERACTIONS AUDIT (AC-4)
+PHASE 6 — AC-4 MICRO-INTERACTIONS AUDIT (manual verification)
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /tailwindcss-animations
 
+These items must be VERIFIED IN BROWSER at 1440px desktop. grep alone is insufficient.
+
+For each item: open the component, verify the className contains the required pattern.
+
 AC-4a: Primary buttons: hover:-translate-y-px active:translate-y-0
-Check: grep -rn "hover:-translate-y-px" components/ --include="*.tsx" | head -5
+  grep -rn "hover:-translate-y-px" components/ --include="*.tsx" | head -5
+  Verify: Button component has both hover and active classes
 
 AC-4b: Secondary buttons: hover:bg-secondary
-Check: grep -rn "hover:bg-secondary" components/ --include="*.tsx" | head -5
+  grep -rn "hover:bg-secondary" components/ --include="*.tsx" | head -5
+  Verify: Button variant="secondary" or outline has this hover
 
 AC-4c: Cards: hover:shadow-md transition-shadow
-Check: grep -rn "hover:shadow-md" components/ --include="*.tsx" | head -5
+  grep -rn "hover:shadow-md" components/ --include="*.tsx" | head -5
+  Verify: interactive cards have shadow lift on hover
 
-AC-4d: Nav links: underline grow animation (NOT bg-primary hover)
-Check: grep -rn "hover:bg-primary" components/marketing/Header.tsx | head -5
-Expected: nav links should NOT use bg-primary hover — use underline animation
+AC-4d: Marketing nav links: underline grow animation (NOT bg-primary hover)
+  grep -rn "hover:bg-primary" components/marketing/Header.tsx | head -5
+  Expected: nav links do NOT use bg-primary hover
+  Verify: nav links use underline animation instead
 
-AC-4e: Inputs: focus:ring-2 focus:ring-primary/30 focus:border-primary
-Check: grep -rn "focus:ring-2 focus:ring-primary/30" components/ --include="*.tsx" | head -5
+AC-4e: Sidebar nav items: hover:scale-110
+  grep -rn "hover:scale-110" components/domain/Sidebar.tsx 2>/dev/null | head -5
+  Verify: sidebar icons scale on hover
 
-AC-4f: Dropdown menus: animate-in fade-in zoom-in-95
-Check: grep -rn "animate-in fade-in" components/ --include="*.tsx" | head -5
+AC-4f: Inputs: focus:ring-2 focus:ring-primary/30 focus:border-primary
+  grep -rn "focus:ring-primary/30" components/ --include="*.tsx" | head -5
+  Verify: form inputs have forest green focus ring
 
-═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 7 — PAGE-BY-PAGE AUDIT (AC-5)
-═══════════════════════════════════════════════════════════════════
+AC-4g: Dropdown menus: animate-in fade-in zoom-in-95
+  grep -rn "animate-in fade-in zoom-in-95" components/ --include="*.tsx" | head -5
+  Verify: dropdowns have scale+fade animation
 
-For EACH page below, verify:
-1. Page renders without crash
-2. Brand colors correct (no white backgrounds, no wrong greens)
-3. Typography correct (font-serif headlines, font-mono labels)
-4. Shapes correct (rounded-2xl cards, rounded-full CTAs)
-5. Required elements present (skip link, main landmark, correct heading hierarchy)
+AC-4h: Sonner toasts: built into sonner (verify sonner is imported)
+  grep -rn "import.*Sonner\|import.*toast" components/ --include="*.tsx" | head -5
+  Verify: SonnerToaster is present in root layout
 
-Run: npm run build && npm run dev
-Then manually visit each page and record PASS or FAIL with notes.
+AC-4i: Conflict cards: slide-out-right animation on resolve
+  grep -rn "animate-out.*slide-out\|slide-out-right" components/ --include="*.tsx" | head -5
+  Verify: conflict cards have exit animation
 
-Pages to audit (in order):
-1. http://localhost:3000/register
-2. http://localhost:3000/login
-3. http://localhost:3000/onboarding
-4. http://localhost:3000/chat
-5. http://localhost:3000/graph
-6. http://localhost:3000/workstation
-7. http://localhost:3000/sources
-8. http://localhost:3000/inbox
-9. http://localhost:3000/settings
-10. http://localhost:3000/settings/billing
-11. http://localhost:3000/settings/referrals
-12. http://localhost:3000/settings/data
-13. http://localhost:3000/
-14. http://localhost:3000/privacy
-15. http://localhost:3000/terms
+AC-4j: Progress bars: transition-all duration-300 ease-out
+  grep -rn "duration-300.*transition\|transition.*duration-300" components/ --include="*.tsx" | head -5
+  Verify: progress bar width transitions smoothly
 
-For each page, record:
-[PASS/FAIL] PageName
-- Brand colors: OK / ISSUES (list)
-- Typography: OK / ISSUES (list)
-- Shapes: OK / ISSUES (list)
-- Required elements: OK / MISSING (list)
+AC-4 SUMMARY: Record PASS/FAIL for each. For any FAIL, add the missing class.
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 8 — ACCESSIBILITY AUDIT (AC-6)
+PHASE 7 — AC-5 PAGE-BY-PAGE AUDIT (run npm build first)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss-advanced-layouts
+
+Start dev server: npm run dev
+
+For EACH page below, visit and verify:
+
+Pages to audit (in this exact order):
+1. /register — Clerk renders, brand lockup, cream background
+2. /login — Clerk renders, brand lockup, cream background
+3. /onboarding — Step indicator, role cards, confetti
+4. /chat — Empty state chips, message rendering, streaming
+5. /graph — Cytoscape renders, node panel, filter bar
+6. /workstation — Prompt textarea, generate button, streaming output
+7. /sources — Dropzone functional, progress bar
+8. /inbox — Conflict cards, keyboard nav
+9. /settings — Model cards, toggles
+10. /settings/billing — Tier display, Stripe portal
+11. /settings/referrals — Copy button, stats
+12. /settings/data — Export, delete account
+13. / — All 9 sections, pricing anchor, footer
+14. /privacy — Header + Footer + content + skip link
+15. /terms — Header + Footer + content + skip link
+
+For each page, record this exact format:
+
+[PASS/FAIL] URL
+- Brand colors: OK / LIST ISSUES
+- Typography: OK / LIST ISSUES
+- Shapes: OK / LIST ISSUES
+- Required elements: OK / LIST MISSING
+- Notes: [specific observations]
+
+═══════════════════════════════════════════════════════════════════
+PHASE 8 — AC-6 ACCESSIBILITY AUDIT (run axe on 3 key pages)
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /superpowers:verification-before-completion
 
-Run axe on 3 key pages:
+Ensure dev server is running: npm run dev
 
+Run these EXACT commands:
+
+```bash
 npx axe-cli http://localhost:3000 --tags wcag2a,wcag2aa
 npx axe-cli http://localhost:3000/onboarding --tags wcag2a,wcag2aa
 npx axe-cli http://localhost:3000/graph --tags wcag2a,wcag2aa
+```
 
-Record number of critical violations for each. Must be 0.
+For each, record:
+- Command output
+- Number of critical violations (must be 0)
+- Number of serious violations (target: 0, document if > 0)
+- Number of moderate violations (target: 0, document if > 0)
 
-Manual checks:
+Manual checks (run in browser):
 □ Every page has skip link as first focusable element
 □ Every page has <main id="main-content">
-□ No keyboard traps in any component
+□ No keyboard traps
 □ All images have alt text
-□ aria-live regions on streaming content
+□ aria-live regions on streaming content (chat, workstation)
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 9 — PERFORMANCE AUDIT (AC-7)
+PHASE 9 — AC-7 PERFORMANCE AUDIT (run ALL commands)
 ═══════════════════════════════════════════════════════════════════
 
 npm run build
 Expected: 0 TypeScript errors, 0 warnings
+Actual: ____ errors, ____ warnings
 
 npm run test
-Expected: 0 test failures
+Expected: 0 failures
+Actual: ____ failures
 
-grep -rn "console.error\|console.warn" components/ app/ --include="*.tsx" --include="*.ts"
-Expected: 0 matches (no console.error/warn in production code)
+No console.error/warn in production code:
+grep -rn "console.error\|console.warn" components/ app/ --include="*.tsx" --include="*.ts" | grep -v "logger\|log\."
+Expected: 0 matches
+Actual: ____ matches
 
-find app/\(dashboard\) -name "page.tsx" | while read p; do
+Missing loading.tsx files:
+find app/\(dashboard\) -name "page.tsx" -type f | while read p; do
   dir=$(dirname "$p")
-  [ -f "$dir/loading.tsx" ] || echo "MISSING loading.tsx: $dir"
+  [ -f "$dir/loading.tsx" ] || echo "MISSING: $dir/loading.tsx"
 done
-Expected: 0 missing loading.tsx files
+Expected: 0 missing
+Actual: ____ missing
+
+Dynamic imports for cytoscape and react-markdown:
+grep -rn "dynamic\|React.lazy" components/ --include="*.tsx" | head -10
+Expected: cytoscape and react-markdown are dynamically imported
+Actual: ____
 
 ═══════════════════════════════════════════════════════════════════
-AUDIT PHASE 10 — MOBILE AUDIT (AC-8)
+PHASE 10 — AC-8 MOBILE AUDIT (test at 375px)
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /tailwindcss-mobile-first
@@ -713,66 +810,165 @@ In browser DevTools, set viewport to 375px (iPhone 12).
 
 For each dashboard page, verify:
 □ Sidebar renders as Sheet drawer (not visible nav)
-□ No horizontal overflow
-□ All touch targets ≥ 44px height
+□ No horizontal overflow (DevTools → Elements → check overflow)
+□ All touch targets ≥ 44px height (use DevTools measuring tool)
 □ Pricing cards stack vertically
+□ Mobile menu opens and closes correctly
+
+Record PASS/FAIL for each check.
 
 ═══════════════════════════════════════════════════════════════════
-FIX PRIORITY
+FIX PRIORITY TABLE
 ═══════════════════════════════════════════════════════════════════
 
-Fix violations in this order (most impactful first):
+Fix violations in this EXACT order:
 
-P0 (Critical — fix immediately):
+P0 — CRITICAL (fix immediately, do not pass go):
 - Any page that crashes or shows 500 error
 - Missing skip links on any page
-- Hardcoded hex colors in component files
-- Sidebar not using bg-primary
+- Hardcoded hex colors in component files (AC-1i)
+- Sidebar not using bg-primary in both modes (AC-1a)
 
-P1 (High — fix before marking complete):
-- Cards using rounded-lg instead of rounded-2xl
-- CTAs using rounded-md instead of rounded-full
-- H1 without font-serif
-- ◆ mono labels without font-mono
-- Missing loading.tsx files
+P1 — HIGH (fix before marking complete):
+- Cards using rounded-lg instead of rounded-2xl (AC-3a)
+- CTAs using rounded-md instead of rounded-full (AC-3b)
+- H1 without font-serif (AC-2a)
+- H2 without font-serif (AC-2b)
+- ◆ mono labels without font-mono (AC-2d)
+- Missing loading.tsx files (AC-7e)
 
-P2 (Medium — fix if found):
-- Missing micro-interactions (hover states)
-- Focus ring missing or wrong color
-- Accessibility violations reported by axe
+P2 — MEDIUM (fix if found):
+- Missing micro-interactions (hover states) (AC-4)
+- Focus ring missing or wrong color (AC-1g)
+- Missing aria-live on streaming content (AC-6e)
+- axe-cli critical violations (AC-6f-h)
+- Missing alt text on images (AC-6b)
+
+P3 — LOW (fix if quick):
+- Touch target < 44px on non-critical elements (AC-8a)
+- Minor visual drift from spec
 
 ═══════════════════════════════════════════════════════════════════
-ANTI-PATTERNS — automatic rejection
+ANTI-PATTERNS — automatic rejection without asking
 ═══════════════════════════════════════════════════════════════════
 
 During this audit, if you find ANY of these, fix immediately and document:
-❌ className with hardcoded hex color → replace with CSS variable
-❌ className="rounded-lg" on any card → change to rounded-2xl
-❌ className="rounded-md" on any CTA button → change to rounded-full
-❌ className="bg-white" → change to bg-card or bg-background
-❌ className without font-serif on h1 or h2 → add font-serif
-❌ ◆ label without font-mono → add font-mono
-❌ Page without loading.tsx → create it
-❌ Marketing pages without Header or Footer → add them
+
+❌ className with hardcoded hex color → replace with CSS variable immediately
+❌ className="rounded-lg" on any card → change to rounded-2xl immediately
+❌ className="rounded-md" on any CTA button → change to rounded-full immediately
+❌ className="bg-white" → change to bg-card or bg-background immediately
+❌ className="bg-background" on sidebar → must be bg-primary immediately
+❌ className without font-serif on h1 or h2 → add font-serif immediately
+❌ ◆ label without font-mono → add font-mono immediately
+❌ Page without loading.tsx → create immediately
+❌ Marketing pages without Header or Footer → add immediately
+❌ Any hardcoded color (#1a1a1a, #ffffff, etc.) in className → replace immediately
 
 ═══════════════════════════════════════════════════════════════════
-DOCUMENTATION — after fixing all violations
+STORY-038-AUDIT.md — REQUIRED DOCUMENTATION
 ═══════════════════════════════════════════════════════════════════
 
-Create a file: docs/stories/EPIC-08-polish/STORY-038-AUDIT.md
+After fixing all violations, create this file:
 
-Audit results document with:
-A. Hardcoded hex violations found and fixed (list each file:line:fix)
-B. Typography violations found and fixed
-C. Shape violations found and fixed
-D. Micro-interaction violations found and fixed
-E. Page-by-page results (PASS/FAIL for each of 15 pages)
-F. Accessibility results (axe output per page)
-G. Mobile results (issues found)
-H. Performance results (npm run build + npm run test output)
+docs/stories/EPIC-08-polish/STORY-038-AUDIT.md
+
+Use this EXACT format:
+
+```markdown
+# STORY-038 Audit Results
+
+Date: [YYYY-MM-DD]
+Agent: [agent identifier]
+Build: [npm run build result]
+Tests: [npm run test result]
+
+## Phase 1: Hardcoded Hex Audit (AC-1i)
+
+Command: grep -rn "#2d4a3e\|#f5f3ee..." [full command]
+Violations found: [N]
+
+| File | Line | Content | Fix Applied |
+|---|---|---|---|
+| path/to/file.tsx | 42 | "className=\"bg-[#2d4a3e]\"" | Replaced with bg-primary |
+
+## Phase 2: CSS Variables Verification
+
+:root tokens: [PASS/FAIL — list any missing/wrong]
+.dark tokens: [PASS/FAIL — list any missing/wrong]
+@theme inline fonts: [PASS/FAIL]
+
+## Phase 3: Brand Color Audit (AC-1)
+
+| Sub-item | Command | Expected | Actual | PASS/FAIL |
+|---|---|---|---|---|
+| AC-1a Sidebar bg-primary | grep... | >0 matches | N matches | PASS/FAIL |
+
+## Phase 4: Typography Audit (AC-2)
+
+| Sub-item | Command | Expected | Actual | PASS/FAIL |
+|---|---|---|---|---|
+| AC-2a H1 font-serif | grep... | 0 matches | N matches | PASS/FAIL |
+
+## Phase 5: Shape Audit (AC-3)
+
+| Sub-item | Command | Expected | Actual | PASS/FAIL |
+|---|---|---|---|---|
+| AC-3a cards rounded-2xl | grep... | 0 matches | N matches | PASS/FAIL |
+
+## Phase 6: Micro-Interactions (AC-4)
+
+| Sub-item | File | PASS/FAIL | Notes |
+|---|---|---|---|
+| AC-4a button hover | Button.tsx | PASS/FAIL | |
+
+## Phase 7: Page-by-Page Audit (AC-5)
+
+| Page | Brand | Typography | Shapes | Required | PASS/FAIL |
+|---|---|---|---|---|---|
+| /register | OK | OK | OK | OK | PASS |
+| /login | ISSUES | OK | OK | MISSING | FAIL |
+
+## Phase 8: Accessibility (AC-6)
+
+| Page | Critical | Serious | Moderate | PASS/FAIL |
+|---|---|---|---|---|
+| / | 0 | 0 | 0 | PASS |
+| /onboarding | 0 | 0 | 0 | PASS |
+| /graph | 0 | 0 | 0 | PASS |
+
+## Phase 9: Performance (AC-7)
+
+| Check | Expected | Actual | PASS/FAIL |
+|---|---|---|---|
+| npm run build | 0 errors | N errors | PASS/FAIL |
+| npm run test | 0 failures | N failures | PASS/FAIL |
+| console.error/warn | 0 matches | N matches | PASS/FAIL |
+| loading.tsx present | all present | N missing | PASS/FAIL |
+
+## Phase 10: Mobile (AC-8)
+
+| Page | Sidebar Sheet | No Overflow | 44px Targets | PASS/FAIL |
+|---|---|---|---|---|
+| /chat | PASS | PASS | FAIL | FAIL |
+| /graph | PASS | PASS | PASS | PASS |
+
+## Summary
+
+Total violations found: [N]
+Total violations fixed: [N]
+Total violations outstanding: [N]
+
+All P0 violations: FIXED ✅
+All P1 violations: FIXED ✅ / [list if any remain]
+All P2 violations: FIXED ✅ / [list if any remain]
+All P3 violations: FIXED ✅ / [list if any remain]
+
+Overall: [PASS/FAIL]
+```
 
 ═══════════════════════════════════════════════════════════════════
-SUCCESS CRITERIA
+SUCCESS CRITERIA — ALL must be YES to report complete
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /superpowers:verification-before-completion
@@ -782,11 +978,12 @@ INVOKE: Use /superpowers:verification-before-completion
 ✅ AC-1: 0 hardcoded hex violations in component files
 ✅ AC-2: 0 typography violations (all headlines font-serif, all mono labels font-mono)
 ✅ AC-3: 0 shape violations (all cards rounded-2xl, all CTAs rounded-full)
-✅ AC-4: All micro-interactions present
+✅ AC-4: All micro-interactions present (verified in browser)
 ✅ AC-5: All 15 pages PASS page-by-page audit
 ✅ AC-6: axe reports 0 critical violations on 3 key pages
 ✅ AC-7: No console.error/warn in production code, all loading.tsx present
 ✅ AC-8: Mobile audit passes (no overflow, 44px touch targets)
+✅ STORY-038-AUDIT.md created with all sections filled in
 ✅ Product walked through /register → /onboarding → /chat → /graph → /workstation → /sources → /inbox without any page crashing or showing wrong colors
 
 Show plan first. Do not implement yet.

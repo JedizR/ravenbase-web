@@ -5,13 +5,6 @@ import { useParams } from "next/navigation"
 import { Coins, Ban, CheckCircle, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog"
 import { Minus, Plus } from "lucide-react"
 import {
   Table,

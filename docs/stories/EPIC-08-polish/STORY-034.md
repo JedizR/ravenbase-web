@@ -125,6 +125,7 @@ async def award_referrer_on_first_upload(referee_id: uuid.UUID, db: AsyncSession
      (green check icon, text-success)
    - Button: rounded-full border border-border bg-card hover:bg-secondary
    - Transition: all 150ms ease on text/icon swap
+   - TIMING: exactly 2000ms (2 seconds) before returning to default state
 
 4. Social share buttons:
    - Twitter/X: opens https://twitter.com/intent/tweet?text=...
@@ -213,151 +214,143 @@ Only commit the docs update (epics.md, story-counter, project-status, journal) A
    Write complete explanations, complete code, complete verification commands.
 
 ═══════════════════════════════════════════════════════════════════
-CONTEXT — this story has a BACKEND PART and a FRONTEND PART
+STEP 0 — PROJECT CONTEXT (carry forward to every phase)
 ═══════════════════════════════════════════════════════════════════
 
-The backend (referral code generation, credit reward logic, AC-1 through AC-10
-in the Acceptance Criteria) must be implemented in ravenbase-api FIRST.
-This frontend story depends on those endpoints being deployed and tested.
-
-Frontend ACs are: AC-9 (Settings → Referrals page with copy button, stats, milestones)
-The backend must provide: GET /v1/account/referral endpoint.
-
-Confirm backend is complete before starting frontend implementation:
-grep -n "GET.*referral\|POST.*referral" ravenbase-api/src/api/routes/account.py
-If not found → frontend cannot be fully tested yet.
+Ravenbase Frontend: Next.js 15 App Router + Tailwind CSS v4 + shadcn/ui + TanStack Query
+Design system: CSS variables only (no hardcoded hex). Dark mode via .dark class on <html>
+Brand colors: Primary=#2d4a3e (forest green), Background=#f5f3ee (warm cream), Accent=#a8c4b2
+DO NOT introduce new design aesthetics — follow the established brand system exactly.
+Page directory: app/(dashboard)/settings/referrals/page.tsx (already exists)
+Page loading: app/(dashboard)/settings/referrals/loading.tsx (already exists)
+API endpoint: GET /v1/account/referral (frontend must call this)
+Backend must be complete first: run grep -n "referral" ravenbase-api/src/api/routes/account.py
 
 ═══════════════════════════════════════════════════════════════════
-PLAN REQUIREMENTS FOR MiniMax-M2.7
-═══════════════════════════════════════════════════════════════════
-
-A. FILE INVENTORY — every CREATE or MODIFY file with path + purpose
-
-B. READING ORDER — read ALL files, write "CONFIRMED READ: [filename]" after each:
-   1. CLAUDE.md (all 19 rules)
-   2. docs/design/AGENT_DESIGN_PREAMBLE.md
-   3. docs/design/00-brand-identity.md
-   4. docs/design/01-design-system.md
-   5. docs/design/04-ux-patterns.md (micro-interactions, copy button animation)
-   6. docs/stories/EPIC-08-polish/STORY-034.md (this file)
-
-C. API CONTRACT — document the GET /v1/account/referral response shape:
-   {
-     "referral_code": string,
-     "referral_url": string,
-     "total_referrals": number,
-     "pending_referrals": number,
-     "credits_earned": number,
-     "current_month_count": number,
-     "monthly_cap": number
-   }
-
-D. PAGE DESIGN — full JSX for Settings → Referrals page:
-   - Referral link display card (read-only input + copy button)
-   - Social share buttons (Twitter/X, LinkedIn)
-   - Stats card (total referrals, credits earned, progress bar)
-   - Milestone timeline (checkmarks for reached, amber dot for next, gray for future)
-   - Every className string specified
-   - TanStack Query integration (useQuery, staleTime)
-
-E. COPY BUTTON STATE MACHINE — complete design:
-   - Default: "COPY_LINK" + Copy icon
-   - Success (2 seconds): "COPIED!" + Check icon + text-success color
-   - Return to default after 2000ms
-
-F. VERIFICATION COMMANDS — every grep/test command to prove each AC
-
-═══════════════════════════════════════════════════════════════════
-STEP 1 — READ PHASE
+STEP 1 — READ PHASE (mandatory — read ALL files before touching code)
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /frontend-design
 
-Read in this order. Write "✅ CONFIRMED READ: [filename]" after each:
+Read ALL files in order — NOT in parallel — every file completely:
 
 1. CLAUDE.md
    → All 19 rules. Critical rules for this story:
-     RULE 6 (TanStack Query for server state)
+     RULE 6 (TanStack Query for server state — NEVER useState+useEffect for API data)
      RULE 2 (no <form> tags — use onClick)
      RULE 7 (shadcn/ui components)
+     RULE 9 (use RavenbaseLogo/RavenbaseLockup — never placeholder div)
 
 2. docs/design/AGENT_DESIGN_PREAMBLE.md
-   → Anti-patterns:
-     ❌ Hardcoded hex → must use CSS variables
-     ❌ rounded-lg on cards → must be rounded-2xl
-     ❌ rounded-md on CTAs → must be rounded-full
-     ❌ bg-[#xxxx] → must use bg-primary/bg-card/bg-secondary
+   → Anti-patterns to reject on sight:
+     ❌ className="rounded-lg" on cards → must be rounded-2xl
+     ❌ className="rounded-md" on CTAs → must be rounded-full
+     ❌ bg-[#2d4a3e] → must be bg-primary
+     ❌ bg-[#f5f3ee] → must be bg-background
+     ❌ bg-[#ffc00d] → must be bg-warning
+     ❌ floating labels → labels always ABOVE input
+     ❌ className="dark" or "light" on route group layouts
 
 3. docs/design/00-brand-identity.md
-   → Mono label: ◆ REFERRAL_LINK, ◆ REFERRAL_STATS, ◆ MILESTONE
+   → Mono label pattern: ◆ REFERRAL_LINK, ◆ REFERRAL_STATS, ◆ MILESTONES
    → Brand voice rules
+   → Logo usage: RavenbaseLogo and RavenbaseLockup from @/components/brand
 
 4. docs/design/01-design-system.md
-   → All CSS variables
+   → All CSS variable definitions (light and dark)
    → Card style: bg-card rounded-2xl border border-border
-   → CTA: rounded-full bg-primary
+   → CTA: rounded-full bg-primary text-primary-foreground
+   → Section mono label: text-xs font-mono text-muted-foreground tracking-wider
+   → Success color: text-success (#3d8b5a)
+   → Warning color: bg-warning (#ffc00d)
 
 5. docs/design/04-ux-patterns.md
-   → Copy button: 2-second success state
+   → Copy button: 2-second success state (EXACTLY 2000ms)
    → Social share: Twitter intent URL, LinkedIn share-offsite URL
    → Progress bar: bg-primary fill, bg-secondary track
-   → Milestone: checkmark = text-success, amber dot = bg-warning, gray = bg-secondary
+   → Milestone indicators: CheckCircle2 (reached), amber dot (next), gray circle (future)
+   → Section 10: use-copy-to-clipboard.ts hook pattern
 
-6. docs/stories/EPIC-08-polish/STORY-034.md
-   → All ACs. Focus: AC-9 (frontend), AC-1 through AC-8 (backend — verify first)
+6. docs/stories/EPIC-08-polish/STORY-034.md (this file)
+   → All ACs. Focus: AC-9 (frontend), AC-1 through AC-8 (backend)
+   → CONFIRMED: Read every acceptance criterion
 
 ═══════════════════════════════════════════════════════════════════
 STEP 2 — BACKEND AVAILABILITY CHECK
 ═══════════════════════════════════════════════════════════════════
 
-Run:
-grep -n "referral" ravenbase-api/src/api/routes/account.py | head -20
+Before writing frontend code, verify the backend API exists:
 
-If GET /v1/account/referral is not implemented → document this as a dependency
-block and describe what the frontend page will look like (can be built, not fully testable).
+grep -n "referral" /Users/admin/destination/ravenbase/ravenbase-api/src/api/routes/account.py | head -20
+
+Expected output should include:
+- GET /v1/account/referral
+- POST /v1/account/apply-referral
+
+If these endpoints do NOT exist → this frontend story cannot be fully tested.
+Document the dependency block and proceed with UI implementation only.
 
 ═══════════════════════════════════════════════════════════════════
-STEP 3 — PAGE STRUCTURE (full code)
+STEP 3 — PAGE DESIGN (Phase 2a — full code for page.tsx)
 ═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss
 
 FILE: app/(dashboard)/settings/referrals/page.tsx
 
+This file ALREADY EXISTS. You are enhancing it to match this exact specification.
+
+Complete code — every line, no omissions:
+
+```tsx
 "use client"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { Copy, Check, Twitter, Linkedin } from "lucide-react"
+import { Copy, Check, Linkedin } from "lucide-react"
 import { CheckCircle2 } from "lucide-react"
-import { RavenbaseLockup } from "@/components/brand"
+import { useApiFetch } from "@/lib/api-client"
+
+interface ReferralResponse {
+  referral_code: string
+  referral_url: string
+  total_referrals: number
+  pending_referrals: number
+  credits_earned: number
+  current_month_count: number
+  monthly_cap: number
+}
 
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false)
-  const [selectedFormat, setSelectedFormat] = useState<"json" | "csv" | "zip">("json")
+  const apiFetch = useApiFetch()
 
-  // TanStack Query for referral data
-  const { data, isLoading } = useQuery({
+  // TanStack Query for referral data — RULE 6: useQuery for server state
+  const { data, isLoading } = useQuery<ReferralResponse>({
     queryKey: ["referral"],
-    queryFn: () =>
-      apiFetch<ReferralResponse>("/v1/account/referral"),
-    staleTime: 30_000,
+    queryFn: () => apiFetch<ReferralResponse>("/v1/account/referral"),
+    staleTime: 30_000,  // Referral stats change infrequently
   })
 
   const referralUrl = data?.referral_url ?? ""
   const totalReferrals = data?.total_referrals ?? 0
   const creditsEarned = data?.credits_earned ?? 0
 
+  // COPY BUTTON STATE MACHINE:
+  // State: COPY_LINK (default) → COPIED! (2 seconds) → COPY_LINK
+  // AC-9b: Exactly 2000ms timeout before returning to default
   const handleCopy = async () => {
     await navigator.clipboard.writeText(referralUrl)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)  // AC-9b: 2s COPIED state
+    setTimeout(() => setCopied(false), 2000)
   }
 
-  // Milestone state
+  // Milestone configuration
   const milestones = [
     { count: 1, reward: "100 bonus credits", reached: totalReferrals >= 1 },
     { count: 3, reward: "500 bonus credits", reached: totalReferrals >= 3 },
     { count: 5, reward: "1 month Pro free", reached: totalReferrals >= 5 },
   ]
-  const nextMilestone = milestones.find(m => !m.reached)
+  const nextMilestone = milestones.find((m) => !m.reached)
   const progressPercent = nextMilestone
     ? (totalReferrals / nextMilestone.count) * 100
     : 100
@@ -366,21 +359,24 @@ export default function ReferralsPage() {
     <div className="space-y-8">
       {/* Referral link card */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
-        <p className="text-xs font-mono text-muted-foreground tracking-wider">◆ REFERRAL_LINK</p>
+        <p className="text-xs font-mono text-muted-foreground tracking-wider">
+          ◆ REFERRAL_LINK
+        </p>
 
-        {/* Read-only URL input */}
+        {/* Read-only URL input with copy button overlay */}
         <div className="relative">
           <input
             readOnly
             value={referralUrl}
+            aria-label="Your referral link"
             className="w-full bg-secondary rounded-xl px-4 py-3 pr-20
                        font-mono text-sm text-foreground
                        border border-border outline-none"
           />
-          {/* Copy button — overlays right side */}
+          {/* Copy button — overlays right side of input */}
           <button
             onClick={handleCopy}
-            aria-label={copied ? "Link copied" : "Copy referral link"}
+            aria-label={copied ? "Link copied to clipboard" : "Copy referral link to clipboard"}
             className="absolute right-2 top-1/2 -translate-y-1/2
                        flex items-center gap-1.5 px-3 py-1.5 rounded-full
                        border border-border bg-card hover:bg-secondary
@@ -401,8 +397,9 @@ export default function ReferralsPage() {
           </button>
         </div>
 
-        {/* Social share */}
+        {/* Social share buttons */}
         <div className="flex gap-2">
+          {/* Twitter/X share */}
           <a
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
               "I'm using Ravenbase to build my AI memory. Get 200 free credits: " + referralUrl
@@ -417,6 +414,7 @@ export default function ReferralsPage() {
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
           </a>
+          {/* LinkedIn share */}
           <a
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`}
             target="_blank"
@@ -432,20 +430,25 @@ export default function ReferralsPage() {
 
       {/* Stats card */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
-        <p className="text-xs font-mono text-muted-foreground tracking-wider">◆ REFERRAL_STATS</p>
+        <p className="text-xs font-mono text-muted-foreground tracking-wider">
+          ◆ REFERRAL_STATS
+        </p>
 
         <div className="flex items-baseline gap-2">
           <span className="font-mono text-4xl font-bold text-primary">
-            {totalReferrals}
+            {isLoading ? "—" : totalReferrals}
           </span>
           <span className="text-sm text-muted-foreground">users referred</span>
         </div>
 
         <div className="text-sm text-muted-foreground">
-          <span className="font-mono text-foreground">{creditsEarned}</span> credits earned
+          <span className="font-mono text-foreground">
+            {isLoading ? "—" : creditsEarned}
+          </span>{" "}
+          credits earned
         </div>
 
-        {/* Progress bar toward next reward */}
+        {/* Progress bar toward next reward milestone */}
         {nextMilestone && (
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">
@@ -465,19 +468,29 @@ export default function ReferralsPage() {
 
       {/* Milestone timeline */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-3">
-        <p className="text-xs font-mono text-muted-foreground tracking-wider">◆ MILESTONES</p>
+        <p className="text-xs font-mono text-muted-foreground tracking-wider">
+          ◆ MILESTONES
+        </p>
         {milestones.map((m, i) => {
-          const isNext = !m.reached && milestones.slice(0, i).every(x => x.reached)
+          const isNext =
+            !m.reached && milestones.slice(0, i).every((x) => x.reached)
           return (
             <div key={i} className="flex items-center gap-3">
               {m.reached ? (
+                // Green checkmark: milestone reached
                 <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
               ) : isNext ? (
+                // Amber dot: next milestone to reach
                 <div className="w-5 h-5 rounded-full bg-warning shrink-0" />
               ) : (
+                // Gray circle: future milestone
                 <div className="w-5 h-5 rounded-full bg-secondary border border-border shrink-0" />
               )}
-              <span className={`text-sm ${m.reached ? "text-foreground" : "text-muted-foreground"}`}>
+              <span
+                className={`text-sm ${
+                  m.reached ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
                 {m.count} referral{m.count > 1 ? "s" : ""} → {m.reward}
               </span>
             </div>
@@ -487,107 +500,202 @@ export default function ReferralsPage() {
     </div>
   )
 }
-
-interface ReferralResponse {
-  referral_code: string
-  referral_url: string
-  total_referrals: number
-  pending_referrals: number
-  credits_earned: number
-  current_month_count: number
-  monthly_cap: number
-}
 ```
 
 ═══════════════════════════════════════════════════════════════════
-STEP 4 — LOADING STATE (required — RULE 10)
+STEP 4 — LOADING STATE (Phase 2b — required by RULE 10)
 ═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss
 
 FILE: app/(dashboard)/settings/referrals/loading.tsx
 
+This file ALREADY EXISTS. Verify it matches this exact specification.
+
+```tsx
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ReferralsLoading() {
   return (
     <div className="space-y-8">
+      {/* Skeleton for ◆ REFERRAL_LINK card */}
       <Skeleton className="h-4 w-32" />
       <Skeleton className="h-40 w-full rounded-2xl" />
+      {/* Skeleton for ◆ REFERRAL_STATS card */}
       <Skeleton className="h-32 w-full rounded-2xl" />
+      {/* Skeleton for ◆ MILESTONES card */}
       <Skeleton className="h-24 w-full rounded-2xl" />
     </div>
   )
 }
+```
+
+RULE 10: Every dashboard page must have a loading.tsx sibling.
+This skeleton renders during navigation while data fetches.
+Do NOT use a spinner-only loading state.
 
 ═══════════════════════════════════════════════════════════════════
-STEP 5 — VERIFICATION COMMANDS
+STEP 5 — VERIFICATION COMMANDS (Phase 3)
 ═══════════════════════════════════════════════════════════════════
 
-# Page structure
+INVOKE: Use /tailwindcss-animations
+
+Run these exact grep commands and verify the expected counts:
+
+# 1. Page structure — mono label ◆ REFERRAL_LINK
 grep -c "◆ REFERRAL_LINK" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 1
+Expected: 1
 
-# Copy button with 2s state
+# 2. Copy button with EXACTLY 2000ms timeout (2 seconds)
 grep -c "setTimeout.*2000" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 1
+Expected: 1
 
-# Social share buttons
-grep -c "twitter.com\|linkedin.com" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 2
+# 3. Copy button state machine — COPY_LINK text
+grep -c "COPY_LINK" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
 
-# Stats card
+# 4. Copy button state machine — COPIED! text (success state)
+grep -c "COPIED!" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+
+# 5. Twitter/X share — correct intent URL
+grep -c "twitter.com/intent/tweet" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+
+# 6. LinkedIn share — correct share-offsite URL
+grep -c "linkedin.com/sharing/share-offsite" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+
+# 7. Stats card — mono label ◆ REFERRAL_STATS
 grep -c "◆ REFERRAL_STATS" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 1
+Expected: 1
 
-# Progress bar
-grep -c "bg-primary.*rounded-full" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 1
+# 8. Stats — total referrals number in font-mono text-primary
+grep -c 'font-mono text-4xl font-bold text-primary' app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
 
-# Milestones
+# 9. Progress bar — bg-primary rounded-full
+grep -c "bg-primary rounded-full" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+
+# 10. Milestones — mono label ◆ MILESTONES
 grep -c "◆ MILESTONES" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 1
+Expected: 1
 
-# TanStack Query
-grep -c "useQuery" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 1
+# 11. Milestone reached indicator — CheckCircle2 text-success
+grep -c "CheckCircle2.*text-success" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
 
-# Loading state exists
+# 12. Milestone next indicator — bg-warning (amber dot)
+grep -c "bg-warning.*shrink-0" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+
+# 13. TanStack Query — useQuery with staleTime
+grep -c "useQuery.*ReferralResponse" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+grep -c "staleTime: 30_000" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 1
+
+# 14. Loading state exists
 ls app/\(dashboard\)/settings/referrals/loading.tsx 2>/dev/null && echo "EXISTS" || echo "MISSING"
-# Expected: EXISTS
+Expected: EXISTS
 
-# No form tags
+# 15. No <form> tags (RULE 2: never use form tags)
 grep -c "<form" app/\(dashboard\)/settings/referrals/page.tsx
-# Expected: 0
+Expected: 0
+
+# 16. No hardcoded hex colors (RULE: use CSS variables only)
+grep -c "#2d4a3e\|#f5f3ee\|#ffc00d" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 0
+
+# 17. Card radius — rounded-2xl (not rounded-lg)
+grep -c "rounded-2xl" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: 3 (3 cards: link card, stats card, milestones card)
+
+# 18. Copy button radius — rounded-full
+grep -c "rounded-full" app/\(dashboard\)/settings/referrals/page.tsx
+Expected: At least 1 (copy button)
 
 ═══════════════════════════════════════════════════════════════════
-ANTI-PATTERNS — automatic rejection
+STEP 6 — AC-BY-AC VERIFICATION
+═══════════════════════════════════════════════════════════════════
+
+For each acceptance criterion, write a one-line verification result:
+
+□ AC-1 (backend): Referral code auto-generated on user creation
+  VERIFIED: grep -n "generate_referral_code" ravenbase-api/src/services/referral_service.py
+
+□ AC-2 (backend): POST /v1/account/apply-referral sets referred_by_user_id
+  VERIFIED: grep -n "apply-referral" ravenbase-api/src/api/routes/account.py
+
+□ AC-3 (backend): Referee gets +200 signup_referral_bonus
+  VERIFIED: grep -n "signup_referral_bonus" ravenbase-api/src/services/
+
+□ AC-4 (backend): Referrer gets +200 on first Source creation
+  VERIFIED: grep -n "award_referrer_on_first_upload" ravenbase-api/src/workers/tasks/
+
+□ AC-5 (backend): referral_reward_claimed idempotency guard
+  VERIFIED: grep -n "referral_reward_claimed" ravenbase-api/src/
+
+□ AC-6 (backend): ReferralTransaction record created
+  VERIFIED: grep -n "ReferralTransaction" ravenbase-api/src/models/
+
+□ AC-7 (backend): Monthly cap 50 — skips if exceeded
+  VERIFIED: grep -n "monthly_cap_reached\|>= 50" ravenbase-api/src/services/referral_service.py
+
+□ AC-8 (backend): GET /v1/account/referral returns code, URL, stats
+  VERIFIED: curl -s http://localhost:8000/v1/account/referral -H "Authorization: Bearer $TOKEN" | python -m json.tool
+
+□ AC-9 (frontend): Settings → Referrals page with copy button, stats, milestones
+  VERIFIED: grep -c "◆ REFERRAL_LINK" app/\(dashboard\)/settings/referrals/page.tsx = 1
+  VERIFIED: grep -c "setTimeout.*2000" app/\(dashboard\)/settings/referrals/page.tsx = 1
+  VERIFIED: grep -c "◆ MILESTONES" app/\(dashboard\)/settings/referrals/page.tsx = 1
+
+□ AC-10 (backend): Case-insensitive referral code lookup
+  VERIFIED: grep -n "\.upper()" ravenbase-api/src/services/referral_service.py
+
+═══════════════════════════════════════════════════════════════════
+ANTI-PATTERNS — automatic rejection (reject on sight)
 ═══════════════════════════════════════════════════════════════════
 
 ❌ className="rounded-lg" on any card → must be rounded-2xl
 ❌ className="rounded-md" on any button → must be rounded-full
-❌ <form> tag anywhere → use onClick + controlled state
-❌ Hardcoded hex → must use CSS variables
-❌ COPY_LINK text in success state without "COPIED!" → both required
-❌ No timeout reset on copy → must reset after 2000ms
+❌ <form> tag anywhere → RULE 2: use onClick + controlled state, never <form>
+❌ Hardcoded hex color (#2d4a3e, #f5f3ee, #ffc00d) → use CSS variables (bg-primary, bg-background, bg-warning)
+❌ COPY_LINK text WITHOUT "COPIED!" success state → both states required
+❌ setTimeout with 1000ms or 3000ms → must be exactly 2000ms (2 seconds)
+❌ TanStack useState + useEffect for API data → RULE 6: must use useQuery/useMutation
+❌ No loading.tsx sibling → RULE 10: every async dashboard page needs loading.tsx
+❌ floating labels / placeholder-as-label → labels always ABOVE input
+❌ bg-[#xxxx] anywhere → must use CSS variable token
+❌ className="dark" or "light" on route group layout outer div
 
 ═══════════════════════════════════════════════════════════════════
-SUCCESS CRITERIA
+SUCCESS CRITERIA — ALL must be YES to report complete
 ═══════════════════════════════════════════════════════════════════
 
 INVOKE: Use /superpowers:verification-before-completion
 
-✅ Referral link displayed in read-only input (font-mono)
-✅ Copy button: "COPY_LINK" → "COPIED!" for exactly 2 seconds
-✅ Twitter/X share button: correct intent URL opens in new tab
+✅ Referral link displayed in read-only input (font-mono text-sm bg-secondary)
+✅ Copy button: "COPY_LINK" → "COPIED!" for exactly 2000ms (2 seconds)
+✅ Copy button: Check icon + text-success in copied state, Copy icon + text-muted-foreground in default
+✅ Twitter/X share button: correct intent URL opens in new tab (target="_blank" rel="noopener noreferrer")
 ✅ LinkedIn share button: correct share-offsite URL opens in new tab
-✅ Stats: total referrals number in font-mono text-primary
-✅ Progress bar: forest green fill toward next milestone
-✅ Milestone timeline: CheckCircle2 (reached), amber dot (next), gray circle (future)
-✅ loading.tsx sibling exists
-✅ TanStack Query with useQuery (no useState+useEffect for API data)
+✅ Stats: total referrals number in font-mono text-4xl text-primary
+✅ Progress bar: bg-primary rounded-full fill toward next milestone
+✅ Milestone timeline: CheckCircle2 text-success (reached), bg-warning (next), bg-secondary border (future)
+✅ loading.tsx sibling exists with skeleton matching page structure
+✅ TanStack Query: useQuery with staleTime: 30_000 (no useState+useEffect for API data)
+✅ API response typed with ReferralResponse interface
+✅ No <form> tags in the page
+✅ No hardcoded hex colors in className strings
+✅ All cards use rounded-2xl (not rounded-lg)
 ✅ npm run build passes (0 TypeScript errors)
 
 Show plan first. Do not implement yet.
 ```
+
+---
 
 ## Development Loop
 Follow `docs/DEVELOPMENT_LOOP.md`.

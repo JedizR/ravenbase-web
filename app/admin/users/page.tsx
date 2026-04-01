@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/dialog"
 import { Minus, Plus } from "lucide-react"
 import { useApiFetch } from "@/lib/api-client"
-import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 interface UserType {
   id: string
@@ -49,7 +49,6 @@ export default function AdminUsersPage() {
   const [reason, setReason] = useState("")
   const queryClient = useQueryClient()
   const apiFetch = useApiFetch()
-  const router = useRouter()
 
   const { data: users = [], isLoading } = useQuery<UserType[]>({
     queryKey: ["admin", "users"],
@@ -191,8 +190,10 @@ export default function AdminUsersPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl">
-                      <DropdownMenuItem onClick={() => router.push(`/admin/users/${user.id}`)}>
-                        <User className="w-4 h-4 mr-2" /> View details
+                      <DropdownMenuItem asChild>
+                        <Link href={`/admin/users/${user.id}`} className="flex items-center">
+                          <User className="w-4 h-4 mr-2" /> View details
+                        </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setCreditDialogUser(user)}>
                         <Coins className="w-4 h-4 mr-2" /> Adjust credits
