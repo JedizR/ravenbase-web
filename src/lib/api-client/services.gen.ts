@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, ListMetaDocumentsV1MetadocGetData, ListMetaDocumentsV1MetadocGetResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse, CreatePortalSessionV1BillingCreatePortalSessionPostData, CreatePortalSessionV1BillingCreatePortalSessionPostResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, GetNotificationPreferencesV1AccountNotificationPreferencesGetData, GetNotificationPreferencesV1AccountNotificationPreferencesGetResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostData, SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
+import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, ListMetaDocumentsV1MetadocGetData, ListMetaDocumentsV1MetadocGetResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse, CreatePortalSessionV1BillingCreatePortalSessionPostData, CreatePortalSessionV1BillingCreatePortalSessionPostResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, GetNotificationPreferencesV1AccountNotificationPreferencesGetData, GetNotificationPreferencesV1AccountNotificationPreferencesGetResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostData, SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostResponse, GetReferralInfoV1AccountReferralGetData, GetReferralInfoV1AccountReferralGetResponse, ApplyReferralCodeV1AccountApplyReferralPostData, ApplyReferralCodeV1AccountApplyReferralPostResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
 
 /**
  * Health Check
@@ -745,6 +745,56 @@ export const sendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePos
         headers: {
             authorization: data.authorization
         },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Get Referral Info
+ * Return the current user's referral code, URL, and stats (AC-8).
+ *
+ * Used by Settings → Referrals page.
+ * @param data The data for the request.
+ * @param data.authorization
+ * @returns ReferralResponse Successful Response
+ * @throws ApiError
+ */
+export const getReferralInfoV1AccountReferralGet = (data: GetReferralInfoV1AccountReferralGetData = {}): CancelablePromise<GetReferralInfoV1AccountReferralGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/v1/account/referral',
+        headers: {
+            authorization: data.authorization
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Apply Referral Code
+ * Apply a referral code to the authenticated user's account (AC-2, AC-3, AC-10).
+ *
+ * Awards the referee +200 signup bonus immediately.
+ * Silently ignores invalid codes (not an error to the user).
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @param data.authorization
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const applyReferralCodeV1AccountApplyReferralPost = (data: ApplyReferralCodeV1AccountApplyReferralPostData): CancelablePromise<ApplyReferralCodeV1AccountApplyReferralPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/v1/account/apply-referral',
+        headers: {
+            authorization: data.authorization
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
         errors: {
             422: 'Validation Error'
         }

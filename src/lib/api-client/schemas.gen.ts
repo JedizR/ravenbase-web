@@ -241,6 +241,18 @@ export const AdminUserOutSchema = {
     title: 'AdminUserOut'
 } as const;
 
+export const ApplyReferralRequestSchema = {
+    properties: {
+        referral_code: {
+            type: 'string',
+            title: 'Referral Code'
+        }
+    },
+    type: 'object',
+    required: ['referral_code'],
+    title: 'ApplyReferralRequest'
+} as const;
+
 export const BalanceResponseSchema = {
     properties: {
         balance: {
@@ -1196,6 +1208,43 @@ export const ProfileUpdateSchema = {
     },
     type: 'object',
     title: 'ProfileUpdate'
+} as const;
+
+export const ReferralResponseSchema = {
+    properties: {
+        referral_code: {
+            type: 'string',
+            title: 'Referral Code'
+        },
+        referral_url: {
+            type: 'string',
+            title: 'Referral Url'
+        },
+        total_referrals: {
+            type: 'integer',
+            title: 'Total Referrals'
+        },
+        pending_referrals: {
+            type: 'integer',
+            title: 'Pending Referrals'
+        },
+        credits_earned: {
+            type: 'integer',
+            title: 'Credits Earned'
+        },
+        current_month_count: {
+            type: 'integer',
+            title: 'Current Month Count'
+        },
+        monthly_cap: {
+            type: 'integer',
+            title: 'Monthly Cap',
+            default: 50
+        }
+    },
+    type: 'object',
+    required: ['referral_code', 'referral_url', 'total_referrals', 'pending_referrals', 'credits_earned', 'current_month_count'],
+    title: 'ReferralResponse'
 } as const;
 
 export const ResolveActionSchema = {

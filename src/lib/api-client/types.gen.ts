@@ -56,6 +56,10 @@ export type AdminUserOut = {
     last_active_at: (string | null);
 };
 
+export type ApplyReferralRequest = {
+    referral_code: string;
+};
+
 export type BalanceResponse = {
     balance: number;
     transactions: Array<CreditTransactionOut>;
@@ -269,6 +273,16 @@ export type ProfileUpdate = {
     icon?: (string | null);
     color?: (string | null);
     is_default?: (boolean | null);
+};
+
+export type ReferralResponse = {
+    referral_code: string;
+    referral_url: string;
+    total_referrals: number;
+    pending_referrals: number;
+    credits_earned: number;
+    current_month_count: number;
+    monthly_cap?: number;
 };
 
 export type ResolveAction = 'ACCEPT_NEW' | 'KEEP_OLD' | 'CUSTOM';
@@ -532,6 +546,21 @@ export type SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePost
 };
 
 export type SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostResponse = ({
+    [key: string]: unknown;
+});
+
+export type GetReferralInfoV1AccountReferralGetData = {
+    authorization?: (string | null);
+};
+
+export type GetReferralInfoV1AccountReferralGetResponse = (ReferralResponse);
+
+export type ApplyReferralCodeV1AccountApplyReferralPostData = {
+    authorization?: (string | null);
+    requestBody: ApplyReferralRequest;
+};
+
+export type ApplyReferralCodeV1AccountApplyReferralPostResponse = ({
     [key: string]: unknown;
 });
 
