@@ -17,7 +17,7 @@ import { RavenbaseLogo } from "@/components/brand"
 import { ProfileSwitcher } from "@/components/domain/ProfileSwitcher"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { listConflictsV1ConflictsGet } from "@/src/lib/api-client/services.gen"
+import { getCreditsBalanceV1CreditsBalanceGet, listConflictsV1ConflictsGet } from "@/src/lib/api-client/services.gen"
 
 interface NavItem {
   href: string
@@ -36,6 +36,13 @@ export function Sidebar() {
     queryFn: () => listConflictsV1ConflictsGet({ status: "pending" }),
     refetchInterval: 30_000,
     staleTime: 30_000,
+  })
+
+  // Fetch credits balance (stale after 15s)
+  const { data: creditsData } = useQuery({
+    queryKey: ["credits", "balance"],
+    queryFn: () => getCreditsBalanceV1CreditsBalanceGet(),
+    staleTime: 15_000,
   })
 
   const pendingCount = conflictData?.items.length ?? 0
@@ -155,9 +162,8 @@ export function Sidebar() {
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
           <Coins className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
           <span className="font-mono">◆ CREDITS</span>
-          {/* TODO: wire up actual credits balance */}
           <span className="ml-auto font-mono text-primary-foreground/80">
-            — —
+            {creditsData?.balance ?? "—"}
           </span>
         </div>
       </div>
