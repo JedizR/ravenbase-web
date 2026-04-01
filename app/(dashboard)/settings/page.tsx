@@ -4,9 +4,6 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
 import { useApiFetch } from "@/lib/api-client"
 
 // ---------------------------------------------------------------------------
@@ -15,9 +12,6 @@ import { useApiFetch } from "@/lib/api-client"
 
 interface UserMe {
   preferred_model: string
-  notify_welcome: boolean
-  notify_low_credits: boolean
-  notify_ingestion_complete: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -42,28 +36,6 @@ const MODEL_OPTIONS = [
 ] as const
 
 // ---------------------------------------------------------------------------
-// Notification options
-// ---------------------------------------------------------------------------
-
-const NOTIFICATION_OPTIONS = [
-  {
-    key: "notify_welcome" as const,
-    label: "Welcome email",
-    description: "Sent once when you first create your account.",
-  },
-  {
-    key: "notify_low_credits" as const,
-    label: "Low credits warning",
-    description: "Sent when your credit balance drops below 10% of your plan.",
-  },
-  {
-    key: "notify_ingestion_complete" as const,
-    label: "Ingestion complete",
-    description: "Sent when a large file (>2MB) finishes processing.",
-  },
-] as const
-
-// ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
@@ -74,12 +46,6 @@ export default function SettingsPage() {
   const [preferredModel, setPreferredModel] = useState<string>(
     "claude-haiku-4-5-20251001"
   )
-  const [notifications, setNotifications] = useState({
-    notify_welcome: true,
-    notify_low_credits: true,
-    notify_ingestion_complete: true,
-  })
-  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -89,11 +55,6 @@ export default function SettingsPage() {
         if (cancelled) return
         setUser(data)
         setPreferredModel(data.preferred_model)
-        setNotifications({
-          notify_welcome: data.notify_welcome,
-          notify_low_credits: data.notify_low_credits,
-          notify_ingestion_complete: data.notify_ingestion_complete,
-        })
       } catch {
         // Use defaults if endpoint not yet available
       } finally {
@@ -122,23 +83,21 @@ export default function SettingsPage() {
     }
   }
 
-  async function updateNotification(
-    key: (typeof NOTIFICATION_OPTIONS)[number]["key"],
-    value: boolean
-  ) {
-    const prev = { ...notifications }
-    setNotifications((n) => ({ ...n, [key]: value })) // optimistic
-    try {
-      await apiFetch("/v1/account/notification-preferences", {
-        method: "PATCH",
-        body: JSON.stringify({ [key]: value }),
-      })
-    } catch (err) {
-      setNotifications(prev)
-      toast.error("Failed to update notification preference", {
-        description: err instanceof Error ? err.message : "Unknown error",
-      })
-    }
+  if (isLoading) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 space-y-8">
+        <div>
+          <h1 className="font-serif text-3xl text-foreground">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manage your AI model preferences and notification settings.
+          </p>
+        </div>
+        <div className="space-y-3">
+          <div className="h-24 rounded-xl bg-secondary/50 animate-pulse" />
+          <div className="h-24 rounded-xl bg-secondary/50 animate-pulse" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -147,14 +106,17 @@ export default function SettingsPage() {
       <div>
         <h1 className="font-serif text-3xl text-foreground">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Manage your AI model preferences and notification settings.
+          Manage your AI model preferences.
         </p>
       </div>
 
       {/* AI Models */}
       <section aria-labelledby="ai-models-heading">
         <div className="mb-4">
-          <h2 id="ai-models-heading" className="font-mono text-xs text-muted-foreground tracking-wider">
+          <h2
+            id="ai-models-heading"
+            className="font-mono text-xs text-muted-foreground tracking-wider"
+          >
             ◆ AI_MODELS
           </h2>
           <p className="text-sm text-muted-foreground mt-0.5">
@@ -194,49 +156,18 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <Separator />
-
-      {/* Notifications */}
-      <section aria-labelledby="notifications-heading">
-        <div className="mb-4">
-          <h2 id="notifications-heading" className="font-mono text-xs text-muted-foreground tracking-wider">
-            ◆ NOTIFICATIONS
-          </h2>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Choose which emails Ravenbase sends you.
-          </p>
-        </div>
-
-        <div className="bg-card border border-border rounded-2xl divide-y divide-border">
-          {NOTIFICATION_OPTIONS.map((opt) => (
-            <div
-              key={opt.key}
-              className="flex items-center justify-between px-4 py-4 first:rounded-t-2xl last:rounded-b-2xl"
-            >
-              <div className="flex-1 pr-4">
-                <p className="text-sm font-medium">{opt.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {opt.description}
-                </p>
-              </div>
-              <Switch
-                checked={notifications[opt.key]}
-                onCheckedChange={(checked) =>
-                  updateNotification(opt.key, checked)
-                }
-                aria-label={opt.label}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Save indicator */}
-      {isSaving && (
-        <p className="text-xs text-muted-foreground font-mono animate-pulse">
-          ◆ SAVING…
+      {/* Link to notifications settings */}
+      <div className="text-center pt-4 border-t border-border">
+        <p className="text-sm text-muted-foreground mb-3">
+          Notification preferences are managed separately.
         </p>
-      )}
+        <a
+          href="/settings/notifications"
+          className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline"
+        >
+          Manage notification settings
+        </a>
+      </div>
     </div>
   )
 }

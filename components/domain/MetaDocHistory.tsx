@@ -48,7 +48,7 @@ export function MetaDocHistory({
     queryKey: ["meta-documents"],
     queryFn: async () => {
       const res = await listMetaDocumentsV1MetadocGet({ page: 1, pageSize: 50 })
-      return res.items as unknown as MetaDocSummary[]
+      return res as unknown as MetaDocSummary[]
     },
     staleTime: 30_000,
   })

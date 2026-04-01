@@ -1008,37 +1008,6 @@ export const PaginatedResponse_ConflictResponse_Schema = {
     title: 'PaginatedResponse[ConflictResponse]'
 } as const;
 
-export const PaginatedResponse_MetaDocSummary_Schema = {
-    properties: {
-        items: {
-            items: {
-                '$ref': '#/components/schemas/MetaDocSummary'
-            },
-            type: 'array',
-            title: 'Items'
-        },
-        total: {
-            type: 'integer',
-            title: 'Total'
-        },
-        page: {
-            type: 'integer',
-            title: 'Page'
-        },
-        page_size: {
-            type: 'integer',
-            title: 'Page Size'
-        },
-        has_more: {
-            type: 'boolean',
-            title: 'Has More'
-        }
-    },
-    type: 'object',
-    required: ['items', 'total', 'page', 'page_size', 'has_more'],
-    title: 'PaginatedResponse[MetaDocSummary]'
-} as const;
-
 export const PortalSessionResponseSchema = {
     properties: {
         portal_url: {

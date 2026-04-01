@@ -241,14 +241,6 @@ export type PaginatedResponse_ConflictResponse_ = {
     has_more: boolean;
 };
 
-export type PaginatedResponse_MetaDocSummary_ = {
-    items: Array<MetaDocSummary>;
-    total: number;
-    page: number;
-    page_size: number;
-    has_more: boolean;
-};
-
 export type PortalSessionResponse = {
     portal_url: string;
 };
@@ -453,20 +445,20 @@ export type UndoResolutionV1ConflictsConflictIdUndoPostData = {
 
 export type UndoResolutionV1ConflictsConflictIdUndoPostResponse = (UndoResponse);
 
-export type GenerateMetaDocumentV1MetadocGeneratePostData = {
-    authorization?: (string | null);
-    requestBody: GenerateRequest;
-};
-
-export type GenerateMetaDocumentV1MetadocGeneratePostResponse = (GenerateResponse);
-
 export type ListMetaDocumentsV1MetadocGetData = {
     authorization?: (string | null);
     page?: number;
     pageSize?: number;
 };
 
-export type ListMetaDocumentsV1MetadocGetResponse = (PaginatedResponse_MetaDocSummary_);
+export type ListMetaDocumentsV1MetadocGetResponse = (Array<MetaDocSummary>);
+
+export type GenerateMetaDocumentV1MetadocGeneratePostData = {
+    authorization?: (string | null);
+    requestBody: GenerateRequest;
+};
+
+export type GenerateMetaDocumentV1MetadocGeneratePostResponse = (GenerateResponse);
 
 export type StreamMetaDocumentV1MetadocStreamJobIdGetData = {
     jobId: string;
@@ -517,12 +509,29 @@ export type UpdateModelPreferenceV1AccountModelPreferencePatchResponse = ({
     [key: string]: unknown;
 });
 
+export type GetNotificationPreferencesV1AccountNotificationPreferencesGetData = {
+    authorization?: (string | null);
+};
+
+export type GetNotificationPreferencesV1AccountNotificationPreferencesGetResponse = ({
+    [key: string]: unknown;
+});
+
 export type UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData = {
     authorization?: (string | null);
     requestBody: NotificationPreferencesUpdate;
 };
 
 export type UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse = ({
+    [key: string]: unknown;
+});
+
+export type SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostData = {
+    authorization?: (string | null);
+    emailType: 'welcome' | 'low_credits' | 'ingestion_complete';
+};
+
+export type SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostResponse = ({
     [key: string]: unknown;
 });
 

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, ListMetaDocumentsV1MetadocGetData, ListMetaDocumentsV1MetadocGetResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse, CreatePortalSessionV1BillingCreatePortalSessionPostData, CreatePortalSessionV1BillingCreatePortalSessionPostResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
+import type { HealthCheckHealthGetResponse, ListUsersV1AdminUsersGetData, ListUsersV1AdminUsersGetResponse, GetUserDetailV1AdminUsersUserIdGetData, GetUserDetailV1AdminUsersUserIdGetResponse, AdjustCreditsV1AdminCreditsAdjustPostData, AdjustCreditsV1AdminCreditsAdjustPostResponse, ToggleActiveV1AdminUsersUserIdToggleActivePostData, ToggleActiveV1AdminUsersUserIdToggleActivePostResponse, GetAdminStatsV1AdminStatsGetData, GetAdminStatsV1AdminStatsGetResponse, UploadFileV1IngestUploadPostData, UploadFileV1IngestUploadPostResponse, IngestTextV1IngestTextPostData, IngestTextV1IngestTextPostResponse, StreamProgressV1IngestStreamSourceIdGetData, StreamProgressV1IngestStreamSourceIdGetResponse, GetImportPromptV1IngestImportPromptGetData, GetImportPromptV1IngestImportPromptGetResponse, GetGraphNodesV1GraphNodesGetData, GetGraphNodesV1GraphNodesGetResponse, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetData, GetGraphNeighborhoodV1GraphNeighborhoodNodeIdGetResponse, NaturalLanguageGraphQueryV1GraphQueryPostData, NaturalLanguageGraphQueryV1GraphQueryPostResponse, ListConflictsV1ConflictsGetData, ListConflictsV1ConflictsGetResponse, ResolveConflictV1ConflictsConflictIdResolvePostData, ResolveConflictV1ConflictsConflictIdResolvePostResponse, UndoResolutionV1ConflictsConflictIdUndoPostData, UndoResolutionV1ConflictsConflictIdUndoPostResponse, ListMetaDocumentsV1MetadocGetData, ListMetaDocumentsV1MetadocGetResponse, GenerateMetaDocumentV1MetadocGeneratePostData, GenerateMetaDocumentV1MetadocGeneratePostResponse, StreamMetaDocumentV1MetadocStreamJobIdGetData, StreamMetaDocumentV1MetadocStreamJobIdGetResponse, GetCreditsBalanceV1CreditsBalanceGetData, GetCreditsBalanceV1CreditsBalanceGetResponse, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostData, CreateCheckoutSessionV1BillingCreateCheckoutSessionPostResponse, CreatePortalSessionV1BillingCreatePortalSessionPostData, CreatePortalSessionV1BillingCreatePortalSessionPostResponse, ClerkWebhookWebhooksClerkPostResponse, StripeWebhookWebhooksStripePostResponse, DeleteAccountV1AccountDeleteData, DeleteAccountV1AccountDeleteResponse, UpdateModelPreferenceV1AccountModelPreferencePatchData, UpdateModelPreferenceV1AccountModelPreferencePatchResponse, GetNotificationPreferencesV1AccountNotificationPreferencesGetData, GetNotificationPreferencesV1AccountNotificationPreferencesGetResponse, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchData, UpdateNotificationPreferencesV1AccountNotificationPreferencesPatchResponse, SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostData, SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostResponse, SendMessageV1ChatMessagePostData, SendMessageV1ChatMessagePostResponse, ListSessionsV1ChatSessionsGetData, ListSessionsV1ChatSessionsGetResponse, GetSessionV1ChatSessionsSessionIdGetData, GetSessionV1ChatSessionsSessionIdGetResponse, DeleteSessionV1ChatSessionsSessionIdDeleteData, DeleteSessionV1ChatSessionsSessionIdDeleteResponse, ListProfilesV1ProfilesGetData, ListProfilesV1ProfilesGetResponse, CreateProfileV1ProfilesPostData, CreateProfileV1ProfilesPostResponse, UpdateProfileV1ProfilesProfileIdPatchData, UpdateProfileV1ProfilesProfileIdPatchResponse, DeleteProfileV1ProfilesProfileIdDeleteData, DeleteProfileV1ProfilesProfileIdDeleteResponse } from './types.gen';
 
 /**
  * Health Check
@@ -428,6 +428,33 @@ export const undoResolutionV1ConflictsConflictIdUndoPost = (data: UndoResolution
 };
 
 /**
+ * List Meta Documents
+ * List the user's Meta-Documents, most recent first.
+ * @param data The data for the request.
+ * @param data.page
+ * @param data.pageSize
+ * @param data.authorization
+ * @returns MetaDocSummary Successful Response
+ * @throws ApiError
+ */
+export const listMetaDocumentsV1MetadocGet = (data: ListMetaDocumentsV1MetadocGetData = {}): CancelablePromise<ListMetaDocumentsV1MetadocGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/v1/metadoc',
+        headers: {
+            authorization: data.authorization
+        },
+        query: {
+            page: data.page,
+            pageSize: data.pageSize
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
  * Generate Meta Document
  * Enqueue Meta-Document generation. Returns job_id immediately.
  *
@@ -448,33 +475,6 @@ export const generateMetaDocumentV1MetadocGeneratePost = (data: GenerateMetaDocu
         },
         body: data.requestBody,
         mediaType: 'application/json',
-        errors: {
-            422: 'Validation Error'
-        }
-    });
-};
-
-/**
- * List Meta Documents
- * List all Meta-Documents for the current user, newest first.
- * @param data The data for the request.
- * @param data.page
- * @param data.pageSize
- * @param data.authorization
- * @returns PaginatedResponse_MetaDocSummary_ Successful Response
- * @throws ApiError
- */
-export const listMetaDocumentsV1MetadocGet = (data: ListMetaDocumentsV1MetadocGetData = {}): CancelablePromise<ListMetaDocumentsV1MetadocGetResponse> => {
-    return __request(OpenAPI, {
-        method: 'GET',
-        url: '/v1/metadoc',
-        headers: {
-            authorization: data.authorization
-        },
-        query: {
-            page: data.page,
-            page_size: data.pageSize
-        },
         errors: {
             422: 'Validation Error'
         }
@@ -677,6 +677,27 @@ export const updateModelPreferenceV1AccountModelPreferencePatch = (data: UpdateM
 };
 
 /**
+ * Get Notification Preferences
+ * Get the user's notification preference flags.
+ * @param data The data for the request.
+ * @param data.authorization
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const getNotificationPreferencesV1AccountNotificationPreferencesGet = (data: GetNotificationPreferencesV1AccountNotificationPreferencesGetData = {}): CancelablePromise<GetNotificationPreferencesV1AccountNotificationPreferencesGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/v1/account/notification-preferences',
+        headers: {
+            authorization: data.authorization
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
  * Update Notification Preferences
  * Update the user's notification preference flags.
  *
@@ -696,6 +717,34 @@ export const updateNotificationPreferencesV1AccountNotificationPreferencesPatch 
         },
         body: data.requestBody,
         mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Send Test Notification Email
+ * Send a test email of the specified type to the authenticated user's email.
+ *
+ * This endpoint is used by the Settings → Notifications page to let users
+ * preview each email template before it fires for real.
+ * @param data The data for the request.
+ * @param data.emailType
+ * @param data.authorization
+ * @returns unknown Successful Response
+ * @throws ApiError
+ */
+export const sendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePost = (data: SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostData): CancelablePromise<SendTestNotificationEmailV1AccountNotificationPrefsTestEmailTypePostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/v1/account/notification-prefs/test/{email_type}',
+        path: {
+            email_type: data.emailType
+        },
+        headers: {
+            authorization: data.authorization
+        },
         errors: {
             422: 'Validation Error'
         }
@@ -813,7 +862,6 @@ export const deleteSessionV1ChatSessionsSessionIdDelete = (data: DeleteSessionV1
 
 /**
  * List Profiles
- * List all profiles for the authenticated user.
  * @param data The data for the request.
  * @param data.authorization
  * @returns PaginatedProfileResponse Successful Response
@@ -834,7 +882,6 @@ export const listProfilesV1ProfilesGet = (data: ListProfilesV1ProfilesGetData = 
 
 /**
  * Create Profile
- * Create a new profile for the authenticated user.
  * @param data The data for the request.
  * @param data.requestBody
  * @param data.authorization
@@ -858,7 +905,6 @@ export const createProfileV1ProfilesPost = (data: CreateProfileV1ProfilesPostDat
 
 /**
  * Update Profile
- * Partially update a profile. All fields are optional.
  * @param data The data for the request.
  * @param data.profileId
  * @param data.requestBody
@@ -886,7 +932,6 @@ export const updateProfileV1ProfilesProfileIdPatch = (data: UpdateProfileV1Profi
 
 /**
  * Delete Profile
- * Delete a profile. Cannot delete the last remaining profile.
  * @param data The data for the request.
  * @param data.profileId
  * @param data.authorization
