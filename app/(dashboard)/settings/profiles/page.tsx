@@ -18,14 +18,14 @@ import type { ProfileCreate, ProfileUpdate } from "@/src/lib/api-client/types.ge
 // ---------------------------------------------------------------------------
 
 const COLOR_OPTIONS = [
-  "#2d4a3e", // forest green (primary)
-  "#3d8b5a", // success green
-  "#3f87c2", // info blue
-  "#7c3aed", // violet
-  "#b53233", // destructive red
-  "#ffc00d", // warning amber
-  "#a8c4b2", // sage
-  "#6b7280", // gray
+  { value: "var(--primary)", label: "Forest Green" },
+  { value: "var(--success)", label: "Green" },
+  { value: "var(--info)", label: "Blue" },
+  { value: "var(--accent)", label: "Violet" },
+  { value: "var(--destructive)", label: "Red" },
+  { value: "var(--warning)", label: "Amber" },
+  { value: "var(--accent)", label: "Sage" },
+  { value: "var(--muted)", label: "Gray" },
 ]
 
 // ---------------------------------------------------------------------------
@@ -54,7 +54,7 @@ function ProfileFormDialog({
   mode,
 }: ProfileFormDialogProps) {
   const [name, setName] = useState(initial.name ?? "")
-  const [color, setColor] = useState(initial.color ?? COLOR_OPTIONS[0])
+  const [color, setColor] = useState(initial.color ?? COLOR_OPTIONS[0].value)
   const [is_default, setIsDefault] = useState(initial.is_default ?? false)
   const [error, setError] = useState<string | null>(null)
   const [touched, setTouched] = useState(false)
@@ -90,7 +90,7 @@ function ProfileFormDialog({
       } as ProfileCreate)
       onOpenChange(false)
       setName("")
-      setColor(COLOR_OPTIONS[0])
+      setColor(COLOR_OPTIONS[0].value)
       setIsDefault(false)
       setError(null)
       setTouched(false)
@@ -145,17 +145,17 @@ function ProfileFormDialog({
             <div className="flex flex-wrap gap-2">
               {COLOR_OPTIONS.map((c) => (
                 <button
-                  key={c}
+                  key={c.value}
                   type="button"
-                  onClick={() => setColor(c)}
+                  onClick={() => setColor(c.value)}
                   className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform ${
-                    color === c ? "scale-125 ring-2 ring-offset-2 ring-primary" : ""
+                    color === c.value ? "scale-125 ring-2 ring-offset-2 ring-primary" : ""
                   }`}
-                  style={{ backgroundColor: c }}
-                  aria-label={`Color ${c}`}
-                  aria-pressed={color === c}
+                  style={{ backgroundColor: c.value }}
+                  aria-label={`Color ${c.label}`}
+                  aria-pressed={color === c.value}
                 >
-                  {color === c && (
+                  {color === c.value && (
                     <Circle className="w-3 h-3 text-white" fill="white" stroke="none" />
                   )}
                 </button>
@@ -348,7 +348,7 @@ export default function ProfilesSettingsPage() {
           onSubmit={handleEdit}
           initial={{
             name: editProfile.name,
-            color: editProfile.color ?? COLOR_OPTIONS[0],
+            color: editProfile.color ?? COLOR_OPTIONS[0].value,
             is_default: editProfile.is_default,
           }}
           mode="edit"

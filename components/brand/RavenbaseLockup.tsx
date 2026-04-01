@@ -23,8 +23,7 @@ export function RavenbaseLockup({ size = "lg", color = "currentColor", className
     >
       <RavenbaseLogo size={size} color="currentColor" />
       <span
-        className={`font-sans font-extrabold tracking-wider uppercase ${TEXT_SIZE_MAP[size]}`}
-        style={{ lineHeight: 1 }}
+        className={`font-sans font-extrabold tracking-wider uppercase leading-none ${TEXT_SIZE_MAP[size]}`}
       >
         RAVENBASE
       </span>

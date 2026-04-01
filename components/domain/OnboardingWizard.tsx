@@ -9,6 +9,7 @@ import { RavenbaseLockup } from "@/components/brand"
 import { IngestionDropzone } from "@/components/domain/IngestionDropzone"
 import { useApiFetch, useApiUpload } from "@/lib/api-client"
 import { useSSE } from "@/hooks/use-sse"
+import { CheckCircle2 } from "lucide-react"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -31,6 +32,12 @@ const ROLE_DEFAULTS: Record<Role, string> = {
   Designer: "Design Research",
   Researcher: "Research — Primary",
   Other: "My Knowledge Base",
+}
+
+const STEP_META: Record<Step, { label: string; timeEstimate: string }> = {
+  1: { label: "Tell us about yourself", timeEstimate: "~2 min remaining" },
+  2: { label: "Add your first memory", timeEstimate: "~1 min remaining" },
+  3: { label: "Watching it grow", timeEstimate: "Almost done!" },
 }
 
 interface UserMeResponse {
@@ -73,6 +80,7 @@ export function OnboardingWizard() {
   const [sourceId, setSourceId] = useState<string | null>(null)
   const [sseToken, setSseToken] = useState<string | null>(null)
   const [hasCompleted, setHasCompleted] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
 
   // -------------------------------------------------------------------------
   // AC-7: Check if user already completed onboarding — redirect if so
@@ -96,18 +104,20 @@ export function OnboardingWizard() {
   const sseUrl = sourceId ? `/v1/ingest/stream/${sourceId}` : null
   const sseState = useSSE(sseUrl, sseToken)
 
-  // Fetch token when entering step 3 (EventSource needs it as query param)
   useEffect(() => {
     if (step === 3 && sourceId) {
       getToken().then((t) => setSseToken(t)).catch(() => null)
     }
   }, [step, sourceId, getToken])
 
-  // Auto-advance to dashboard when processing completes
+  // Auto-advance to dashboard when processing completes — with 1.5s pause + confetti
   useEffect(() => {
     if (sseState.status === "complete" && !hasCompleted) {
       setHasCompleted(true)
-      completeOnboarding()
+      setShowConfetti(true)
+      setTimeout(() => {
+        completeOnboarding()
+      }, 1500)
     }
   }, [sseState.status, hasCompleted]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -177,9 +187,13 @@ export function OnboardingWizard() {
   }
 
   // -------------------------------------------------------------------------
-  // Step indicator value
+  // Derived state
   // -------------------------------------------------------------------------
   const progressPercent = (step / 3) * 100
+  const stepMeta = STEP_META[step]
+
+  // Show "Nice to meet you" greeting once user advances past step 1
+  const showGreeting = step > 1 && profileName.trim().length >= 2
 
   // -------------------------------------------------------------------------
   // Render
@@ -199,6 +213,11 @@ export function OnboardingWizard() {
         <RavenbaseLockup size="lg" />
       </div>
 
+      {/* Confetti overlay */}
+      {showConfetti && (
+        <ConfettiOverlay />
+      )}
+
       {/* Wizard card */}
       <main
         id="main-content"
@@ -214,7 +233,12 @@ export function OnboardingWizard() {
               {step}/3
             </span>
           </div>
-          <Progress value={progressPercent} className="h-1" />
+          <Progress value={progressPercent} className="h-1 [&>div]:bg-primary" />
+          {/* Step label + time estimate */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium text-foreground">{stepMeta.label}</p>
+            <p className="text-xs font-mono text-muted-foreground">{stepMeta.timeEstimate}</p>
+          </div>
         </div>
 
         {step === 1 && (
@@ -223,6 +247,7 @@ export function OnboardingWizard() {
             profileName={profileName}
             profileNameError={profileNameError}
             profileNameTouched={profileNameTouched}
+            showGreeting={showGreeting}
             onRoleSelect={handleRoleSelect}
             onProfileNameChange={setProfileName}
             onProfileNameBlur={handleProfileNameBlur}
@@ -258,9 +283,46 @@ export function OnboardingWizard() {
           <StepProgress
             sseState={sseState}
             onForceContinue={completeOnboarding}
+            isComplete={hasCompleted}
           />
         )}
       </main>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// ConfettiOverlay
+// ---------------------------------------------------------------------------
+
+function ConfettiOverlay() {
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50" aria-hidden="true">
+      <style>{`
+        .confetti-piece {
+          position: absolute;
+          top: -8px;
+          width: 8px;
+          height: 8px;
+          border-radius: 2px;
+          animation: confetti-fall 1.5s ease-in forwards;
+        }
+        @keyframes confetti-fall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+      `}</style>
+      {[...Array(40)].map((_, i) => (
+        <div
+          key={i}
+          className="confetti-piece"
+          style={{
+            left: `${(i * 2.5) % 100}%`,
+            animationDelay: `${(i * 37) % 800}ms`,
+            backgroundColor: ["var(--primary)", "var(--accent)", "var(--warning)", "var(--success)", "var(--destructive)"][i % 5],
+          }}
+        />
+      ))}
     </div>
   )
 }
@@ -274,6 +336,7 @@ interface StepProfileProps {
   profileName: string
   profileNameError: string | null
   profileNameTouched: boolean
+  showGreeting: boolean
   onRoleSelect: (r: Role) => void
   onProfileNameChange: (v: string) => void
   onProfileNameBlur: (e: React.FocusEvent<HTMLInputElement>) => void
@@ -285,11 +348,14 @@ function StepProfile({
   profileName,
   profileNameError,
   profileNameTouched,
+  showGreeting,
   onRoleSelect,
   onProfileNameChange,
   onProfileNameBlur,
   onContinue,
 }: StepProfileProps) {
+  const isValid = profileNameTouched && !profileNameError && profileName.trim().length >= 2
+
   return (
     <div className="space-y-6">
       <div>
@@ -300,6 +366,18 @@ function StepProfile({
           Profiles let you keep different areas of your life separate.
         </p>
       </div>
+
+      {/* Greeting */}
+      {showGreeting && (
+        <div className="rounded-xl bg-accent/20 border border-accent/30 px-4 py-3">
+          <p className="text-sm text-foreground font-medium">
+            Nice to meet you, {profileName.split(" ")[0]}!
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Your memory graph will be ready shortly.
+          </p>
+        </div>
+      )}
 
       {/* Role selector */}
       <div className="space-y-3">
@@ -320,9 +398,10 @@ function StepProfile({
               }}
               aria-pressed={role === r}
               className={[
-                "rounded-xl border px-4 py-3 text-left text-sm transition-colors duration-150 h-11 sm:h-auto",
+                "rounded-xl border px-4 py-3 text-left text-sm transition-all duration-150 h-11 sm:h-auto",
+                "hover:shadow-md hover:-translate-y-0.5",
                 role === r
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
                   : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-secondary",
               ].join(" ")}
             >
@@ -340,22 +419,32 @@ function StepProfile({
         >
           Profile name
         </label>
-        <input
-          id="profile-name"
-          type="text"
-          value={profileName}
-          onChange={(e) => onProfileNameChange(e.target.value)}
-          onBlur={onProfileNameBlur}
-          placeholder="e.g. Work — Software Engineer"
-          aria-invalid={profileNameTouched && !!profileNameError}
-          aria-describedby={profileNameError ? "profile-name-error" : undefined}
-          className={[
-            "w-full rounded-xl border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring transition-colors",
-            profileNameTouched && profileNameError
-              ? "border-destructive"
-              : "border-border",
-          ].join(" ")}
-        />
+        <div className="relative">
+          <input
+            id="profile-name"
+            type="text"
+            value={profileName}
+            onChange={(e) => onProfileNameChange(e.target.value)}
+            onBlur={onProfileNameBlur}
+            placeholder="e.g. Work — Software Engineer"
+            aria-invalid={profileNameTouched && !!profileNameError}
+            aria-describedby={profileNameError ? "profile-name-error" : undefined}
+            className={[
+              "w-full rounded-xl border bg-card px-4 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring transition-colors",
+              profileNameTouched && profileNameError
+                ? "border-destructive"
+                : "border-border",
+            ].join(" ")}
+          />
+          {/* Success checkmark */}
+          {isValid && (
+            <CheckCircle2
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-success"
+              size={16}
+              aria-hidden="true"
+            />
+          )}
+        </div>
         {profileNameTouched && profileNameError && (
           <p
             id="profile-name-error"
@@ -494,19 +583,22 @@ function StepUpload({
 interface StepProgressProps {
   sseState: ReturnType<typeof useSSE>
   onForceContinue: () => void
+  isComplete: boolean
 }
 
-function StepProgress({ sseState, onForceContinue }: StepProgressProps) {
+function StepProgress({ sseState, onForceContinue, isComplete }: StepProgressProps) {
   const { progress, message, entities, status } = sseState
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-serif text-2xl text-foreground mb-1">
-          Building your graph
+          {isComplete ? "You&apos;re all set!" : "Building your graph"}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Ravenbase is extracting entities and relationships from your document.
+          {isComplete
+            ? "Your knowledge graph is ready. Redirecting to dashboard..."
+            : "Ravenbase is extracting entities and relationships from your document."}
         </p>
       </div>
 
@@ -526,7 +618,13 @@ function StepProgress({ sseState, onForceContinue }: StepProgressProps) {
           </span>
         </div>
 
-        <Progress value={progress} className="h-2" />
+        {/* Forest green progress bar */}
+        <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+          <div
+            className="h-full bg-primary transition-all duration-300 ease-out rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
 
         {message && (
           <p className="text-sm text-muted-foreground">{message}</p>

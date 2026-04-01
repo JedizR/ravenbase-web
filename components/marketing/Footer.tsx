@@ -22,7 +22,7 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href="/#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Pricing
                   </Link>
                 </li>
@@ -35,12 +35,12 @@ export function Footer() {
               <ul className="space-y-2">
                 <li>
                   <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Privacy
+                    Privacy Policy
                   </Link>
                 </li>
                 <li>
                   <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Terms
+                    Terms of Service
                   </Link>
                 </li>
               </ul>

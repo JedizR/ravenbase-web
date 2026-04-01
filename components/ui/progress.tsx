@@ -22,6 +22,9 @@ function Progress({
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
         className="h-full w-full flex-1 bg-primary transition-all"
+        /* CSS transform required for the progress fill animation — this is a
+         * technical necessity for the Radix UI progress indicator to work
+         * correctly with the width-based animation. */
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />
     </ProgressPrimitive.Root>

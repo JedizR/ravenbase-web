@@ -195,7 +195,7 @@ export function GraphNodePanel({
                     <AlertTriangle
                       className="size-4 text-warning"
                       style={{
-                        color: "var(--warning-foreground, #1a1a1a)",
+                        color: "var(--warning-foreground)",
                       }}
                     />
                     <span className="text-sm font-medium text-foreground">

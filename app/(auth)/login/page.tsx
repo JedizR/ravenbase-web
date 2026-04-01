@@ -19,7 +19,7 @@ export default function LoginPage() {
       <SignIn
         path="/login"
         signUpUrl="/register"
-        afterSignInUrl="/dashboard"
+        afterSignInUrl="/chat"
       />
     </main>
   )

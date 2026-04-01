@@ -7,6 +7,7 @@ import { FeaturesSection } from "@/components/marketing/FeaturesSection"
 import { FeatureDeepDive } from "@/components/marketing/FeatureDeepDive"
 import { TestimonialsSection } from "@/components/marketing/TestimonialsSection"
 import { FAQSection } from "@/components/marketing/FAQSection"
+import { PricingSection } from "@/components/marketing/PricingSection"
 import { CTASection } from "@/components/marketing/CTASection"
 import { Footer } from "@/components/marketing/Footer"
 
@@ -70,6 +71,11 @@ export default function LandingPage() {
         <FeatureDeepDive />
         <TestimonialsSection />
         <FAQSection />
+        <section id="pricing" aria-labelledby="pricing-heading" className="py-24 bg-background">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <PricingSection />
+          </div>
+        </section>
         <CTASection />
       </main>
       <Footer />

@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Features",     href: "#features" },
   { label: "FAQ",          href: "#faq" },
-  { label: "Pricing",      href: "/pricing" },
+  { label: "Pricing",     href: "/#pricing" },
 ]
 
 export function Header() {

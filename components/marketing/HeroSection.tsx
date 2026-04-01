@@ -9,7 +9,7 @@ export function HeroSection() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden"
+      className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-visible"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -74,7 +74,7 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center overflow-visible"
             aria-hidden="true"
           >
             <AnimatedGraph className="w-full max-w-lg h-auto" />
