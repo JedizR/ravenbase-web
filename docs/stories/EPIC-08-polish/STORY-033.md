@@ -276,25 +276,210 @@ curl http://localhost:3000 | grep "/privacy"
 
 ---
 
-## Agent Implementation Brief
+## Frontend Agent Brief
 
 ```
 Implement STORY-033: Legal Pages (Privacy Policy, Terms of Service, Cookie Consent).
 
-Read first:
-1. CLAUDE.md (frontend rules — especially RULE 5: route groups, RULE 15: metadata export)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
-3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+Read FIRST — read every file listed below completely before writing any code:
+1. CLAUDE.md (all 19 frontend rules — especially RULE 5: route groups, RULE 15: metadata, RULE 16: skip links)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules.
+   Anti-patterns to REJECT on sight:
+   - Hardcoded hex colors in JSX (use CSS variables only)
+   - Rounded-lg on cards (use rounded-2xl)
+   - No metadata export on a page (required for all marketing pages)
+   - Missing skip link as first focusable element
+3. docs/design/00-brand-identity.md — brand colors, mono labels
 4. docs/design/01-design-system.md — all color tokens, typography
-5. docs/design/CLAUDE_FRONTEND.md (SEO spec, semantic HTML rules)
-6. docs/stories/EPIC-07-marketing/STORY-021.md (marketing layout and footer to extend)
-7. docs/stories/EPIC-08-polish/STORY-033.md (this file)
+5. docs/design/CLAUDE_FRONTEND.md — SEO spec for legal pages, sitemap rules
+6. docs/stories/EPIC-07-marketing/STORY-021.md — marketing layout and footer to extend
+7. docs/stories/EPIC-08-polish/STORY-033.md (this file — all ACs)
 
-Key constraints:
-- Both pages must be SSG (no async data fetching) — pure static content
-- Cookie consent: client component only, conditional on NEXT_PUBLIC_POSTHOG_KEY
-- Never block page with modal — use fixed bottom banner
-- Placeholder copy clearly marked with comments — do not write real legal language
+SPECIFIC IMPLEMENTATION STEPS:
+
+Step 1 — Check if pages already exist:
+ls app/\(marketing\)/privacy/ 2>/dev/null && echo "EXISTS" || echo "CREATE"
+ls app/\(marketing\)/terms/ 2>/dev/null && echo "EXISTS" || echo "CREATE"
+If they exist, verify they are complete (Header + Footer + semantic content).
+If they don't exist, create them following Step 2-3.
+
+Step 2 — Create app/(marketing)/privacy/page.tsx:
+This must be a Server Component (no "use client") — pure SSG.
+
+import type { Metadata } from "next"
+import { Header } from "@/components/marketing/Header"
+import { Footer } from "@/components/marketing/Footer"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "How Ravenbase collects, uses, and protects your personal data.",
+  robots: { index: true, follow: true },  // AC-8: must be crawlable
+}
+
+export default function PrivacyPolicy() {
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
+      <Header />
+      <a href="#main-content" className="sr-only focus:not-sr-only ...">Skip to main content</a>
+      <main id="main-content" className="flex-1">
+        <article className="max-w-3xl mx-auto px-6 py-16">
+          <header className="mb-12">
+            <p className="text-xs font-mono text-muted-foreground tracking-wider mb-4">
+              ◆ LEGAL  {/* AC-5: mono label above h1 */}
+            </p>
+            <h1 className="font-serif text-5xl leading-tight mb-4">
+              Privacy Policy
+            </h1>
+            <p className="text-xs font-mono text-muted-foreground">
+              Last updated: April 2026
+            </p>
+          </header>
+
+          <section aria-labelledby="what-we-collect" className="mb-12">
+            <h2 id="what-we-collect" className="font-serif text-2xl mb-4">
+              What We Collect
+            </h2>
+            <p className="text-muted-foreground leading-relaxed">
+              {/* Placeholder: describe account data, content data, usage data */}
+            </p>
+          </section>
+
+          {/* AC-5: Additional sections: How We Use It, Data Retention,
+               Your Rights (GDPR/PDPA), Contact Us — each with mono label ◆ SECTION */}
+        </article>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+Typography requirements (AC-5):
+- h1: font-serif text-5xl (Playfair Display)
+- h2: font-serif text-2xl
+- Mono label above each h2: text-xs font-mono text-muted-foreground tracking-wider
+- Body: font-sans text-base leading-relaxed text-foreground
+- Effective date: font-mono text-xs text-muted-foreground
+
+Step 3 — Create app/(marketing)/terms/page.tsx:
+Same structure as privacy page. Different h1 and different sections (AC-6):
+- Acceptance of Terms
+- Service Description
+- User Responsibilities
+- Payment Terms
+- Limitation of Liability
+- Governing Law
+
+Each section: font-serif h2 + ◆ SECTION_NAME mono label + placeholder paragraph.
+
+Step 4 — Verify/update Footer component:
+Open components/marketing/Footer.tsx.
+Confirm it has a <nav aria-label="Legal navigation"> with:
+- <Link href="/privacy">Privacy Policy</Link>
+- <Link href="/terms">Terms of Service</Link>
+These must be visible links, not commented out.
+
+Step 5 — Check sitemap.ts:
+Verify /privacy and /terms are included in sitemap (AC-3):
+curl http://localhost:3000/sitemap.xml | grep -E "privacy|terms"
+
+Step 6 — Cookie Consent Banner:
+Check if app/(marketing)/layout.tsx already has CookieConsent.
+If not, create components/marketing/CookieConsent.tsx:
+
+"use client"
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+
+const CONSENT_KEY = "ravenbase-cookie-consent"
+
+export function CookieConsent() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    // AC-7a: only show if PostHog is configured
+    const hasPostHog = !!process.env.NEXT_PUBLIC_POSTHOG_KEY
+    // AC-7b: only show if consent not yet given
+    const hasConsent = localStorage.getItem(CONSENT_KEY) !== null
+    setVisible(hasPostHog && !hasConsent)
+  }, [])
+
+  if (!visible) return null
+
+  const accept = () => {
+    localStorage.setItem(CONSENT_KEY, "accepted")
+    setVisible(false)
+  }
+
+  const decline = () => {
+    localStorage.setItem(CONSENT_KEY, "declined")
+    setVisible(false)
+  }
+
+  return (
+    <div
+      role="dialog"
+      aria-labelledby="cookie-consent-title"
+      className="fixed bottom-0 left-0 right-0 z-50
+                 bg-card border-t border-border p-4
+                 shadow-lg"
+    >
+      <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+        <p className="text-sm flex-1 text-center sm:text-left">
+          We use analytics cookies to improve Ravenbase.
+          Essential cookies (authentication) are always active.{" "}
+          <Link href="/privacy" className="underline hover:text-foreground">
+            Privacy Policy
+          </Link>
+        </p>
+        <div className="flex gap-2 shrink-0">
+          <Button size="sm" onClick={accept} className="rounded-full bg-primary">
+            Accept
+          </Button>
+          <Button size="sm" variant="outline" onClick={decline} className="rounded-full">
+            Decline
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+Add to app/(marketing)/layout.tsx:
+import { CookieConsent } from "@/components/marketing/CookieConsent"
+Place <CookieConsent /> before </body> or after <Header>.
+
+AC-7 checklist:
+□ CookieConsent is "use client"
+□ Only renders if NEXT_PUBLIC_POSTHOG_KEY is set
+□ Stores consent in localStorage key 'ravenbase-cookie-consent'
+□ Does NOT block page interaction (fixed bottom, not modal)
+□ Accept and Decline buttons both work
+
+Step 7 — Accessibility verification (AC-8):
+Both /privacy and /terms must:
+□ Export metadata with robots: { index: true, follow: true }
+□ Have skip link as first focusable element
+□ Have <main id="main-content">
+□ Have semantic h1 → h2 hierarchy
+□ Have all images with alt text (there may be 0 images on legal pages)
+
+WHAT NOT TO DO:
+- DO NOT use hardcoded hex colors — use bg-background, bg-card, text-muted-foreground
+- DO NOT use rounded-lg on cards — use rounded-2xl
+- DO NOT make cookie consent a modal — use fixed bottom banner
+- DO NOT write actual legal language — use clearly marked placeholders
+- DO NOT make pages dynamic — they must be SSG (no async data fetching)
+
+AC CHECKLIST (all must be verified):
+□ /privacy page: Header + Footer + semantic article with h1+h2
+□ /terms page: Header + Footer + semantic article with h1+h2
+□ Both: font-serif on h1 and h2, ◆ mono label above each h2
+□ Both: metadata export with robots: { index: true, follow: true }
+□ Footer: <nav aria-label="Legal navigation"> with /privacy and /terms links
+□ sitemap.xml includes /privacy and /terms
+□ CookieConsent: "use client", conditional on PostHog, localStorage persistence
+□ CookieConsent: fixed bottom banner, not modal, does not block page interaction
 
 Show plan first. Do not implement yet.
 ```

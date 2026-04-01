@@ -253,22 +253,288 @@ Show plan first. Do not implement yet.
 ## Frontend Agent Brief
 
 ```
-Implement STORY-036 frontend: Admin Dashboard UI.
+Implement STORY-036 Frontend: Admin Dashboard UI.
 Complete ONLY after backend STORY-036 endpoints are deployed and tested.
 
-Read first:
-1. CLAUDE.md (for CLAUDE_FRONTEND.md — all 19 rules)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
-3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+Read FIRST — read every file listed below completely before writing any code:
+1. CLAUDE.md (all 19 frontend rules — especially RULE 5: no forced color mode, RULE 6: TanStack Query)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules.
+   Anti-patterns to REJECT:
+   - Hardcoded hex colors (use CSS variables only)
+   - Rounded-lg on cards (use rounded-2xl)
+   - Using <form> tags (use onClick + controlled state)
+3. docs/design/00-brand-identity.md — brand colors, mono labels, ◆ ADMIN_PANEL in red
 4. docs/design/01-design-system.md — all color tokens, typography
-5. docs/architecture/03-api-contract.md (admin endpoint shapes)
-6. docs/stories/EPIC-08-polish/STORY-036.md (this file, frontend ACs 7-12)
+5. docs/architecture/03-api-contract.md — GET /v1/admin/stats, GET /v1/admin/users,
+   GET /v1/admin/users/{user_id}, POST /v1/admin/credits/adjust, POST /v1/admin/users/{user_id}/toggle-active
+6. docs/stories/EPIC-08-polish/STORY-036.md (this file — frontend ACs 7-12)
 
-Key:
-- Admin layout must redirect non-admins to /dashboard silently
-- Use shadcn/ui Table for user list, shadcn/ui Card for stats
-- ◆ ADMIN_PANEL mono label in header (text-destructive red, not green)
-- Credit adjustment: validate amount non-zero, reason min 10 chars
+SPECIFIC IMPLEMENTATION STEPS:
+
+Step 1 — Create app/(admin)/layout.tsx:
+
+"use client"
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
+
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { userId } = await auth()
+
+  // AC-7: redirect non-admins to /dashboard silently
+  const adminIds = (process.env.ADMIN_USER_IDS || "")
+    .split(",")
+    .map(id => id.trim())
+    .filter(Boolean)
+
+  if (!userId || !adminIds.includes(userId)) {
+    redirect("/dashboard")
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border px-6 py-4 flex items-center gap-4">
+        {/* RavenbaseLockup */}
+        <RavenbaseLockup size="sm" />
+        {/* AC-12: ◆ ADMIN_PANEL in text-destructive (RED), not green */}
+        <span className="font-mono text-xs text-destructive tracking-wider font-bold">
+          ◆ ADMIN_PANEL
+        </span>
+      </header>
+      <main>{children}</main>
+    </div>
+  )
+}
+
+Step 2 — Create app/(admin)/page.tsx (Stats Dashboard):
+
+Layout: 4 stat cards in a grid:
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  {stats.map(s => (
+    <div key={s.label} className="bg-card rounded-2xl border border-border p-6
+                                  hover:shadow-md transition-shadow">
+      <p className="text-xs font-mono text-muted-foreground tracking-wider uppercase mb-2">
+        {s.label}
+      </p>
+      <p className="font-mono text-3xl font-bold text-foreground">{s.value}</p>
+      {s.trend && (
+        <p className={cn("text-xs font-mono mt-1", s.trend.up ? "text-success" : "text-destructive")}>
+          {s.trend.up ? "▲" : "▼"} {s.trend.pct}% vs last week
+        </p>
+      )}
+    </div>
+  ))}
+</div>
+
+Stats to display (AC-8):
+- Total users
+- Active this week
+- Total credits used
+- Revenue this month
+- Daily LLM spend vs cap (progress bar)
+
+For LLM spend progress bar:
+<div className="space-y-1">
+  <div className="flex justify-between text-xs">
+    <span className="text-muted-foreground">Daily LLM Spend</span>
+    <span className="font-mono">${spend}/$2,000</span>
+  </div>
+  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+    <div className="h-full bg-primary rounded-full"
+         style={{ width: `${Math.min(100, spend/2000*100)}%` }} />
+  </div>
+</div>
+
+Step 3 — Create app/(admin)/users/page.tsx (User List):
+
+Search + filter bar:
+<div className="flex flex-col sm:flex-row gap-4 mb-6">
+  {/* Search input */}
+  <div className="relative flex-1">
+    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+    <input
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      placeholder="Search by email..."
+      className="w-full bg-secondary rounded-xl pl-10 pr-4 py-2
+                 text-sm outline-none border border-border
+                 focus:ring-2 focus:ring-primary/30 focus:border-primary"
+    />
+  </div>
+  {/* Filter pills */}
+  <div className="flex gap-2">
+    {["All", "Free", "Pro", "Team"].map(tier => (
+      <button
+        key={tier}
+        onClick={() => setTierFilter(tier)}
+        className={cn(
+          "px-3 py-1 rounded-full text-xs font-mono transition-colors",
+          tierFilter === tier
+            ? "bg-primary text-primary-foreground"
+            : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+        )}
+      >
+        {tier}
+      </button>
+    ))}
+  </div>
+</div>
+
+User table using shadcn/ui Table:
+<Table>
+  <TableHeader>
+    <TableRow className="bg-secondary/50 rounded-t-xl">
+      <TableHead className="font-mono text-xs uppercase">User</TableHead>
+      <TableHead className="font-mono text-xs uppercase">Tier</TableHead>
+      <TableHead className="font-mono text-xs uppercase">Credits</TableHead>
+      <TableHead className="font-mono text-xs uppercase">Status</TableHead>
+      <TableHead className="font-mono text-xs uppercase">Joined</TableHead>
+      <TableHead className="w-12" />
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {users.map(user => (
+      <TableRow key={user.id} className="hover:bg-secondary/30 cursor-pointer">
+        <TableCell>
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarFallback>{user.email[0].toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm">{user.email}</span>
+          </div>
+        </TableCell>
+        <TableCell>
+          <span className={cn(
+            "px-2 py-0.5 rounded-full text-xs font-mono",
+            user.tier === "pro" ? "bg-primary/10 text-primary" :
+            user.tier === "team" ? "bg-accent/30 text-foreground" :
+            "bg-secondary text-muted-foreground"
+          )}>
+            {user.tier.toUpperCase()}
+          </span>
+        </TableCell>
+        <TableCell className="font-mono text-sm">{user.credits_balance}</TableCell>
+        <TableCell>
+          <span className={cn(
+            "px-2 py-0.5 rounded-full text-xs font-mono",
+            user.is_active ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+          )}>
+            {user.is_active ? "ACTIVE" : "DISABLED"}
+          </span>
+        </TableCell>
+        <TableCell className="text-xs text-muted-foreground">
+          {new Date(user.created_at).toLocaleDateString()}
+        </TableCell>
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="rounded-xl">
+              <DropdownMenuItem>
+                <User className="w-4 h-4 mr-2" /> View details
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openCreditAdjust(user)}>
+                <Coins className="w-4 h-4 mr-2" /> Adjust credits
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => toggleActive(user)}
+                className={cn(!user.is_active && "text-success")}
+              >
+                <Ban className="w-4 h-4 mr-2" />
+                {user.is_active ? "Disable account" : "Enable account"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+
+Step 4 — Credit Adjustment Dialog:
+AC-11: amount ≠ 0, reason ≥ 10 chars
+
+<Dialog open={creditDialogOpen} onOpenChange={setCreditDialogOpen}>
+  <DialogContent className="rounded-2xl">
+    <DialogTitle>Adjust Credits</DialogTitle>
+    <p className="text-sm text-muted-foreground">
+      Current balance: <span className="font-mono">{selectedUser?.credits_balance}</span>
+    </p>
+
+    {/* Amount stepper */}
+    <div className="flex items-center gap-4">
+      <Button variant="outline" size="icon"
+              onClick={() => setAdjustAmount(a => a - 100)}>
+        <Minus className="w-4 h-4" />
+      </Button>
+      <input
+        type="number"
+        value={adjustAmount}
+        onChange={(e) => setAdjustAmount(parseInt(e.target.value) || 0)}
+        className="w-24 text-center font-mono text-lg border border-border rounded-xl px-3 py-2"
+      />
+      <Button variant="outline" size="icon"
+              onClick={() => setAdjustAmount(a => a + 100)}>
+        <Plus className="w-4 h-4" />
+      </Button>
+    </div>
+
+    {/* Reason textarea */}
+    <div className="space-y-1.5">
+      <label className="text-sm font-medium">Reason (min 10 characters)</label>
+      <textarea
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="Describe why you're adjusting this user's credits..."
+        rows={3}
+        className="w-full rounded-xl border border-border px-3 py-2 text-sm
+                   focus:ring-2 focus:ring-primary/30 focus:border-primary"
+      />
+      {reason.length > 0 && reason.length < 10 && (
+        <p className="text-xs text-destructive">
+          {10 - reason.length} more characters required
+        </p>
+      )}
+    </div>
+
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setCreditDialogOpen(false)}>Cancel</Button>
+      <Button
+        onClick={submitCreditAdjust}
+        disabled={adjustAmount === 0 || reason.length < 10}
+        className="rounded-full bg-primary"
+      >
+        {adjustAmount > 0 ? `Add ${adjustAmount}` : adjustAmount < 0 ? `Remove ${Math.abs(adjustAmount)}` : "Set amount"}
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+Step 5 — loading.tsx files (required):
+Create loading.tsx for admin pages using shadcn Skeleton component.
+
+WHAT NOT TO DO:
+- DO NOT use <form> tags — use onClick + controlled state
+- DO NOT use rounded-lg on cards — use rounded-2xl
+- DO NOT use bg-primary for ◆ ADMIN_PANEL — use text-destructive (RED)
+- DO NOT allow credit adjustment with 0 amount or < 10 char reason
+- DO NOT skip loading.tsx siblings
+
+AC CHECKLIST:
+□ /admin route group: middleware/admin auth check (ADMIN_USER_IDS)
+□ Non-admin → redirect to /dashboard silently
+□ Stats page: 4 stat cards with trend indicators
+□ User list: search + tier filter pills + sortable table
+□ Table: email, tier badge, credits, status, joined date, actions dropdown
+□ Tier badges: Free=bg-secondary, Pro=bg-primary/10, Team=bg-accent/30
+□ Actions dropdown: View details, Adjust credits, Disable/Enable
+□ Credit dialog: stepper (+/- 100), reason textarea (min 10 chars validation)
+□ Submit disabled until valid amount + reason
+□ toast.success on successful credit adjustment
+□ Ban/unban button with confirmation
+□ loading.tsx for all admin pages
 
 Show plan first. Do not implement yet.
 ```

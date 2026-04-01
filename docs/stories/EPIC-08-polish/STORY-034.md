@@ -195,26 +195,195 @@ Only commit the docs update (epics.md, story-counter, project-status, journal) A
 #     → expect 200 OK (silently ignored — invalid codes are not errors)
 ```
 
-## Agent Implementation Brief
+## Frontend Agent Brief
 
 ```
-Implement STORY-034: Referral System.
+Implement STORY-034 Frontend: Settings → Referrals Page.
 
-Read first:
-1. CLAUDE.md
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
-3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
+This is the FRONTEND PART ONLY. The backend (referral code generation, credit
+reward logic, AC-1 through AC-10 in the Acceptance Criteria) must be implemented
+in ravenbase-api first. This frontend story depends on those endpoints being deployed.
+
+Read FIRST — read every file listed below completely before writing any code:
+1. CLAUDE.md (all 19 frontend rules)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules.
+   Anti-patterns to REJECT:
+   - Hardcoded hex colors (use CSS variables only)
+   - Rounded-lg on cards (use rounded-2xl)
+   - rounded-md on primary CTAs (use rounded-full)
+3. docs/design/00-brand-identity.md — brand colors, mono labels, ◆ SECTION pattern
 4. docs/design/01-design-system.md — all color tokens, typography
-5. docs/prd/05-monetization.md (referral rules, reward amounts, caps)
-6. docs/architecture/02-database-schema.md (referral_code, ReferralTransaction)
-7. docs/stories/EPIC-08-polish/STORY-023.md (credit transaction patterns)
-8. docs/stories/EPIC-08-polish/STORY-034.md (this file)
+5. docs/architecture/03-api-contract.md — GET /v1/account/referral response shape
+6. docs/stories/EPIC-08-polish/STORY-034.md (this file — frontend ACs 9-10)
 
-Key constraints:
-- Referrer reward triggers on FIRST UPLOAD, not signup — use referral_reward_claimed
-- Monthly cap 50 rewards/referrer
-- Never award if either account is inactive
-Show plan first.
+SPECIFIC IMPLEMENTATION STEPS:
+
+Step 1 — Create app/(dashboard)/settings/referrals/page.tsx:
+Use the settings page layout pattern from other settings pages.
+
+The page must include (per UX requirements):
+
+1. Referral link display card:
+<div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+  <p className="text-xs font-mono text-muted-foreground tracking-wider">◆ REFERRAL_LINK</p>
+  {/* Referral URL input (read-only) */}
+  <div className="relative">
+    <input
+      readOnly
+      value={referralUrl}
+      className="w-full bg-secondary rounded-xl px-4 py-3 font-mono text-sm
+                 text-foreground border border-border pr-20"
+    />
+    {/* Copy button overlaid on right */}
+  </div>
+</div>
+
+2. Copy button with 2-second "COPIED!" state:
+"use client"
+import { useState } from "react"
+import { Copy, Check } from "lucide-react"
+
+const [copied, setCopied] = useState(false)
+
+const handleCopy = async () => {
+  await navigator.clipboard.writeText(referralUrl)
+  setCopied(true)
+  setTimeout(() => setCopied(false), 2000)  // AC-9b: 2s "COPIED!" state
+}
+
+<button
+  onClick={handleCopy}
+  className="absolute right-2 top-1/2 -translate-y-1/2
+             flex items-center gap-1.5 px-3 py-1.5 rounded-full
+             border border-border bg-card hover:bg-secondary
+             text-xs font-mono transition-all duration-150"
+>
+  {copied
+    ? <Check className="w-3 h-3 text-success" />
+    : <Copy className="w-3 h-3 text-muted-foreground" />
+  }
+  {copied ? "COPIED!" : "COPY_LINK"}
+</button>
+
+3. Social share buttons (AC-9: social share):
+<div className="flex gap-2">
+  {/* Twitter/X */}
+  <a
+    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("I'm using Ravenbase to build my AI memory. Get 200 free credits: " + referralUrl)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="p-2 rounded-full border border-border hover:bg-secondary transition-colors"
+  >
+    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+      {/* X/Twitter icon SVG */}
+    </svg>
+  </a>
+  {/* LinkedIn */}
+  <a
+    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralUrl)}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="p-2 rounded-full border border-border hover:bg-secondary transition-colors"
+  >
+    <Linkedin className="w-4 h-4" />
+  </a>
+</div>
+
+4. Stats card (AC-9: referral stats):
+<div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+  <p className="text-xs font-mono text-muted-foreground tracking-wider">◆ REFERRAL_STATS</p>
+
+  <div className="flex items-baseline gap-2">
+    <span className="font-mono text-4xl font-bold text-primary">
+      {totalReferrals}
+    </span>
+    <span className="text-sm text-muted-foreground">users referred</span>
+  </div>
+
+  <div className="text-sm text-muted-foreground">
+    <span className="font-mono text-foreground">{creditsEarned}</span> credits earned
+  </div>
+
+  {/* Progress bar toward next reward */}
+  <div className="space-y-1">
+    <p className="text-xs text-muted-foreground">
+      {nextMilestone} more referrals to unlock Pro month free
+    </p>
+    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+      <div
+        className="h-full bg-primary rounded-full transition-all duration-300"
+        style={{ width: `${progressPercent}%` }}
+      />
+    </div>
+  </div>
+</div>
+
+5. Reward milestones timeline (AC-9):
+Visual checkmarks for reached milestones:
+const milestones = [
+  { count: 1, reward: "100 bonus credits", reached: totalReferrals >= 1 },
+  { count: 3, reward: "500 bonus credits", reached: totalReferrals >= 3 },
+  { count: 5, reward: "1 month Pro free", reached: totalReferrals >= 5 },
+]
+
+{milestones.map((m, i) => (
+  <div key={i} className="flex items-center gap-3">
+    {/* Reached: green checkmark. Next: amber dot. Future: gray circle */}
+    {m.reached
+      ? <CheckCircle2 className="w-5 h-5 text-success" />
+      : totalReferrals < m.count && i === milestones.findIndex(x => !x.reached)
+        ? <div className="w-5 h-5 rounded-full bg-warning" />
+        : <div className="w-5 h-5 rounded-full bg-secondary border border-border" />
+    }
+    <span className="text-sm text-foreground">
+      {m.count} referral{m.count > 1 ? "s" : ""} → {m.reward}
+    </span>
+  </div>
+))}
+
+Step 2 — API integration:
+GET /v1/account/referral returns:
+{
+  "referral_code": "550E8400",
+  "referral_url": "https://ravenbase.app/register?ref=550E8400",
+  "total_referrals": 2,
+  "pending_referrals": 0,
+  "credits_earned": 400,
+  "current_month_count": 1,
+  "monthly_cap": 50
+}
+
+Use useQuery to fetch this:
+const { data, isLoading } = useQuery({
+  queryKey: ["referral"],
+  queryFn: () => apiFetch<ReferralResponse>("/v1/account/referral"),
+  staleTime: 30_000,
+})
+
+Step 3 — Backend files needed first (confirm these exist):
+Before implementing the frontend, verify these backend files are implemented:
+- src/api/routes/account.py: GET /v1/account/referral
+- src/api/routes/account.py: POST /v1/account/apply-referral
+- src/services/referral_service.py
+These are backend STORY-034 items. If missing, the frontend cannot be tested.
+
+WHAT NOT TO DO:
+- DO NOT use bg-[#xxxxxx] — use bg-primary, bg-card, bg-secondary
+- DO NOT use rounded-lg on cards — use rounded-2xl
+- DO NOT use rounded-md on CTAs — use rounded-full
+- DO NOT use rounded-full on non-CTA elements
+
+AC CHECKLIST:
+□ Page accessible at /settings/referrals
+□ Referral link displayed in read-only input
+□ Copy button: shows "COPY_LINK" → "COPIED!" for 2 seconds on click
+□ Social share: Twitter and LinkedIn links open in new tab
+□ Stats card: total referrals, credits earned
+□ Progress bar: toward next reward milestone
+□ Milestone timeline: visual checkmarks/dots/circles
+□ Font: font-mono on all mono labels, ◆ REFERRAL_LINK, ◆ REFERRAL_STATS
+
+Show plan first. Do not implement yet.
 ```
 
 ## Development Loop

@@ -314,25 +314,185 @@ npm run build
 
 ## Frontend Agent Brief
 
-Read these files FIRST before writing any code:
-1. CLAUDE.md (all 19 rules)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md (non-negotiable visual rules)
-3. docs/design/00-brand-identity.md (brand colors, mono labels)
-4. docs/design/01-design-system.md (all color tokens)
-
-PLAN QUALITY: The plan must be minimum 800 lines. Write full
-TypeScript for every component — no pseudocode.
-
 ```
 Implement STORY-031: Dark Mode Toggle.
 
-Key constraints:
-- Implement with localStorage + classList, NOT next-themes package
-- No-flash inline script in <head> (must run before React hydrates)
-- Remove any forced .dark/.light class from route group layouts
-- ThemeToggle component in dashboard header (not settings page)
-- Default = light mode
-- Sidebar must remain bg-primary (forest green) in both light and dark mode
+Read FIRST — read every file listed below completely before writing any code:
+1. CLAUDE.md (all 19 frontend rules — especially RULE 5: no forced color mode in route groups)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules. Anti-patterns to REJECT:
+   - Using bg-[#xxxxxx] instead of bg-primary/bg-background/bg-secondary
+   - Adding className=".dark" or className="light" to any layout file
+   - Using next-themes package (this project uses localStorage + classList only)
+3. docs/design/00-brand-identity.md — brand colors, mono labels
+4. docs/design/01-design-system.md — :root and .dark CSS variable definitions
+5. docs/stories/EPIC-08-polish/STORY-031.md (this file — all 8 ACs must be implemented)
+
+SPECIFIC IMPLEMENTATION STEPS:
+
+Step 1 — Verify globals.css CSS variables FIRST (before any code):
+Open app/globals.css and confirm these exact :root values exist:
+  --background: #f5f3ee
+  --foreground: #1a1a1a
+  --primary: #2d4a3e
+  --primary-foreground: #ffffff
+  --secondary: #e8ebe6
+  --muted-foreground: #6b7280
+  --accent: #a8c4b2
+  --warning: #ffc00d
+  --warning-foreground: #78350f
+  --border: #d1d5db
+  --card: #ffffff
+  --card-foreground: #1a1a1a
+  --radius: 1rem  (equals rounded-2xl)
+
+And confirm .dark overrides:
+  --background: #1a1a1a
+  --foreground: #f5f3ee
+  --primary: #3d6454
+  --primary-foreground: #f0f7f4
+  --secondary: #2a2a2a
+  --muted-foreground: #9ca3af
+  --border: #333333
+  --card: #242424
+
+If ANY variable is missing or wrong: fix globals.css FIRST.
+
+Step 2 — Create hooks/use-theme.ts:
+"use client"
+import { useEffect, useState } from "react"
+
+const STORAGE_KEY = "ravenbase-theme"  // AC-3
+
+export function useTheme() {
+  const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    // AC-7: Default = light if no preference stored
+    const stored = localStorage.getItem(STORAGE_KEY)
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+    const dark = stored === "dark" || (!stored && prefersDark)
+    setIsDark(dark)
+    document.documentElement.classList.toggle("dark", dark)
+  }, [])
+
+  const toggle = () => {
+    const next = !isDark
+    setIsDark(next)
+    document.documentElement.classList.toggle("dark", next)
+    // AC-3: Store preference in localStorage
+    localStorage.setItem(STORAGE_KEY, next ? "dark" : "light")
+  }
+
+  return { isDark, toggle }
+}
+
+Step 3 — Create components/domain/ThemeToggle.tsx:
+"use client"
+import { Moon, Sun } from "lucide-react"
+import { useTheme } from "@/hooks/use-theme"
+
+export function ThemeToggle() {
+  const { isDark, toggle } = useTheme()
+  return (
+    <button
+      onClick={toggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                 bg-secondary hover:bg-accent transition-colors
+                 text-xs font-mono text-muted-foreground border border-border
+                 min-h-[44px] min-w-[44px]"  // AC-8: 44px touch target
+    >
+      {isDark
+        ? <Sun className="w-3.5 h-3.5 text-primary transition-transform duration-300 rotate-180" />
+        : <Moon className="w-3.5 h-3.5 text-primary transition-transform duration-300 rotate-0" />
+      }
+      <span className="hidden sm:inline">{isDark ? "Day" : "Night"}</span>
+    </button>
+  )
+}
+
+Step 4 — Add no-flash script to app/layout.tsx:
+In the <head> section (BEFORE any other scripts), add:
+<script dangerouslySetInnerHTML={{ __html: `
+(function() {
+  try {
+    var s = localStorage.getItem('ravenbase-theme');
+    var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (s === 'dark' || (!s && d)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+})();
+`}} />
+
+This goes inside <head> in the root app/layout.tsx — NOT in a dashboard layout.
+AC-4: This prevents flash of wrong theme on every page load.
+
+Step 5 — Add smooth transition class to globals.css:
+Add to globals.css:
+html.transitioning *,
+html.transitioning {
+  transition: background-color 200ms ease, border-color 200ms ease,
+              color 150ms ease !important;
+}
+
+When toggling, briefly add 'transitioning' class, remove after 250ms:
+const toggle = () => {
+  document.documentElement.classList.add('transitioning')
+  const next = !isDark
+  setIsDark(next)
+  document.documentElement.classList.toggle("dark", next)
+  localStorage.setItem(STORAGE_KEY, next ? "dark" : "light")
+  setTimeout(() => document.documentElement.classList.remove('transitioning'), 250)
+}
+
+Step 6 — Fix app/layout.tsx font variables:
+Confirm <html> has:
+className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
+(Together, these three become the class string: "${font-sans} ${font-serif} ${font-mono}")
+
+Step 7 — Remove forced color mode from route group layouts:
+Search for any className containing ".dark" or ".light" in app/(marketing)/layout.tsx
+and app/(dashboard)/layout.tsx — REMOVE them. AC-6: Marketing pages must respect
+stored theme preference.
+
+Step 8 — Add ThemeToggle to DashboardHeader:
+Find the dashboard header component (likely components/domain/DashboardHeader.tsx
+or part of app/(dashboard)/layout.tsx).
+Add: <ThemeToggle /> in the top-right area, near the avatar.
+
+Step 9 — Sidebar must remain bg-primary in BOTH modes:
+In app/(dashboard)/layout.tsx or the sidebar component, verify:
+- Sidebar (or its nav container) uses: className="bg-primary text-primary-foreground"
+- This must NOT change based on dark mode
+- AC-1: sidebar bg-primary is the #2d4a3e forest green — never bg-background
+
+Step 10 — Hardcoded hex audit:
+grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d" components/ app/ --include="*.tsx"
+Every match must be in globals.css as a CSS variable definition, NOT in a className.
+
+WHAT NOT TO DO:
+- DO NOT use next-themes package — this project uses pure localStorage + classList
+- DO NOT add className="dark" or className="light" to any layout file's outer div
+- DO NOT use bg-[#2d4a3e] in any component — use bg-primary
+- DO NOT use bg-[#f5f3ee] in any component — use bg-background
+- DO NOT put ThemeToggle in settings — it goes in the dashboard header
+
+AC CHECKLIST (all must be verified):
+□ AC-1: ThemeToggle in dashboard header (top right, near avatar)
+□ AC-2: .dark class added/removed on document.documentElement
+□ AC-3: localStorage key 'ravenbase-theme' stores 'dark' or 'light'
+□ AC-4: No flash on page load (blocking script in <head>)
+□ AC-5: Sun icon in dark mode (click→light), Moon icon in light mode (click→dark)
+□ AC-6: Marketing pages respect stored theme
+□ AC-7: Default is light mode if nothing stored
+□ AC-8: Toggle touch target ≥ 44px
+□ Brand colors: sidebar bg-primary in both modes
+□ Hardcoded hex audit: 0 violations
+
+PLAN QUALITY: This plan must be minimum 800 lines. Write full TypeScript for
+every component file. No pseudocode, no vague descriptions. Show the exact
+className string for every element.
 
 Show plan first. Do not implement yet.
 ```
