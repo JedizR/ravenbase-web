@@ -106,6 +106,48 @@ async def award_referrer_on_first_upload(referee_id: uuid.UUID, db: AsyncSession
 - Referral code generation is server-side (Clerk webhook) — never from registration form
 - Frontend captures `?ref=CODE` in localStorage before Clerk redirect, calls `apply-referral` post-signup
 
+## UX & Visual Quality Requirements
+
+### Settings → Referrals Page UX
+1. Referral link display card:
+   bg-card rounded-2xl border border-border p-6 space-y-4
+
+2. Referral link input (read-only):
+   - Shows: https://ravenbase.app/register?ref=XXXXXX
+   - Input: bg-secondary rounded-xl px-4 py-3 font-mono text-sm
+   - Read-only, not editable
+   - Full width on mobile
+
+3. Copy button animation:
+   - Default: "◆ COPY_LINK" with Copy icon
+   - On click: call navigator.clipboard.writeText(referralUrl)
+   - Success state (2 seconds): "◆ COPIED!" with Check icon
+     (green check icon, text-success)
+   - Button: rounded-full border border-border bg-card hover:bg-secondary
+   - Transition: all 150ms ease on text/icon swap
+
+4. Social share buttons:
+   - Twitter/X: opens https://twitter.com/intent/tweet?text=...
+   - LinkedIn: opens https://www.linkedin.com/sharing/share-offsite/?url=...
+   - Each button: rounded-full border border-border p-2 hover:bg-secondary
+   - Open in new tab: target="_blank" rel="noopener noreferrer"
+
+5. Referral stats card:
+   bg-card rounded-2xl border border-border p-6
+   Show:
+   - "X users referred" — large font-mono number in forest green
+   - "X credits earned" — secondary stat
+   - Progress bar toward next reward:
+     "X more referrals to unlock Pro month free"
+     Progress bar: bg-primary [&>div]:bg-warning (amber progress on green bar)
+
+6. Reward milestones list:
+   Visual timeline of reward tiers:
+   1 referral → 100 bonus credits
+   3 referrals → 500 bonus credits
+   5 referrals → 1 month Pro free
+   Each milestone: checkmark (green if reached), dot (amber if next), circle (gray if future)
+
 ## Definition of Done
 - [ ] Referral codes auto-generated on user creation
 - [ ] Referee bonus (+200) at signup; referrer reward (+200) on first upload

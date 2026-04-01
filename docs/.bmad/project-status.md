@@ -8,8 +8,8 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 30
-**Status:** In progress — 33 of 37 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022 done)
+**Current sprint:** 31
+**Status:** In progress — 33 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022 done)
 
 **Next story to implement:** STORY-031 (Sprint 31 — Dark mode toggle)
 **Story file:** `docs/stories/EPIC-08-polish/STORY-031.md`
@@ -62,3 +62,7 @@ as part of the final commit step (see `DEVELOPMENT_LOOP.md` → Post-Story Commi
 
 _Use this section for anything that doesn't fit the structure above:
 blockers encountered, decisions made, deferred issues, environment quirks._
+
+Brand color fix and UX quality gates added to all remaining stories STORY-031
+through STORY-036. STORY-038 created as final polish story. Total stories
+increased from 37 to 38.

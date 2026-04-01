@@ -129,6 +129,54 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 - Credit adjustments always create a CreditTransaction record — no silent balance changes
 - `ADMIN_USER_IDS` env var must not be committed to the repo (add to `.gitignore` and `.env.example`)
 
+## UX & Visual Quality Requirements
+
+### Admin Dashboard Visual Design
+1. Admin dashboard MUST feel like an internal tool, not a public product.
+   All standard design system rules apply (forest green, cream bg, rounded-2xl cards).
+
+2. Stat cards row at top (4 cards):
+   - Total users / Active this week / Total credits used / Revenue this month
+   - bg-card rounded-2xl border border-border p-6
+   - Large number: font-mono text-3xl font-bold text-foreground
+   - Label: text-xs font-mono text-muted-foreground tracking-wider below
+   - Trend indicator: green ▲ or red ▼ with percentage vs last week
+   - Card hover: hover:shadow-md transition-shadow
+
+3. User management table:
+   - Table header: bg-secondary/50 rounded-t-xl font-mono text-xs text-muted-foreground uppercase
+   - Row hover: bg-secondary/30 transition-colors cursor-pointer
+   - Each row shows: Avatar (Clerk imageUrl or initials fallback) | Email |
+     Tier badge | Credits | Last active | Actions menu
+   - Tier badges: Free=bg-secondary, Pro=bg-primary/10 text-primary,
+     Team=bg-accent/30 text-foreground
+   - Pagination: "Showing X-Y of Z" with Prev/Next buttons
+
+4. Actions dropdown per user row:
+   - Three-dot menu (MoreHorizontal icon) that opens a DropdownMenu
+   - Options: View details | Adjust credits | Change tier | Disable account
+   - Each option has an appropriate Lucide icon
+   - Destructive action (Disable): text-destructive
+   - Dropdown animation: scale(0.95)→scale(1) fade-in 150ms
+
+5. Credit adjustment dialog:
+   - Triggered from Actions → Adjust credits
+   - Uses shadcn Dialog component
+   - Shows current balance
+   - +/- stepper buttons: increment/decrement by 100
+   - Or direct input field for exact amount
+   - Reason textarea (required, min 10 chars)
+   - Submit button: rounded-full bg-primary (only enabled when reason filled)
+
+6. Search/filter bar above table:
+   - bg-secondary rounded-xl px-4 py-2 flex items-center gap-2
+   - Search icon: text-muted-foreground
+   - Input: bg-transparent outline-none text-sm placeholder:text-muted-foreground
+   - Filter pills: Tier (All/Free/Pro/Team) and Status (All/Active/Disabled)
+   - Each pill: rounded-full text-xs font-mono px-3 py-1
+   - Active pill: bg-primary text-primary-foreground
+   - Inactive pill: bg-secondary text-muted-foreground hover:bg-secondary/80
+
 ## Definition of Done
 - [ ] `require_admin` returns `403` for non-admin authenticated users
 - [ ] All 5 admin API endpoints work and are protected

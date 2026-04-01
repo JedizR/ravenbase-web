@@ -2,7 +2,7 @@
 
 > **Status key:** 🔲 DRAFT | ✅ DONE | 🔄 IN_PROGRESS | 🔍 IN_REVIEW | ✅ BE / 🔲 FE PARTIAL (cross-repo story, backend done, frontend pending Phase B)
 >
-> **Total stories:** 37 | **Total epics:** 9
+> **Total stories:** 38 | **Total epics:** 9
 >
 > **Execution order:** Stories within each epic must be completed in order (each builds on the previous). Epics must be completed before moving to the next epic.
 
@@ -117,6 +117,7 @@
 | STORY-035 | Data export / portability (multi-store ZIP, email link, Settings → Data) | P1 | Medium | 🔲 |
 | STORY-036 | Internal admin dashboard (user management, credit adjustment, stats) | P1 | Medium | ✅ BE / 🔲 FE |
 | STORY-037 | Cold data lifecycle — inactivity archival for Free-tier users (CRON, warning email, data purge) | P1 | Medium | ✅ |
+| STORY-038 | Final UX Polish Pass — Lighthouse audit, axe-core, cross-browser, brand audit | P0 | Large | 🔲 |
 
 ---
 

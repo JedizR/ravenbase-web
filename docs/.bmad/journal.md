@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 33 / 37 |
+| Total stories complete | 33 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 30 |
+| Current sprint | 31 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-03-31 (STORY-022) |
+| Last entry | 2026-04-01 (docs: UX quality gates added to STORY-031–036, STORY-038 created) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.

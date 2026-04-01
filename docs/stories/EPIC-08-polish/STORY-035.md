@@ -61,6 +61,54 @@ take my knowledge graph elsewhere or simply have a backup.
 - Store only `storage_path` in JobStatus (URL is ephemeral, regenerated on status check)
 - Export idempotency: if ZIP already exists at `storage_path`, skip recreation (for ARQ retries)
 
+## UX & Visual Quality Requirements
+
+### Settings → Data Page UX
+1. Page header:
+   - h1: font-serif text-3xl "Your Data"
+   - Subtitle: text-sm text-muted-foreground "Download everything you've stored in Ravenbase."
+   - Mono label: ◆ DATA_PORTABILITY
+
+2. Format selector (before export button):
+   Three format cards side by side (or stacked on mobile):
+   - JSON (default): "Complete structured data, machine-readable"
+   - CSV: "Spreadsheet-compatible, sources and memories only"
+   - ZIP: "Everything including original uploaded files"
+
+   Each card: bg-card rounded-2xl border p-4 cursor-pointer
+   Selected: border-2 border-primary bg-primary/5
+   Icon per format: File (JSON), Table (CSV), Archive (ZIP) from lucide-react
+
+3. File size estimate below format selector:
+   - text-xs font-mono text-muted-foreground
+   - Shows: "Estimated size: ~X MB" based on user's source count
+   - Fetched from GET /v1/users/me or estimated client-side
+
+4. Export button states:
+   - Idle: "◆ EXPORT_DATA" — rounded-full bg-primary text-primary-foreground h-11 w-full
+   - Loading: spinner + "Preparing export..."
+   - Progress (if large): forest green determinate progress bar (0→100%)
+   - Success: "◆ EXPORT_READY" + download link button
+   - Error: toast.error("Export failed. Try again or contact support.")
+
+5. Success state after export:
+   - Green checkmark animation (SVG check-draw from globals.css)
+   - "Your data is ready" heading in font-serif
+   - "Download expires in 24 hours" in text-xs text-muted-foreground
+   - Download button: rounded-full bg-success text-success-foreground
+
+6. "Delete all data" section (GDPR):
+   - Separated from export section by <Separator />
+   - Section header: ◆ DANGER_ZONE in text-destructive mono
+   - "Delete my account and all data" button:
+     rounded-full border border-destructive text-destructive
+     hover:bg-destructive hover:text-destructive-foreground
+   - Opens AlertDialog (not inline) with:
+     - Warning: "This permanently deletes your account, knowledge graph,
+       and all uploaded files. This cannot be undone."
+     - Confirmation input: user must type "DELETE" before button enables
+     - Delete button: rounded-full bg-destructive text-destructive-foreground
+
 ## Definition of Done
 - [ ] `POST /v1/account/export` returns 202 with job_id
 - [ ] ZIP created in Supabase Storage with all 4 components

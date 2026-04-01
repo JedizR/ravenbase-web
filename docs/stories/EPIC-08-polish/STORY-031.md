@@ -143,6 +143,117 @@ export function ThemeToggle() {
 - Dark mode toggle belongs in the dashboard header, NOT in settings (accessibility)
 - Sidebar remains `bg-primary` (forest green) in both light and dark mode
 
+## UX & Visual Quality Requirements (mandatory — agent must complete ALL of these)
+
+### Brand Color Verification (do this FIRST before any dark mode work)
+Before implementing the toggle, verify and fix the brand color system:
+
+1. Open app/globals.css and confirm these exact CSS variable values exist
+   in the :root block. If wrong or missing, fix them:
+
+   --background: #f5f3ee;           /* warm cream */
+   --foreground: #1a1a1a;
+   --card: #ffffff;
+   --card-foreground: #1a1a1a;
+   --primary: #2d4a3e;              /* forest green */
+   --primary-foreground: #ffffff;
+   --secondary: #e8ebe6;
+   --secondary-foreground: #1a1a1a;
+   --muted: #e8ebe6;
+   --muted-foreground: #6b7280;
+   --accent: #a8c4b2;
+   --accent-foreground: #1a1a1a;
+   --warning: #ffc00d;
+   --warning-foreground: #78350f;
+   --success: #3d8b5a;
+   --success-foreground: #ffffff;
+   --destructive: #b53233;
+   --destructive-foreground: #ffffff;
+   --border: #d1d5db;
+   --input: #d1d5db;
+   --ring: #2d4a3e;
+   --radius: 1rem;                  /* 16px = rounded-2xl */
+
+   .dark {
+     --background: #1a1a1a;
+     --foreground: #f5f3ee;
+     --card: #242424;
+     --card-foreground: #f5f3ee;
+     --primary: #3d6454;            /* lighter forest green for dark bg contrast */
+     --primary-foreground: #f0f7f4;
+     --secondary: #2a2a2a;
+     --secondary-foreground: #e8ebe6;
+     --muted: #2a2a2a;
+     --muted-foreground: #9ca3af;
+     --accent: #2d4a3e;
+     --accent-foreground: #a8c4b2;
+     --warning: #ffc93d;
+     --warning-foreground: #1a1a1a;
+     --success: #4caf6c;
+     --success-foreground: #1a1a1a;
+     --destructive: #ef4444;
+     --destructive-foreground: #ffffff;
+     --border: #333333;
+     --input: #333333;
+     --ring: #3d6454;
+   }
+
+2. Confirm the @theme inline block correctly maps to next/font CSS variables:
+   @theme inline {
+     --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+     --font-serif: var(--font-playfair-display), "Playfair Display", Georgia, serif;
+     --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+   }
+
+3. Confirm app/layout.tsx applies font variables to <html>:
+   className={`${dmSans.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
+
+4. After confirming/fixing the above, verify visual output:
+   npm run dev
+   Visit http://localhost:3000
+   - Background must be warm cream #f5f3ee (NOT white, NOT gray)
+   - If still wrong: run rm -rf .next && npm run dev
+
+### Dark Mode Toggle Implementation Requirements
+
+5. No flash of wrong theme on page load. Add this blocking script
+   to <head> in app/layout.tsx BEFORE any stylesheets:
+   <script dangerouslySetInnerHTML={{ __html: `
+     (function(){
+       try {
+         var s = localStorage.getItem('ravenbase-color-scheme');
+         var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+         if (s === 'dark' || (!s && d)) {
+           document.documentElement.classList.add('dark');
+         }
+       } catch(e) {}
+     })();
+   `}} />
+
+6. Smooth color transition on toggle (no jarring flash):
+   Add to globals.css:
+   html.transitioning * {
+     transition: background-color 200ms ease, border-color 200ms ease,
+                 color 150ms ease !important;
+   }
+   When toggling, add 'transitioning' class to html, remove after 250ms.
+
+7. Toggle button in DashboardHeader:
+   - Sun icon (Lucide Sun) when dark mode is active, click → light
+   - Moon icon (Lucide Moon) when light mode is active, click → dark
+   - Icon rotates 180deg on toggle: className="transition-transform duration-300"
+   - Button: className="p-2 rounded-lg hover:bg-secondary transition-colors min-h-[44px] min-w-[44px]"
+   - Store preference in localStorage key: 'ravenbase-color-scheme'
+   - Sync with system preference if no localStorage value
+
+8. Dark mode sidebar: sidebar must remain bg-primary (forest green)
+   in BOTH light and dark mode. Never use bg-background on sidebar.
+
+9. Every existing CSS color in the codebase that is hardcoded (not using
+   CSS variables) must be updated to use the design token. Search for:
+   grep -r "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d" components/ app/
+   Replace all hardcoded hex values with the corresponding CSS variable.
+
 ## Definition of Done
 
 - [ ] Toggle appears in dashboard header
@@ -201,18 +312,19 @@ npm run build
 
 ---
 
-## Agent Implementation Brief
+## Frontend Agent Brief
+
+Read these files FIRST before writing any code:
+1. CLAUDE.md (all 19 rules)
+2. docs/design/AGENT_DESIGN_PREAMBLE.md (non-negotiable visual rules)
+3. docs/design/00-brand-identity.md (brand colors, mono labels)
+4. docs/design/01-design-system.md (all color tokens)
+
+PLAN QUALITY: The plan must be minimum 800 lines. Write full
+TypeScript for every component — no pseudocode.
 
 ```
 Implement STORY-031: Dark Mode Toggle.
-
-Read first:
-1. CLAUDE.md (frontend rules — especially RULE 9: no forced color mode)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules, anti-patterns, and pre-commit checklist. Read fully before writing any JSX.
-3. docs/design/00-brand-identity.md — logo spec, voice rules, mono label pattern
-4. docs/design/01-design-system.md — all color tokens, typography
-5. docs/design/CLAUDE_FRONTEND.md (RULE 9: no className="dark" on route layouts)
-6. docs/stories/EPIC-08-polish/STORY-031.md (this file)
 
 Key constraints:
 - Implement with localStorage + classList, NOT next-themes package
@@ -220,6 +332,7 @@ Key constraints:
 - Remove any forced .dark/.light class from route group layouts
 - ThemeToggle component in dashboard header (not settings page)
 - Default = light mode
+- Sidebar must remain bg-primary (forest green) in both light and dark mode
 
 Show plan first. Do not implement yet.
 ```

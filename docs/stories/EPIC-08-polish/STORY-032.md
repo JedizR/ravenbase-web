@@ -279,6 +279,41 @@ Add to dependencies:
 "resend>=2.5.0",
 ```
 
+## UX & Visual Quality Requirements
+
+### Settings → Notifications UX
+1. Email preview cards for each template type:
+   - Welcome email preview
+   - Low credits warning preview (triggers at < 100 credits)
+   - Ingestion complete preview
+   Each card: bg-card rounded-2xl border border-border p-4
+   Preview shows styled mock of the email header + first paragraph
+
+2. "Send test email" button per template:
+   - Button: rounded-full bg-primary text-primary-foreground h-10 px-4 text-sm
+   - Loading state: spinner + "Sending..."
+   - Success: toast.success("Test email sent to your@email.com")
+   - Error: toast.error("Failed to send. Check your Resend API key in .env")
+
+3. Toggle per notification type:
+   - Forest green switch when on (same Toggle component as settings page)
+   - Label: text-sm font-medium text-foreground
+   - Description: text-xs text-muted-foreground below label
+
+### Email Template Visual Requirements
+4. All email templates must use brand colors:
+   - Header: forest green #2d4a3e background with white Ravenbase logo text
+   - Body background: warm cream #f5f3ee
+   - Body text: DM Sans (font-family in inline styles for email compatibility)
+   - CTAs: forest green #2d4a3e background, white text, border-radius: 9999px
+   - Mono labels: JetBrains Mono (or fallback Courier New for email)
+   - Footer: muted text with ◆ ALL_SYSTEMS_OPERATIONAL
+   Use inline styles for all email HTML (not Tailwind — email clients ignore it)
+
+5. All 3 email templates must render as actual HTML that can be previewed.
+   Store templates as functions that return HTML strings in
+   src/services/email_templates.py (ravenbase-api).
+
 ## Definition of Done
 - [ ] Welcome email sends successfully when Clerk `user.created` webhook fires
 - [ ] Low credits email fires when balance < 10% (only once per billing period)

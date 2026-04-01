@@ -179,6 +179,38 @@ export function CookieConsent() {
 - The cookie consent banner must NOT block page interaction (fixed bottom, not modal)
 - PostHog must never initialize if consent is `"declined"` or absent
 
+## UX & Visual Quality Requirements
+
+### Legal Page Visual Requirements
+1. Both /privacy and /terms must use:
+   - Header component (same as landing page)
+   - Footer component (same as landing page)
+   - bg-background (#f5f3ee) page background
+   - Max width container: max-w-3xl mx-auto px-4 py-16
+
+2. Typography:
+   - h1: font-serif text-4xl (Playfair Display)
+   - h2: font-serif text-2xl
+   - Body text: font-sans text-base leading-relaxed text-foreground
+   - Effective date: font-mono text-xs text-muted-foreground tracking-wider
+
+3. Section headers must use ◆ SECTION_NAME mono label above each h2
+
+4. If pages already exist (created in remediation plan), verify:
+   - /privacy renders correctly with Header + Footer
+   - /terms renders correctly with Header + Footer
+   - Both linked in Footer component
+   - Both in sitemap.ts
+   If they do not exist, create them with full content.
+
+5. Cookie consent banner (if not already present):
+   Simple bottom-of-screen bar on first visit:
+   "We use cookies to improve your experience. [Accept] [Decline]"
+   - Store consent in localStorage key: 'ravenbase-cookie-consent'
+   - Bar disappears after choice
+   - bg-card border-t border-border p-4
+   - Only shows on marketing pages, not dashboard
+
 ## Definition of Done
 - [ ] `/privacy` and `/terms` pages render correctly with semantic structure
 - [ ] Both pages appear in `app/sitemap.ts`
