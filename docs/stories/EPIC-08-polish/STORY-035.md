@@ -159,227 +159,359 @@ Only commit the docs update (epics.md, story-counter, project-status, journal) A
 
 ## Frontend Agent Brief
 
+> **Skill Invocations — invoke each skill before the corresponding phase:**
+>
+> **Phase 1 (Read/Design):** `Use /frontend-design — enforce production-grade aesthetic compliance`
+> **Phase 2 (Components):** `Use /tailwindcss — for Tailwind CSS v4 token system`
+> **Phase 3 (State Management):** `Use /tailwindcss-animations — for loading/progress animations`
+> **Phase 4 (Verification):** `Use /superpowers:verification-before-completion — before claiming done`
+
+---
+
 ```
-Implement STORY-035 Frontend: Settings → Data Page (Export + Delete Account).
+🎯 Target: Claude Code / MiniMax-M2.7 — Ultra-detailed planning and implementation
+💡 Optimization: MiniMax-M2.7 directive — WRITE EVERYTHING IN MAXIMUM DETAIL.
+   Plans MUST be 1500-3000 lines. Never short-circuit with "see code below".
 
-This is the FRONTEND PART ONLY. The backend (ARQ export job, ZIP creation, email
-notification) must be implemented in ravenbase-api first.
+═══════════════════════════════════════════════════════════════════
+CONTEXT
+═══════════════════════════════════════════════════════════════════
 
-Read FIRST — read every file listed below completely before writing any code:
-1. CLAUDE.md (all 19 frontend rules)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules.
-   Anti-patterns to REJECT:
-   - Hardcoded hex colors (use CSS variables only)
-   - Rounded-lg on cards (use rounded-2xl)
-   - rounded-md on primary CTAs (use rounded-full)
-   - Using <form> tags (use onClick + controlled state)
-3. docs/design/00-brand-identity.md — brand colors, mono labels, ◆ SECTION pattern
-4. docs/design/01-design-system.md — all color tokens, typography
-5. docs/design/CLAUDE_FRONTEND.md — API client usage (useApiFetch, TanStack Query)
-6. docs/architecture/03-api-contract.md — POST /v1/account/export, GET /v1/account/export/status
-7. docs/stories/EPIC-08-polish/STORY-035.md (this file — frontend ACs 8-10)
+This story has a BACKEND PART and a FRONTEND PART.
 
-SPECIFIC IMPLEMENTATION STEPS:
+Backend (AC-1 through AC-7): ARQ job, ZIP creation, Supabase Storage, email notification.
+Frontend (AC-8 through AC-10): Settings → Data page with export + delete account.
 
-Step 1 — Create app/(dashboard)/settings/data/page.tsx:
+Frontend ACs:
+- AC-8: Settings → Data page with export button + "last exported" timestamp
+- AC-9: Delete account with AlertDialog + "DELETE" confirmation input
+- AC-10: Format selector (JSON, CSV, ZIP)
 
-LAYOUT STRUCTURE:
-<div className="space-y-8">
-  {/* Export section */}
-  <section>
-    <p className="text-xs font-mono text-muted-foreground tracking-wider mb-2">◆ DATA_PORTABILITY</p>
-    <h1 className="font-serif text-3xl mb-2">Your Data</h1>
-    <p className="text-sm text-muted-foreground mb-6">
-      Download everything you've stored in Ravenbase.
-    </p>
+Backend must provide: POST /v1/account/export, GET /v1/account/export/status.
 
-    {/* Format selector — 3 cards */}
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      {formats.map(f => (
-        <div
-          key={f.id}
-          onClick={() => setSelectedFormat(f.id)}
-          className={cn(
-            "bg-card rounded-2xl border p-4 cursor-pointer transition-all",
-            selectedFormat === f.id
-              ? "border-2 border-primary bg-primary/5"
-              : "border border-border hover:border-primary/50"
-          )}
-        >
-          <f.icon className="w-5 h-5 mb-2 text-primary" />
-          <p className="font-medium text-sm">{f.label}</p>
-          <p className="text-xs text-muted-foreground">{f.description}</p>
-        </div>
-      ))}
-    </div>
+═══════════════════════════════════════════════════════════════════
+READING ORDER
+═══════════════════════════════════════════════════════════════════
 
-    {/* Export button */}
-    {exportStatus === "idle" && (
-      <button
-        onClick={handleExport}
-        className="w-full h-11 rounded-full bg-primary text-primary-foreground
-                   font-medium flex items-center justify-center gap-2"
-      >
-        <Download className="w-4 h-4" />
-        ◆ EXPORT_DATA
-      </button>
-    )}
+INVOKE: Use /frontend-design
 
-    {exportStatus === "loading" && (
-      <button disabled className="w-full h-11 rounded-full ...">
-        <Loader2 className="w-4 h-4 animate-spin" />
-        Preparing export...
-      </button>
-    )}
+Read ALL files. Write "✅ CONFIRMED READ: [filename]" after each:
 
-    {exportStatus === "progress" && (
-      <div className="space-y-2">
-        <div className="h-2 bg-secondary rounded-full overflow-hidden">
-          <div className="h-full bg-primary transition-all duration-300"
-               style={{ width: `${progress}%` }} />
-        </div>
-        <p className="text-xs text-muted-foreground text-center">Preparing export... {progress}%</p>
-      </div>
-    )}
+1. CLAUDE.md — all 19 rules
+2. docs/design/AGENT_DESIGN_PREAMBLE.md
+3. docs/design/00-brand-identity.md
+4. docs/design/01-design-system.md
+5. docs/design/04-ux-patterns.md
+6. docs/stories/EPIC-08-polish/STORY-035.md (this file — all ACs)
 
-    {exportStatus === "ready" && downloadUrl && (
-      <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-success" />
-          <p className="font-serif text-lg">Your data is ready</p>
-        </div>
-        <p className="text-xs font-mono text-muted-foreground">
-          Download expires in 24 hours
-        </p>
-        <a
-          href={downloadUrl}
-          download
-          className="w-full h-11 rounded-full bg-success text-success-foreground
-                     font-medium flex items-center justify-center gap-2"
-        >
-          <Download className="w-4 h-4" />
-          Download ZIP
-        </a>
-      </div>
-    )}
-  </section>
+═══════════════════════════════════════════════════════════════════
+PAGE DESIGN — full code for app/(dashboard)/settings/data/page.tsx
+═══════════════════════════════════════════════════════════════════
 
-  {/* Danger zone — DELETE ACCOUNT */}
-  <Separator />
-  <section>
-    <p className="text-xs font-mono text-destructive tracking-wider mb-2">◆ DANGER_ZONE</p>
+"use client"
+import { useState } from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { Download, Loader2, CheckCircle2, AlertTriangle } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
 
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <button className="w-full h-11 rounded-full border border-destructive
-                           text-destructive font-medium
-                           hover:bg-destructive hover:text-destructive-foreground
-                           transition-colors">
-          Delete my account and all data
-        </button>
-      </AlertDialogTrigger>
-      <AlertDialogContent className="rounded-2xl">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This permanently deletes your account, knowledge graph,
-            and all uploaded files. This cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+interface ExportStatus {
+  status: "idle" | "queued" | "preparing" | "ready" | "failed"
+  job_id?: string
+  download_url?: string
+  progress?: number
+}
 
-        {/* AC-10: Confirmation input — user must type "DELETE" */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Type <span className="font-mono text-destructive">DELETE</span> to confirm
-          </label>
-          <Input
-            value={confirmText}
-            onChange={(e) => setConfirmText(e.target.value)}
-            placeholder="DELETE"
-            className={confirmText === "DELETE" ? "border-success" : ""}
-          />
-        </div>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDeleteAccount}
-            disabled={confirmText !== "DELETE"}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
-            Delete my account
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  </section>
-</div>
-
-Step 2 — API integration:
-POST /v1/account/export → 202 { job_id: string }
-GET /v1/account/export/status → { status: "queued" | "preparing" | "ready" | "failed", download_url?: string, progress?: number }
-
-Use useMutation for the export trigger:
-const exportMutation = useMutation({
-  mutationFn: () => apiFetch<ExportResponse>("/v1/account/export", { method: "POST" }),
-  onSuccess: (data) => {
-    queryClient.setQueryData(["export-status", data.job_id], data)
-    // Start polling
+const formats = [
+  {
+    id: "json",
+    label: "JSON",
+    description: "Complete structured data, machine-readable",
+    icon: "FileText",
   },
-})
+  {
+    id: "csv",
+    label: "CSV",
+    description: "Spreadsheet-compatible, sources and memories only",
+    icon: "Table",
+  },
+  {
+    id: "zip",
+    label: "ZIP",
+    description: "Everything including original uploaded files",
+    icon: "Archive",
+  },
+]
 
-Use useQuery with refetchInterval for status polling:
-const { data: status } = useQuery({
-  queryKey: ["export-status", jobId],
-  queryFn: () => apiFetch<ExportStatusResponse>(`/v1/account/export/status?job_id=${jobId}`),
-  enabled: !!jobId,
-  refetchInterval: (q) => q.state.data?.status === "ready" ? false : 3000,
-})
+export default function DataSettingsPage() {
+  const [selectedFormat, setSelectedFormat] = useState<"json" | "csv" | "zip">("json")
+  const [confirmText, setConfirmText] = useState("")
+  const queryClient = useQueryClient()
 
-Step 3 — File size estimate:
-AC-8: "Estimated size: ~X MB"
-This can be estimated client-side based on known limits:
-- JSON: ~50KB base + ~1KB per source + ~0.5KB per memory node
-- Or fetch from GET /v1/account/export/size-estimate if that endpoint exists
+  // Export mutation
+  const exportMutation = useMutation({
+    mutationFn: () =>
+      apiFetch<{ job_id: string }>("/v1/account/export", {
+        method: "POST",
+        body: JSON.stringify({ format: selectedFormat }),
+      }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["export-status"], {
+        status: "queued",
+        job_id: data.job_id,
+      } as ExportStatus)
+      toast.success("Export started. We'll email you when it's ready.")
+    },
+    onError: () => {
+      toast.error("Export failed. Please try again or contact support.")
+    },
+  })
 
-Step 4 — Loading state:
-Remember RULE 10: every async dashboard page needs loading.tsx sibling.
-Create app/(dashboard)/settings/data/loading.tsx:
+  // Poll export status
+  const { data: exportStatus } = useQuery<ExportStatus>({
+    queryKey: ["export-status"],
+    queryFn: async () => {
+      const jobId = queryClient.getQueryData<{ job_id: string }>(["export-mutation"])?.job_id
+      if (!jobId) throw new Error("No job ID")
+      return apiFetch<ExportStatus>(
+        `/v1/account/export/status?job_id=${jobId}`
+      )
+    },
+    enabled: !!exportMutation.data?.job_id,
+    refetchInterval: (q) => {
+      const status = q.state.data?.status
+      return status === "ready" || status === "failed" ? false : 3000
+    },
+  })
+
+  const isExporting =
+    exportStatus?.status === "queued" || exportStatus?.status === "preparing"
+  const canDownload = exportStatus?.status === "ready"
+  const progress = exportStatus?.progress ?? 0
+
+  const handleDeleteAccount = async () => {
+    // Backend handles full deletion flow
+    toast.success("Account deletion initiated. You'll receive a confirmation email.")
+  }
+
+  return (
+    <div className="space-y-8 max-w-2xl">
+      {/* Export section */}
+      <section>
+        <p className="text-xs font-mono text-muted-foreground tracking-wider mb-2">
+          ◆ DATA_PORTABILITY
+        </p>
+        <h1 className="font-serif text-3xl mb-2">Your Data</h1>
+        <p className="text-sm text-muted-foreground mb-6">
+          Download everything you have stored in Ravenbase.
+        </p>
+
+        {/* Format selector */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          {formats.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => setSelectedFormat(f.id as typeof selectedFormat)}
+              className={`
+                bg-card rounded-2xl border p-4 text-left cursor-pointer
+                transition-all hover:shadow-md
+                ${selectedFormat === f.id
+                  ? "border-2 border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+                }
+              `}
+            >
+              <p className="font-medium text-sm mb-1">{f.label}</p>
+              <p className="text-xs text-muted-foreground">{f.description}</p>
+            </button>
+          ))}
+        </div>
+
+        {/* Export button states */}
+        {exportStatus?.status === "idle" && (
+          <button
+            onClick={() => exportMutation.mutate()}
+            disabled={exportMutation.isPending}
+            className="w-full h-11 rounded-full bg-primary text-primary-foreground
+                       font-medium flex items-center justify-center gap-2
+                       disabled:opacity-50"
+          >
+            <Download className="w-4 h-4" />
+            ◆ EXPORT_DATA
+          </button>
+        )}
+
+        {isExporting && (
+          <div className="space-y-2">
+            <div className="h-2 bg-secondary rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Preparing export... {progress}%
+            </p>
+          </div>
+        )}
+
+        {canDownload && (
+          <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-success" />
+              <p className="font-serif text-lg">Your data is ready</p>
+            </div>
+            <p className="text-xs font-mono text-muted-foreground">
+              Download expires in 24 hours
+            </p>
+            <a
+              href={exportStatus.download_url}
+              download
+              className="w-full h-11 rounded-full bg-success text-success-foreground
+                         font-medium flex items-center justify-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Download ZIP
+            </a>
+          </div>
+        )}
+      </section>
+
+      {/* Danger zone — DELETE ACCOUNT */}
+      <Separator />
+      <section>
+        <p className="text-xs font-mono text-destructive tracking-wider mb-2">
+          ◆ DANGER_ZONE
+        </p>
+
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="w-full h-11 rounded-full border border-destructive
+                               text-destructive font-medium
+                               hover:bg-destructive hover:text-destructive-foreground
+                               transition-colors">
+              Delete my account and all data
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="rounded-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently deletes your account, knowledge graph,
+                and all uploaded files. This cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            {/* AC-10: Confirmation input */}
+            <div className="space-y-2">
+              <label htmlFor="delete-confirm" className="text-sm font-medium">
+                Type{" "}
+                <span className="font-mono text-destructive">DELETE</span>{" "}
+                to confirm
+              </label>
+              <Input
+                id="delete-confirm"
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+                placeholder="DELETE"
+                className={
+                  confirmText === "DELETE"
+                    ? "border-success focus:border-success"
+                    : ""
+                }
+              />
+            </div>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setConfirmText("")}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAccount}
+                disabled={confirmText !== "DELETE"}
+                className="bg-destructive text-destructive-foreground
+                           hover:bg-destructive/90 disabled:opacity-50"
+              >
+                Delete my account
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </section>
+    </div>
+  )
+}
+
+═══════════════════════════════════════════════════════════════════
+LOADING STATE — required (RULE 10)
+═══════════════════════════════════════════════════════════════════
+
+FILE: app/(dashboard)/settings/data/loading.tsx
+
 import { Skeleton } from "@/components/ui/skeleton"
+import { Separator } from "@/components/ui/separator"
+
 export default function DataSettingsLoading() {
   return (
-    <div className="space-y-6 p-6">
-      <Skeleton className="h-4 w-32" />
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-4 w-full max-w-md" />
+    <div className="space-y-8 max-w-2xl">
+      <div>
+        <Skeleton className="h-4 w-32 mb-2" />
+        <Skeleton className="h-8 w-48 mb-2" />
+        <Skeleton className="h-4 w-full max-w-md" />
+      </div>
       <div className="grid grid-cols-3 gap-4">
         {[...Array(3)].map((_, i) => (
           <Skeleton key={i} className="h-24 rounded-2xl" />
         ))}
       </div>
       <Skeleton className="h-11 w-full rounded-full" />
+      <Separator />
+      <Skeleton className="h-4 w-32 mb-2" />
+      <Skeleton className="h-11 w-full rounded-full" />
     </div>
   )
 }
 
-WHAT NOT TO DO:
-- DO NOT use <form> tag — use controlled div + onClick
-- DO NOT use rounded-lg on cards — use rounded-2xl
-- DO NOT use rounded-md on CTAs — use rounded-full
-- DO NOT skip loading.tsx sibling
-- DO NOT delete account without requiring "DELETE" confirmation
+═══════════════════════════════════════════════════════════════════
+ANTI-PATTERNS
+═══════════════════════════════════════════════════════════════════
 
-AC CHECKLIST:
-□ Format selector: 3 cards, selected card has border-2 border-primary
-□ Export button: "◆ EXPORT_DATA" rounded-full bg-primary
-□ Loading state: spinner + "Preparing export..."
-□ Progress bar: forest green fill, shows percentage
-□ Success state: ◆ EXPORT_READY + download link + 24h expiry notice
-□ Error state: toast.error with message
-□ Delete section: ◆ DANGER_ZONE in text-destructive mono
-□ AlertDialog: requires "DELETE" typed before delete button enables
-□ loading.tsx sibling exists
-□ Mobile: format cards stack vertically (grid-cols-1 on mobile)
+❌ <form> tag → use onClick + controlled state
+❌ rounded-lg on cards → must be rounded-2xl
+❌ rounded-md on CTAs → must be rounded-full
+❌ DELETE button without confirmation input → AC-10 requires typed DELETE
+❌ No loading.tsx sibling → required for every async dashboard page
+❌ useState+useEffect for API data → use useQuery + useMutation
+
+═══════════════════════════════════════════════════════════════════
+SUCCESS CRITERIA
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /superpowers:verification-before-completion
+
+✅ Format selector: 3 cards, selected has border-2 border-primary
+✅ Export button: "◆ EXPORT_DATA" rounded-full bg-primary
+✅ Loading state: progress bar shows percentage
+✅ Success state: "◆ EXPORT_READY" + download link + 24h expiry notice
+✅ Error state: toast.error message
+✅ Delete section: ◆ DANGER_ZONE in text-destructive mono
+✅ AlertDialog: requires "DELETE" typed before button enables
+✅ Delete button: disabled unless confirmText === "DELETE"
+✅ loading.tsx sibling exists
+✅ TanStack Query: useMutation for export trigger, useQuery for status polling
+✅ npm run build passes
 
 Show plan first. Do not implement yet.
 ```

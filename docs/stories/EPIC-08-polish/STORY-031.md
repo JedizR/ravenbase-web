@@ -314,60 +314,146 @@ npm run build
 
 ## Frontend Agent Brief
 
+> **Skill Invocations — MUST use these for each phase. Paste each skill call as a separate message before starting that phase:**
+>
+> **Phase 1 (Design):** `Use /frontend-design — before writing any JSX, this skill enforces production-grade aesthetic compliance`
+> **Phase 2 (Implementation):** `Use /tailwindcss-mobile-first — for responsive layout verification`
+> **Phase 3 (Accessibility):** `Use /tailwindcss-animations — for micro-interaction and transition patterns`
+> **Phase 4 (Verification):** `Use /superpowers:verification-before-completion — before reporting complete`
+
+---
+
 ```
-Implement STORY-031: Dark Mode Toggle.
+🎯 Target: Claude Code / MiniMax-M2.7 — Structured step-by-step implementation prompt
+💡 Optimized for: MiniMax-M2.7 (OpenAI-compatible, strong at instruction following, code generation, structured output)
 
-Read FIRST — read every file listed below completely before writing any code:
-1. CLAUDE.md (all 19 frontend rules — especially RULE 5: no forced color mode in route groups)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules. Anti-patterns to REJECT:
-   - Using bg-[#xxxxxx] instead of bg-primary/bg-background/bg-secondary
-   - Adding className=".dark" or className="light" to any layout file
-   - Using next-themes package (this project uses localStorage + classList only)
-3. docs/design/00-brand-identity.md — brand colors, mono labels
-4. docs/design/01-design-system.md — :root and .dark CSS variable definitions
-5. docs/stories/EPIC-08-polish/STORY-031.md (this file — all 8 ACs must be implemented)
+═══════════════════════════════════════════════════════════════════
+STEP 0 — PROJECT CONTEXT (carry forward to every phase)
+═══════════════════════════════════════════════════════════════════
 
-SPECIFIC IMPLEMENTATION STEPS:
+Ravenbase Frontend: Next.js 15 App Router + Tailwind CSS v4 + shadcn/ui + TanStack Query
+Design system: CSS variables only (no hardcoded hex). Dark mode via .dark class on <html>
+Brand colors: Primary=#2d4a3e (forest green), Background=#f5f3ee (warm cream), Accent=#a8c4b2
+DO NOT introduce new design aesthetics — follow the established brand system exactly.
 
-Step 1 — Verify globals.css CSS variables FIRST (before any code):
-Open app/globals.css and confirm these exact :root values exist:
-  --background: #f5f3ee
-  --foreground: #1a1a1a
-  --primary: #2d4a3e
-  --primary-foreground: #ffffff
-  --secondary: #e8ebe6
-  --muted-foreground: #6b7280
-  --accent: #a8c4b2
-  --warning: #ffc00d
-  --warning-foreground: #78350f
-  --border: #d1d5db
-  --card: #ffffff
-  --card-foreground: #1a1a1a
-  --radius: 1rem  (equals rounded-2xl)
+═══════════════════════════════════════════════════════════════════
+STEP 1 — READ PHASE (mandatory — read ALL files before touching code)
+═══════════════════════════════════════════════════════════════════
 
-And confirm .dark overrides:
-  --background: #1a1a1a
-  --foreground: #f5f3ee
-  --primary: #3d6454
-  --primary-foreground: #f0f7f4
-  --secondary: #2a2a2a
-  --muted-foreground: #9ca3af
-  --border: #333333
-  --card: #242424
+INVOKE: Use /frontend-design
 
-If ANY variable is missing or wrong: fix globals.css FIRST.
+Then read ALL of these files in order — NOT in parallel — every file completely:
 
-Step 2 — Create hooks/use-theme.ts:
+1. CLAUDE.md
+   → Mandatory. All 19 rules. Especially RULE 5 (no forced color mode in route groups).
+
+2. docs/design/AGENT_DESIGN_PREAMBLE.md
+   → NON-NEGOTIABLE. Read every line. Anti-patterns to REJECT on sight:
+     ❌ className="bg-[#2d4a3e]" → must be bg-primary
+     ❌ className="rounded-lg" on cards → must be rounded-2xl
+     ❌ className="rounded-md" on CTAs → must be rounded-full
+     ❌ className=".dark" on layout outer div → forbidden
+     ❌ next-themes package → forbidden (localStorage + classList only)
+
+3. docs/design/00-brand-identity.md
+   → Brand colors exact values, mono labels ◆ PATTERN, logo usage rules.
+
+4. docs/design/01-design-system.md
+   → Complete CSS variable definitions for :root and .dark. Read the entire file.
+   → Section A: Conflict Card (Active) — border-2 border-primary
+   → Section B: Memory Sticky Note — bg-[#fef9c3] rotation pattern
+
+5. docs/design/04-ux-patterns.md
+   → Micro-interaction specs: hover states, transitions, animations.
+   → Keyboard navigation patterns.
+   → IMPORTANT: This file specifies exact animation timings — use them.
+
+6. docs/stories/EPIC-08-polish/STORY-031.md (this file)
+   → All 8 ACs defined here. Implementation must satisfy all 8.
+
+═══════════════════════════════════════════════════════════════════
+STEP 2 — VERIFY CSS VARIABLES (Phase 2a — before creating any component)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss — for Tailwind CSS v4 token usage
+
+Open app/globals.css. READ the entire file. Confirm ALL of these exist:
+
+:root {
+  --background: #f5f3ee;       /* warm cream — MUST be exact */
+  --foreground: #1a1a1a;
+  --primary: #2d4a3e;          /* forest green — MUST be exact */
+  --primary-foreground: #ffffff;
+  --secondary: #e8ebe6;
+  --secondary-foreground: #1a1a1a;
+  --muted: #e8ebe6;
+  --muted-foreground: #6b7280;
+  --accent: #a8c4b2;
+  --accent-foreground: #1a1a1a;
+  --warning: #ffc00d;
+  --warning-foreground: #78350f;
+  --success: #3d8b5a;
+  --success-foreground: #ffffff;
+  --destructive: #b53233;
+  --destructive-foreground: #ffffff;
+  --border: #d1d5db;
+  --input: #d1d5db;
+  --ring: #2d4a3e;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --radius: 1rem;              /* = rounded-2xl in Tailwind */
+}
+
+.dark {
+  --background: #1a1a1a;
+  --foreground: #f5f3ee;
+  --primary: #3d6454;          /* lighter green for dark bg */
+  --primary-foreground: #f0f7f4;
+  --secondary: #2a2a2a;
+  --secondary-foreground: #e8ebe6;
+  --muted: #2a2a2a;
+  --muted-foreground: #9ca3af;
+  --accent: #2d4a3e;
+  --accent-foreground: #a8c4b2;
+  --warning: #ffc00d;
+  --warning-foreground: #1a1a1a;
+  --success: #4caf6c;
+  --success-foreground: #1a1a1a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #333333;
+  --input: #333333;
+  --ring: #3d6454;
+  --card: #242424;
+  --card-foreground: #f5f3ee;
+}
+
+Also confirm @theme inline maps fonts:
+@theme inline {
+  --font-sans: var(--font-dm-sans), "DM Sans", sans-serif;
+  --font-serif: var(--font-playfair-display), "Playfair Display", Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+}
+
+IF ANY VARIABLE IS WRONG OR MISSING → fix globals.css FIRST.
+This is a prerequisite for every subsequent step.
+
+═══════════════════════════════════════════════════════════════════
+STEP 3 — CREATE HOOK (Phase 2b — useTheme)
+═══════════════════════════════════════════════════════════════════
+
+File: hooks/use-theme.ts
+
 "use client"
 import { useEffect, useState } from "react"
 
-const STORAGE_KEY = "ravenbase-theme"  // AC-3
+const STORAGE_KEY = "ravenbase-theme"
 
 export function useTheme() {
   const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
-    // AC-7: Default = light if no preference stored
+    // AC-7: Default = light if nothing stored
     const stored = localStorage.getItem(STORAGE_KEY)
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
     const dark = stored === "dark" || (!stored && prefersDark)
@@ -376,44 +462,65 @@ export function useTheme() {
   }, [])
 
   const toggle = () => {
+    // Add transitioning class for smooth animation
+    document.documentElement.classList.add("transitioning")
     const next = !isDark
     setIsDark(next)
     document.documentElement.classList.toggle("dark", next)
-    // AC-3: Store preference in localStorage
+    // AC-3: Persist to localStorage
     localStorage.setItem(STORAGE_KEY, next ? "dark" : "light")
+    // Remove transitioning class after animation completes
+    setTimeout(() => document.documentElement.classList.remove("transitioning"), 250)
   }
 
   return { isDark, toggle }
 }
 
-Step 3 — Create components/domain/ThemeToggle.tsx:
+═══════════════════════════════════════════════════════════════════
+STEP 4 — CREATE THEME TOGGLE COMPONENT (Phase 2c)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss-animations
+
+File: components/domain/ThemeToggle.tsx
+
 "use client"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "@/hooks/use-theme"
 
 export function ThemeToggle() {
   const { isDark, toggle } = useTheme()
+
   return (
     <button
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                 bg-secondary hover:bg-accent transition-colors
-                 text-xs font-mono text-muted-foreground border border-border
-                 min-h-[44px] min-w-[44px]"  // AC-8: 44px touch target
+                 bg-secondary hover:bg-accent
+                 text-xs font-mono text-muted-foreground
+                 border border-border
+                 min-h-[44px] min-w-[44px]   // AC-8: 44px touch target minimum
+                 transition-colors duration-150"
     >
-      {isDark
-        ? <Sun className="w-3.5 h-3.5 text-primary transition-transform duration-300 rotate-180" />
-        : <Moon className="w-3.5 h-3.5 text-primary transition-transform duration-300 rotate-0" />
-      }
+      {isDark ? (
+        <Sun className="w-3.5 h-3.5 text-primary transition-transform duration-300 rotate-180" />
+      ) : (
+        <Moon className="w-3.5 h-3.5 text-primary transition-transform duration-300 rotate-0" />
+      )}
       <span className="hidden sm:inline">{isDark ? "Day" : "Night"}</span>
     </button>
   )
 }
 
-Step 4 — Add no-flash script to app/layout.tsx:
-In the <head> section (BEFORE any other scripts), add:
-<script dangerouslySetInnerHTML={{ __html: `
+═══════════════════════════════════════════════════════════════════
+STEP 5 — ADD NO-FLASH SCRIPT (Phase 2d — app/layout.tsx)
+═══════════════════════════════════════════════════════════════════
+
+In app/layout.tsx <head> section — BEFORE any other scripts:
+
+<script
+  dangerouslySetInnerHTML={{
+    __html: `
 (function() {
   try {
     var s = localStorage.getItem('ravenbase-theme');
@@ -423,76 +530,122 @@ In the <head> section (BEFORE any other scripts), add:
     }
   } catch(e) {}
 })();
-`}} />
+`,
+  }}
+/>
 
-This goes inside <head> in the root app/layout.tsx — NOT in a dashboard layout.
-AC-4: This prevents flash of wrong theme on every page load.
+AC-4: This blocking script must run before React hydrates — prevents flash.
 
-Step 5 — Add smooth transition class to globals.css:
-Add to globals.css:
-html.transitioning *,
-html.transitioning {
+Also confirm <html> has:
+className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
+
+═══════════════════════════════════════════════════════════════════
+STEP 6 — FIX ROUTE GROUP LAYOUTS (Phase 2e)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss-mobile-first
+
+Search for any forced color mode in layouts:
+grep -rn "className=.*.dark\|className=.*light" app/\(marketing\)/layout.tsx app/\(dashboard\)/layout.tsx
+
+AC-6 REQUIREMENT: Marketing pages must respect stored theme preference.
+→ REMOVE any className=".dark" or className=".light" from the marketing layout outer div.
+→ REMOVE any className=".dark" from dashboard layout outer div.
+
+Also add smooth transition to globals.css (if not already present):
+html.transitioning,
+html.transitioning * {
   transition: background-color 200ms ease, border-color 200ms ease,
               color 150ms ease !important;
 }
 
-When toggling, briefly add 'transitioning' class, remove after 250ms:
-const toggle = () => {
-  document.documentElement.classList.add('transitioning')
-  const next = !isDark
-  setIsDark(next)
-  document.documentElement.classList.toggle("dark", next)
-  localStorage.setItem(STORAGE_KEY, next ? "dark" : "light")
-  setTimeout(() => document.documentElement.classList.remove('transitioning'), 250)
-}
+═══════════════════════════════════════════════════════════════════
+STEP 7 — ADD TOGGLE TO DASHBOARD HEADER (Phase 2f)
+═══════════════════════════════════════════════════════════════════
 
-Step 6 — Fix app/layout.tsx font variables:
-Confirm <html> has:
-className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable}`}
-(Together, these three become the class string: "${font-sans} ${font-serif} ${font-mono}")
+Find the dashboard header component. Common locations:
+- components/domain/DashboardHeader.tsx
+- app/(dashboard)/layout.tsx (inline)
 
-Step 7 — Remove forced color mode from route group layouts:
-Search for any className containing ".dark" or ".light" in app/(marketing)/layout.tsx
-and app/(dashboard)/layout.tsx — REMOVE them. AC-6: Marketing pages must respect
-stored theme preference.
+Add <ThemeToggle /> in the top-right area of the header, near the user avatar.
 
-Step 8 — Add ThemeToggle to DashboardHeader:
-Find the dashboard header component (likely components/domain/DashboardHeader.tsx
-or part of app/(dashboard)/layout.tsx).
-Add: <ThemeToggle /> in the top-right area, near the avatar.
+AC-1: Toggle must appear in dashboard header (top right, near avatar).
 
-Step 9 — Sidebar must remain bg-primary in BOTH modes:
-In app/(dashboard)/layout.tsx or the sidebar component, verify:
-- Sidebar (or its nav container) uses: className="bg-primary text-primary-foreground"
-- This must NOT change based on dark mode
-- AC-1: sidebar bg-primary is the #2d4a3e forest green — never bg-background
+═══════════════════════════════════════════════════════════════════
+STEP 8 — VERIFY SIDEBAR (Phase 2g)
+═══════════════════════════════════════════════════════════════════
 
-Step 10 — Hardcoded hex audit:
-grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d" components/ app/ --include="*.tsx"
-Every match must be in globals.css as a CSS variable definition, NOT in a className.
+AC-1 (critical): Sidebar must remain bg-primary (#2d4a3e forest green) in BOTH light
+and dark mode. NEVER use bg-background or bg-sidebar on the sidebar.
 
-WHAT NOT TO DO:
-- DO NOT use next-themes package — this project uses pure localStorage + classList
-- DO NOT add className="dark" or className="light" to any layout file's outer div
-- DO NOT use bg-[#2d4a3e] in any component — use bg-primary
-- DO NOT use bg-[#f5f3ee] in any component — use bg-background
-- DO NOT put ThemeToggle in settings — it goes in the dashboard header
+Search: grep -rn "bg-primary" app/\(dashboard\)/ | grep -i sidebar
+Confirm: sidebar nav container has className containing "bg-primary"
 
-AC CHECKLIST (all must be verified):
-□ AC-1: ThemeToggle in dashboard header (top right, near avatar)
-□ AC-2: .dark class added/removed on document.documentElement
-□ AC-3: localStorage key 'ravenbase-theme' stores 'dark' or 'light'
-□ AC-4: No flash on page load (blocking script in <head>)
-□ AC-5: Sun icon in dark mode (click→light), Moon icon in light mode (click→dark)
-□ AC-6: Marketing pages respect stored theme
-□ AC-7: Default is light mode if nothing stored
-□ AC-8: Toggle touch target ≥ 44px
-□ Brand colors: sidebar bg-primary in both modes
-□ Hardcoded hex audit: 0 violations
+═══════════════════════════════════════════════════════════════════
+STEP 9 — HARDCODE HEX AUDIT (Phase 3 — Accessibility & Quality)
+═══════════════════════════════════════════════════════════════════
 
-PLAN QUALITY: This plan must be minimum 800 lines. Write full TypeScript for
-every component file. No pseudocode, no vague descriptions. Show the exact
-className string for every element.
+INVOKE: Use /superpowers:verification-before-completion
+
+Run this audit and fix ALL violations before proceeding:
+grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d\|#a8c4b2\|#1a1a1a" \
+  components/ app/ --include="*.tsx" --include="*.ts"
+
+Every match must be:
+  ✅ Inside app/globals.css as a CSS variable definition
+  ✅ In a comment explaining the brand color
+NOT in any className string in a component file.
+
+If found in a className → replace with CSS variable:
+  #2d4a3e → bg-primary
+  #f5f3ee → bg-background
+  #e8ebe6 → bg-secondary
+  #a8c4b2 → bg-accent
+  #ffc00d → bg-warning
+  #1a1a1a → text-foreground (or bg-foreground in dark contexts)
+
+═══════════════════════════════════════════════════════════════════
+STEP 10 — VERIFY ALL 8 ACCEPTANCE CRITERIA (Phase 4)
+═══════════════════════════════════════════════════════════════════
+
+For each AC, write a one-line verification result:
+
+□ AC-1: ThemeToggle in dashboard header — VERIFIED (grep confirms <ThemeToggle in header)
+□ AC-2: .dark class on documentElement — VERIFIED (useTheme.ts calls classList.toggle)
+□ AC-3: localStorage persists 'dark'/'light' — VERIFIED (grep confirms STORAGE_KEY)
+□ AC-4: No-flash script in <head> — VERIFIED (grep confirms <script dangerouslySetInnerHTML in layout)
+□ AC-5: Sun/Moon icon swap — VERIFIED (ThemeToggle renders both icons conditionally)
+□ AC-6: Marketing respects theme — VERIFIED (grep: no forced .dark/.light in marketing layout)
+□ AC-7: Default = light — VERIFIED (useTheme: stored === null → light)
+□ AC-8: 44px touch target — VERIFIED (className: min-h-[44px] min-w-[44px])
+□ Brand: sidebar bg-primary in both modes — VERIFIED (grep confirms)
+□ Hex audit: 0 violations — VERIFIED (grep run, 0 matches in component files)
+
+═══════════════════════════════════════════════════════════════════
+WHAT NOT TO DO (Anti-patterns — reject these on sight)
+═══════════════════════════════════════════════════════════════════
+
+❌ DO NOT use next-themes package — localStorage + classList only
+❌ DO NOT add className="dark" or "light" to any layout outer div
+❌ DO NOT use bg-[#2d4a3e] — use bg-primary
+❌ DO NOT use bg-[#f5f3ee] — use bg-background
+❌ DO NOT use rounded-lg on cards — rounded-2xl only
+❌ DO NOT use rounded-md on CTAs — rounded-full only
+❌ DO NOT put ThemeToggle in Settings — header only
+❌ DO NOT use system color scheme as sole determinant — localStorage takes priority
+
+═══════════════════════════════════════════════════════════════════
+SUCCESS CRITERIA — ALL must be YES to report complete
+═══════════════════════════════════════════════════════════════════
+
+✅ npm run build passes (0 TypeScript errors)
+✅ AC-1 through AC-8 all verified
+✅ Sidebar: bg-primary in both light and dark mode
+✅ No hardcoded hex colors in any component file
+✅ No flash on page load (blocking script confirmed)
+✅ Theme toggle: Sun in dark mode, Moon in light mode
+✅ localStorage key 'ravenbase-theme' persists preference
+✅ Marketing pages respect stored theme (no forced mode)
 
 Show plan first. Do not implement yet.
 ```

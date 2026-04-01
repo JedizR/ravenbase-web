@@ -401,95 +401,393 @@ npx axe-cli http://localhost:3000/graph --tags wcag2a,wcag2aa
 
 ---
 
-## Agent Implementation Brief
+## Frontend Agent Brief
+
+> **Skill Invocations — invoke each skill before the corresponding phase:**
+>
+> **Phase 1 (Read/Design):** `Use /frontend-design — enforce production-grade aesthetic compliance`
+> **Phase 2 (CSS/Tokens):** `Use /tailwindcss — for Tailwind CSS v4 token system`
+> **Phase 3 (Layout):** `Use /tailwindcss-advanced-layouts — for multi-page layout audit`
+> **Phase 4 (Accessibility):** `Use /tailwindcss-animations — for micro-interaction verification`
+> **Phase 5 (Verification):** `Use /superpowers:verification-before-completion — before claiming done`
+
+---
 
 ```
-Implement STORY-038: Final UX Polish Pass.
+🎯 Target: Claude Code / MiniMax-M2.7 — Ultra-detailed planning and implementation
+💡 Optimization: MiniMax-M2.7 directive — WRITE EVERYTHING IN MAXIMUM DETAIL.
+   Plans MUST be 2000-4000 lines for this story. It is the most complex.
+   Never short-circuit with "see existing files" or "grep to find". Actually run
+   every command. Actually verify every item. Report exact grep output for each.
+
+═══════════════════════════════════════════════════════════════════
+NATURE OF THIS STORY
+═══════════════════════════════════════════════════════════════════
 
 This is a QUALITY AUDIT AND SURFACE CORRECTION PASS. No new features.
-Read these files FIRST before doing anything else:
-1. CLAUDE.md (all 19 rules — every rule is mandatory)
-2. docs/design/AGENT_DESIGN_PREAMBLE.md — NON-NEGOTIABLE visual rules.
-   Anti-patterns to REJECT on sight:
-   - Hardcoded hex colors in JSX: className="bg-[#2d4a3e]" → must be bg-primary
-   - Rounded-lg on cards: className="rounded-lg" → rounded-2xl
-   - font-sans on headlines: className="text-4xl font-sans" → font-serif
-   - White backgrounds: className="bg-white" → bg-background or bg-card
-   - Generic border colors: className="border-gray-200" → border-border
-3. docs/design/00-brand-identity.md — verify exact hex values:
-   Primary: #2d4a3e (forest green)
-   Background: #f5f3ee (warm cream)
-   Secondary: #e8ebe6
-   Accent: #a8c4b2
-   Warning: #ffc00d
-4. docs/design/01-design-system.md — verify all CSS variables are in globals.css
-5. docs/design/04-ux-patterns.md — verify all micro-interactions present in globals.css
+No business logic changes. No refactoring.
 
-DEVELOPMENT SEQUENCE (in order):
-1. Run hardcoded hex audit FIRST — fix all hex colors before touching anything else
-2. Fix typography violations (font-serif on H1/H2, font-mono on mono labels)
-3. Fix shape violations (rounded-2xl on cards, rounded-full on CTAs)
-4. Verify micro-interactions in globals.css (tw-animate-css)
-5. Page-by-page functional check (follow AC-5 order)
-6. Fix missing loading.tsx files
-7. Run axe-cli on key pages
-8. Mobile verification at 375px
-9. Final build: npm run build && npm run test
+What you ARE doing:
+- Verifying every page uses correct brand colors (CSS variables, no hardcoded hex)
+- Verifying every page uses correct fonts (font-serif on headlines, font-mono on mono labels)
+- Verifying every page uses correct shapes (rounded-2xl on cards, rounded-full on CTAs)
+- Verifying every page has required micro-interactions
+- Verifying every page has skip link + main landmark + correct heading hierarchy
+- Fixing violations found during the audit
 
-SPECIFIC FILES TO CHECK AND FIX:
+What you are NOT doing:
+- NOT building new features
+- NOT changing business logic
+- NOT refactoring components for performance
+- NOT adding new pages
 
-app/globals.css:
-- Confirm :root has ALL 18 CSS variables listed in AC-1a
-- Confirm .dark has ALL 18 dark mode overrides
-- Confirm @theme inline maps font variables correctly
-- Confirm tw-animate-css imported
+═══════════════════════════════════════════════════════════════════
+READING ORDER
+═══════════════════════════════════════════════════════════════════
 
-components/marketing/Header.tsx:
-- Nav links: underline grow animation from left (not bg-primary hover)
-- CTA buttons: bg-primary rounded-full
+INVOKE: Use /frontend-design
 
-components/marketing/Footer.tsx:
-- Legal nav links: /privacy and /terms
+Read ALL files in this order. Write "✅ CONFIRMED READ: [filename]" after each:
 
-app/(dashboard)/layout.tsx:
-- NO forced className=".dark" or className="light"
-- Sidebar: bg-primary in both light and dark modes
+1. CLAUDE.md — all 19 rules. Study especially RULE 5, 10, 15, 16
+2. docs/design/AGENT_DESIGN_PREAMBLE.md — entire file, every anti-pattern
+3. docs/design/00-brand-identity.md — exact hex values, mono label pattern ◆
+4. docs/design/01-design-system.md — all 18 CSS variables :root and .dark
+5. docs/design/04-ux-patterns.md — micro-interaction specs, animation timings
+6. docs/stories/epics.md — confirm all 37 previous stories listed
+7. docs/stories/EPIC-08-polish/STORY-038.md (this file — all 8 AC categories)
 
-app/(dashboard)/inbox/page.tsx:
-- Conflict cards: border-2 border-primary when active
-- Keyboard shortcuts: J/K/Enter/Backspace/C/?
-- Empty state: animated checkmark
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 1 — HARDCODE HEX AUDIT
+═══════════════════════════════════════════════════════════════════
 
-app/(dashboard)/chat/page.tsx:
-- Empty state: prompt chips
-- Messages: rounded-2xl
-- Citations: font-mono cards
+INVOKE: Use /tailwindcss
 
-app/(dashboard)/graph/page.tsx:
-- Cytoscape: bg-primary for nodes
-- Filter bar: bg-card rounded-2xl
-- NL query: above filter bar
+Run this command and record EVERY match:
 
-app/(dashboard)/workstation/page.tsx:
-- Prompt: rounded-xl input
-- Generate button: rounded-full bg-primary
-- Auto-save: ◆ SAVED_JUST_NOW mono label
+grep -rn "#2d4a3e\|#f5f3ee\|#e8ebe6\|#ffc00d\|#a8c4b2\|#1a1a1a" \
+  components/ app/ --include="*.tsx" --include="*.ts"
 
-app/(marketing)/pricing/page.tsx:
-- Cards: bg-card rounded-2xl border border-border
-- Annual toggle: works correctly
-- CTA buttons: rounded-full bg-primary
+For each match found, record:
+- File path
+- Line number
+- The actual line content
+- Whether it is in globals.css (OK) or in a component file (MUST FIX)
 
-Every page:
-- Skip-to-content link as first focusable element
-- main id="main-content"
-- Correct heading hierarchy
+IF ANY matches found in component files → fix immediately using this map:
+  #2d4a3e → bg-primary
+  #f5f3ee → bg-background
+  #e8ebe6 → bg-secondary
+  #a8c4b2 → bg-accent
+  #ffc00d → bg-warning
+  #1a1a1a → text-foreground
 
-Show your audit plan first (what you'll check, what you expect to find).
-Report every violation found and fixed.
-Do not implement any new features.
-Do not refactor any business logic.
-Only fix: colors, fonts, shapes, interactions, missing loading states.
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 2 — CSS VARIABLES VERIFICATION
+═══════════════════════════════════════════════════════════════════
+
+Open app/globals.css. READ IT COMPLETELY.
+
+Confirm ALL of these exist in :root:
+--background: #f5f3ee
+--foreground: #1a1a1a
+--primary: #2d4a3e
+--primary-foreground: #ffffff
+--secondary: #e8ebe6
+--muted-foreground: #6b7280
+--accent: #a8c4b2
+--warning: #ffc00d
+--warning-foreground: #78350f
+--border: #d1d5db
+--card: #ffffff
+--card-foreground: #1a1a1a
+--radius: 1rem
+
+Confirm ALL of these exist in .dark:
+--background: #1a1a1a
+--foreground: #f5f3ee
+--primary: #3d6454
+--primary-foreground: #f0f7f4
+--secondary: #2a2a2a
+--muted-foreground: #9ca3af
+--border: #333333
+--card: #242424
+
+IF ANY MISSING OR WRONG → fix globals.css FIRST.
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 3 — BRAND COLOR AUDIT (AC-1)
+═══════════════════════════════════════════════════════════════════
+
+For each of these items, run the verification command and record PASS or FAIL:
+
+AC-1a: Sidebar uses bg-primary in both modes
+Command: grep -rn "bg-primary" app/\(dashboard\)/layout.tsx components/domain/Sidebar.tsx 2>/dev/null | head -5
+Expected: className contains "bg-primary"
+FAIL → add className="bg-primary" to sidebar nav container
+
+AC-1b: Page background uses bg-background
+Command: grep -rn "bg-background" app/\(dashboard\)/ | head -10
+Expected: pages use bg-background not bg-white
+
+AC-1c: CTA buttons use rounded-full
+Command: grep -rn "bg-primary rounded-full" components/ app/ --include="*.tsx" | head -10
+Expected: all primary CTAs have rounded-full
+
+AC-1d: Cards use rounded-2xl
+Command: grep -rn "bg-card rounded-2xl" components/ app/ --include="*.tsx" | head -10
+Expected: all cards have rounded-2xl
+
+AC-1e: Active nav items use bg-primary-foreground/15
+Command: grep -rn "bg-primary-foreground/15" components/ --include="*.tsx" | head -5
+Expected: active nav items have this class
+
+AC-1f: Progress bars use bg-primary fill
+Command: grep -rn "\[&>div\]:bg-primary\|bg-primary.*rounded-full.*h-" components/ --include="*.tsx" | head -5
+Expected: progress bar fills use bg-primary
+
+AC-1g: Focus rings use ring-primary/30
+Command: grep -rn "focus:ring-primary\|ring-primary/30" components/ --include="*.tsx" | head -5
+Expected: focus states use forest green ring
+
+AC-1h: Conflict badges use bg-warning text-[var(--warning-foreground)]
+Command: grep -rn "bg-warning" components/domain/ --include="*.tsx" | head -5
+Expected: conflict/warning badges use bg-warning
+
+AC-1i: Zero hardcoded hex in components (already verified in Phase 1)
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 4 — TYPOGRAPHY AUDIT (AC-2)
+═══════════════════════════════════════════════════════════════════
+
+AC-2a: All H1 use font-serif
+Command: grep -rn "text-[0-9]xl" app/\(marketing\)/ --include="*.tsx" | grep -v font-serif | head -10
+Expected: 0 matches (all headlines use font-serif)
+
+AC-2b: All H2 use font-serif
+Command: grep -rn "font-serif text-2xl\|font-serif text-3xl" components/ app/ --include="*.tsx" | wc -l
+Expected: many matches (all section headings)
+
+AC-2c: All body text uses font-sans (default, no class needed)
+Command: grep -rn "className=.*font-sans" components/ app/ --include="*.tsx" | head -5
+Expected: only when explicitly needed
+
+AC-2d: All mono labels use font-mono
+Command: grep -rn "◆ " components/ app/ --include="*.tsx" | grep -v font-mono | head -10
+Expected: 0 matches (all ◆ labels are font-mono)
+
+AC-2e: Status chips use font-mono
+Command: grep -rn "rounded-full.*font-mono\|font-mono.*rounded-full" components/ --include="*.tsx" | head -5
+Expected: status chips have font-mono
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 5 — SHAPE AUDIT (AC-3)
+═══════════════════════════════════════════════════════════════════
+
+AC-3a: All cards rounded-2xl (not rounded-lg)
+Command: grep -rn "bg-card rounded-lg\|bg-card rounded-xl" components/ app/ --include="*.tsx"
+Expected: 0 matches — all cards must be rounded-2xl
+
+AC-3b: All primary CTAs rounded-full (not rounded-md)
+Command: grep -rn "bg-primary rounded-md\|bg-primary rounded-lg" components/ app/ --include="*.tsx"
+Expected: 0 matches — all primary CTAs must be rounded-full
+
+AC-3c: All dialog content rounded-2xl
+Command: grep -rn "DialogContent\|AlertDialogContent" components/ --include="*.tsx" | head -5
+Expected: shadcn Dialog content is rounded-2xl by default
+
+AC-3d: All inputs rounded-xl
+Command: grep -rn "rounded-lg.*border\|border.*rounded-lg" components/ --include="*.tsx" | head -5
+Expected: input fields should be rounded-xl
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 6 — MICRO-INTERACTIONS AUDIT (AC-4)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss-animations
+
+AC-4a: Primary buttons: hover:-translate-y-px active:translate-y-0
+Check: grep -rn "hover:-translate-y-px" components/ --include="*.tsx" | head -5
+
+AC-4b: Secondary buttons: hover:bg-secondary
+Check: grep -rn "hover:bg-secondary" components/ --include="*.tsx" | head -5
+
+AC-4c: Cards: hover:shadow-md transition-shadow
+Check: grep -rn "hover:shadow-md" components/ --include="*.tsx" | head -5
+
+AC-4d: Nav links: underline grow animation (NOT bg-primary hover)
+Check: grep -rn "hover:bg-primary" components/marketing/Header.tsx | head -5
+Expected: nav links should NOT use bg-primary hover — use underline animation
+
+AC-4e: Inputs: focus:ring-2 focus:ring-primary/30 focus:border-primary
+Check: grep -rn "focus:ring-2 focus:ring-primary/30" components/ --include="*.tsx" | head -5
+
+AC-4f: Dropdown menus: animate-in fade-in zoom-in-95
+Check: grep -rn "animate-in fade-in" components/ --include="*.tsx" | head -5
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 7 — PAGE-BY-PAGE AUDIT (AC-5)
+═══════════════════════════════════════════════════════════════════
+
+For EACH page below, verify:
+1. Page renders without crash
+2. Brand colors correct (no white backgrounds, no wrong greens)
+3. Typography correct (font-serif headlines, font-mono labels)
+4. Shapes correct (rounded-2xl cards, rounded-full CTAs)
+5. Required elements present (skip link, main landmark, correct heading hierarchy)
+
+Run: npm run build && npm run dev
+Then manually visit each page and record PASS or FAIL with notes.
+
+Pages to audit (in order):
+1. http://localhost:3000/register
+2. http://localhost:3000/login
+3. http://localhost:3000/onboarding
+4. http://localhost:3000/chat
+5. http://localhost:3000/graph
+6. http://localhost:3000/workstation
+7. http://localhost:3000/sources
+8. http://localhost:3000/inbox
+9. http://localhost:3000/settings
+10. http://localhost:3000/settings/billing
+11. http://localhost:3000/settings/referrals
+12. http://localhost:3000/settings/data
+13. http://localhost:3000/
+14. http://localhost:3000/privacy
+15. http://localhost:3000/terms
+
+For each page, record:
+[PASS/FAIL] PageName
+- Brand colors: OK / ISSUES (list)
+- Typography: OK / ISSUES (list)
+- Shapes: OK / ISSUES (list)
+- Required elements: OK / MISSING (list)
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 8 — ACCESSIBILITY AUDIT (AC-6)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /superpowers:verification-before-completion
+
+Run axe on 3 key pages:
+
+npx axe-cli http://localhost:3000 --tags wcag2a,wcag2aa
+npx axe-cli http://localhost:3000/onboarding --tags wcag2a,wcag2aa
+npx axe-cli http://localhost:3000/graph --tags wcag2a,wcag2aa
+
+Record number of critical violations for each. Must be 0.
+
+Manual checks:
+□ Every page has skip link as first focusable element
+□ Every page has <main id="main-content">
+□ No keyboard traps in any component
+□ All images have alt text
+□ aria-live regions on streaming content
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 9 — PERFORMANCE AUDIT (AC-7)
+═══════════════════════════════════════════════════════════════════
+
+npm run build
+Expected: 0 TypeScript errors, 0 warnings
+
+npm run test
+Expected: 0 test failures
+
+grep -rn "console.error\|console.warn" components/ app/ --include="*.tsx" --include="*.ts"
+Expected: 0 matches (no console.error/warn in production code)
+
+find app/\(dashboard\) -name "page.tsx" | while read p; do
+  dir=$(dirname "$p")
+  [ -f "$dir/loading.tsx" ] || echo "MISSING loading.tsx: $dir"
+done
+Expected: 0 missing loading.tsx files
+
+═══════════════════════════════════════════════════════════════════
+AUDIT PHASE 10 — MOBILE AUDIT (AC-8)
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /tailwindcss-mobile-first
+
+In browser DevTools, set viewport to 375px (iPhone 12).
+
+For each dashboard page, verify:
+□ Sidebar renders as Sheet drawer (not visible nav)
+□ No horizontal overflow
+□ All touch targets ≥ 44px height
+□ Pricing cards stack vertically
+
+═══════════════════════════════════════════════════════════════════
+FIX PRIORITY
+═══════════════════════════════════════════════════════════════════
+
+Fix violations in this order (most impactful first):
+
+P0 (Critical — fix immediately):
+- Any page that crashes or shows 500 error
+- Missing skip links on any page
+- Hardcoded hex colors in component files
+- Sidebar not using bg-primary
+
+P1 (High — fix before marking complete):
+- Cards using rounded-lg instead of rounded-2xl
+- CTAs using rounded-md instead of rounded-full
+- H1 without font-serif
+- ◆ mono labels without font-mono
+- Missing loading.tsx files
+
+P2 (Medium — fix if found):
+- Missing micro-interactions (hover states)
+- Focus ring missing or wrong color
+- Accessibility violations reported by axe
+
+═══════════════════════════════════════════════════════════════════
+ANTI-PATTERNS — automatic rejection
+═══════════════════════════════════════════════════════════════════
+
+During this audit, if you find ANY of these, fix immediately and document:
+❌ className with hardcoded hex color → replace with CSS variable
+❌ className="rounded-lg" on any card → change to rounded-2xl
+❌ className="rounded-md" on any CTA button → change to rounded-full
+❌ className="bg-white" → change to bg-card or bg-background
+❌ className without font-serif on h1 or h2 → add font-serif
+❌ ◆ label without font-mono → add font-mono
+❌ Page without loading.tsx → create it
+❌ Marketing pages without Header or Footer → add them
+
+═══════════════════════════════════════════════════════════════════
+DOCUMENTATION — after fixing all violations
+═══════════════════════════════════════════════════════════════════
+
+Create a file: docs/stories/EPIC-08-polish/STORY-038-AUDIT.md
+
+Audit results document with:
+A. Hardcoded hex violations found and fixed (list each file:line:fix)
+B. Typography violations found and fixed
+C. Shape violations found and fixed
+D. Micro-interaction violations found and fixed
+E. Page-by-page results (PASS/FAIL for each of 15 pages)
+F. Accessibility results (axe output per page)
+G. Mobile results (issues found)
+H. Performance results (npm run build + npm run test output)
+
+═══════════════════════════════════════════════════════════════════
+SUCCESS CRITERIA
+═══════════════════════════════════════════════════════════════════
+
+INVOKE: Use /superpowers:verification-before-completion
+
+✅ npm run build: 0 TypeScript errors, 0 warnings
+✅ npm run test: 0 failures
+✅ AC-1: 0 hardcoded hex violations in component files
+✅ AC-2: 0 typography violations (all headlines font-serif, all mono labels font-mono)
+✅ AC-3: 0 shape violations (all cards rounded-2xl, all CTAs rounded-full)
+✅ AC-4: All micro-interactions present
+✅ AC-5: All 15 pages PASS page-by-page audit
+✅ AC-6: axe reports 0 critical violations on 3 key pages
+✅ AC-7: No console.error/warn in production code, all loading.tsx present
+✅ AC-8: Mobile audit passes (no overflow, 44px touch targets)
+✅ Product walked through /register → /onboarding → /chat → /graph → /workstation → /sources → /inbox without any page crashing or showing wrong colors
 
 Show plan first. Do not implement yet.
 ```
