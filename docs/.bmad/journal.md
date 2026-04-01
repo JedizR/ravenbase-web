@@ -12,7 +12,7 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 33 / 38 |
+| Total stories complete | 34 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
 | Current sprint | 31 |
 | Active repo | ravenbase-web |
@@ -1066,7 +1066,26 @@ GraphQueryBar component above the filter bar with example query chips (clicking 
 > Theme toggle, transactional email, Privacy/Terms pages.
 > Sprint 27 covers STORY-031, STORY-032, and STORY-033.
 
-_No entries yet._
+### STORY-031 — Dark Mode Toggle
+**Date:** 2026-04-01 | **Sprint:** 27 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors, build passes
+**Commit:** `bd3e8f2`
+
+**What was built:**
+Dark/light mode toggle with `.dark` class on `<html>`, localStorage persistence via `ravenbase-theme` key, and no-flash blocking script in `<head>`. ThemeToggle button in dashboard header with Moon (light mode) / Sun (dark mode) icons and 44px touch target. Marketing pages respect stored preference. Smooth CSS transitions via `.transitioning` class.
+
+**Key decisions:**
+- Implemented per spec — no deviations
+- `useTheme` hook: `useState(false)` (light default), `useEffect` with empty deps applies class before paint
+- No-flash script uses `dangerouslySetInnerHTML` (only way to inject blocking inline scripts in Next.js App Router)
+- `STORAGE_KEY = "ravenbase-theme"` matches both the hook and the blocking script
+- Icon rotation: 180deg `transition-transform duration-300` on toggle
+
+**Gotchas:**
+- None encountered — straightforward implementation per spec
+
+**Tech debt noted:**
+- None.
 
 ---
 

@@ -9,23 +9,23 @@
 
 **Phase:** B — Frontend (Sprints 20–38)
 **Current sprint:** 31
-**Status:** In progress — 33 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022 done)
+**Status:** In progress — 34 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031 done)
 
-**Next story to implement:** STORY-031 (Sprint 31 — Dark mode toggle)
-**Story file:** `docs/stories/EPIC-08-polish/STORY-031.md`
+**Next story to implement:** STORY-032 (Sprint 32 — Transactional email via Resend)
+**Story file:** `docs/stories/EPIC-08-polish/STORY-032.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-022 — Pricing Page + Stripe Checkout (Sprint 30)** (2026-03-31)
-Public `/pricing` page with Free/Pro/Team tier cards, monthly/annual toggle, feature comparison table. Stripe Checkout session created server-side. Redis-idempotent webhook handler upgrades `User.tier` on `checkout.session.completed` and reverts to free on `customer.subscription.deleted`. Settings → Billing page with Customer Portal link. Build passes, 0 TypeScript errors.
+**STORY-031 — Dark Mode Toggle (Sprint 31)** (2026-04-01)
+Dark/light mode toggle implemented with `.dark` class on `<html>`, localStorage persistence via `ravenbase-theme` key, and no-flash blocking script. ThemeToggle button in dashboard header with Moon/Sun icons. Marketing pages respect stored preference. Build passes, 0 TypeScript errors.
 
 ---
 
 ## Context for Next Session
 
-STORY-022 complete. Pricing page at `app/(marketing)/pricing/page.tsx` (Server Component, SSG). PricingSection and PricingToggle in `components/marketing/`. Billing settings at `app/(dashboard)/settings/billing/page.tsx`. CheckoutSuccessHandler at `components/dashboard/CheckoutSuccessHandler.tsx` — listens for `?checkout=success` and fires toast. Marketing layout now includes QueryClientProvider (added to fix build error). Backend: `src/api/routes/billing.py` (create-checkout-session, create-portal-session), `src/services/billing_service.py`, `src/api/routes/webhooks.py` upgraded with Redis idempotency. API client regenerated after STORY-022.
+STORY-031 complete. Created `hooks/use-theme.ts` (useTheme hook with localStorage + classList.toggle) and `components/domain/ThemeToggle.tsx` (Moon/Sun icon toggle with 44px touch target). Added no-flash blocking script to `app/layout.tsx`. Added smooth transition CSS to `app/globals.css`. ThemeToggle added to `DashboardHeader`. No forced `.dark` or `.light` in any layout. Next: STORY-032 (transactional email).
 
 ---
 
