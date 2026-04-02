@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 41 / 43 |
+| Total stories complete | 41 / 43 (STORY-042 in progress) |
 | Current phase | Phase B — Production Launch (EPIC-10) |
-| Current sprint | 41 |
-| Active repo | ravenbase-web + ravenbase-api |
+| Current sprint | 42 |
+| Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-02 (STORY-041: Sources page upload wired, deployment config files created, UX gaps closed) |
+| Last entry | 2026-04-03 (STORY-042: Critical bug fixes + design polish — SSE reliability, auto-save, graph error states, mobile UX, testimonials) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1471,6 +1471,33 @@ Sources page Upload tab now renders `<IngestionDropzone>` with full upload flow:
 **Tech debt noted:**
 - Sources page has no error boundary — add in STORY-043.
 - `IngestionProgress` polling interval hardcoded at 2s.
+
+---
+
+## Sprint 42 — Production Readiness: Bug Fixes + Design Polish
+
+> Deep audit found 42 production-blocking issues. Comprehensive STORY-042 rewritten.
+> Sprint 42 covers STORY-042 Parts A, B, and C.
+
+### STORY-042 (in progress) — Production Readiness: Bug Fixes, Design Polish & Deployment Hardening
+**Date:** 2026-04-03 | **Sprint:** 42 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** 0 TypeScript errors, 24 routes compiled
+**Commit:** `7dbf713` (bug fixes), `0bfa6fa` (design polish)
+
+**What was built:**
+Part A — Critical Bug Fixes (15 items): SSE hooks retry + timeout, MemoryChat JSON.parse safety + input preservation, MetaDocEditor real auto-save, GraphExplorer error state, MemoryInbox off-by-one + swipe leak fix, IngestionDropzone maxFiles=1, IngestionProgress token race fix.
+Part B — User Journey Fixes: ProfileContext persistence, Sidebar credits for admins, CheckoutSuccessHandler redirect fix, mobile sidebar auto-close.
+Part C — Design Polish: Hero radial gradients + CTA hierarchy, feature card hover states, TestimonialsSection implemented (was null), stagger animations added.
+
+**Key decisions:**
+- SSE retry uses exponential backoff (1s/2s/4s) — not fixed interval
+- Auto-save uses localStorage — no network dependency for draft recovery
+- Kept JWT in query param for EventSource (browser limitation) — documented risk
+
+**Tech debt noted:**
+- SSE token security needs backend ephemeral token exchange
+- Hydration mismatches in useTheme/useMediaQuery pending
+- Parts D (security) and E (smoke tests) still pending
 
 ---
 

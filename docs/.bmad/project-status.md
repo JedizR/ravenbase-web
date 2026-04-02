@@ -9,12 +9,12 @@
 
 **Phase:** B — Production Launch
 **Current sprint:** 42
-**Status:** DEPLOYMENT READY — STORY-039/040/041 complete. All critical bugs fixed, admin bypass implemented, deployment configs created. Next: STORY-042 Production Deployment.
+**Status:** IN PROGRESS — STORY-042 Part A (critical bug fixes) + Part B (UX fixes) + Part C (design polish) implemented and deployed. Remaining: Part D (security hardening) + Part E (smoke test verification).
 
-**Next story to implement:** STORY-042 (Production Deployment — Railway + Vercel)
+**Next story to implement:** STORY-042 continued (Parts D + E) then STORY-043
 **Story file:** `docs/stories/EPIC-10-production-launch/STORY-042.md`
 
-**State:** All critical bugs fixed. System is code-complete and ready for deployment.
+**State:** Major bug fixes deployed. 42-item comprehensive story written and partially implemented.
 - ✅ BUG-001: Double Header/Footer removed from marketing pages
 - ✅ BUG-002: /dashboard → redirects to /chat (app/dashboard/page.tsx)
 - ✅ BUG-003: Header backdrop-blur removed (solid bg-background)
@@ -43,6 +43,7 @@
 
 ## Last Completed Stories
 
+**STORY-042 Part A+B+C (2026-04-03)** — Critical Bug Fixes + UX Fixes + Design Polish (in progress)
 **STORY-041 (2026-04-02)** — Sources Page Upload + UX Gaps + Deployment Config
 **STORY-040 (2026-04-02)** — Admin Bypass System
 **STORY-039 (2026-04-02)** — Critical Bug Fixes
