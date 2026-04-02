@@ -1366,7 +1366,7 @@ Backend: `ExportService` collects PostgreSQL (sources, meta_documents, profiles,
 
 **Quality gate:** `npm run build` — ✅ 0 TypeScript errors, all 3 admin pages compiled (`/admin`, `/admin/users`, `/admin/users/[id]`)
 
-**Commit:** _(see git log)_
+**Commit:** `ce178c6`
 
 **What was built:**
 - Fixed API contract mismatches in all 3 admin pages against the live backend (`types.gen.ts` as source of truth)
