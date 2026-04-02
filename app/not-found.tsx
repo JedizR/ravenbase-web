@@ -12,10 +12,10 @@ export default function NotFound() {
           This memory doesn&apos;t exist in your knowledge graph.
         </p>
         <Link
-          href="/dashboard"
+          href="/chat"
           className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium text-sm hover:bg-primary/90 transition-colors"
         >
-          Return to Dashboard
+          Return to Chat
         </Link>
       </div>
     </div>

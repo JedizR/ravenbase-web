@@ -12,6 +12,7 @@ import { PricingToggle } from "./PricingToggle"
 
 interface UserProfile {
   tier: string
+  is_admin?: boolean
 }
 
 interface CheckoutResponse {
@@ -124,6 +125,7 @@ export function PricingSection() {
   void clerkUser
 
   const currentTier = userProfile?.tier ?? null
+  const isAdmin = userProfile?.is_admin ?? false
 
   const checkoutMutation = useMutation({
     mutationFn: async ({
@@ -143,7 +145,16 @@ export function PricingSection() {
       return data
     },
     onSuccess: (data) => {
-      window.location.href = data.checkout_url
+      try {
+        const url = new URL(data.checkout_url)
+        if (url.protocol === "https:") {
+          window.location.href = data.checkout_url
+        } else {
+          toast.error("Invalid checkout URL. Please contact support.")
+        }
+      } catch {
+        toast.error("Invalid checkout URL. Please contact support.")
+      }
     },
     onError: () => {
       toast.error("Could not start checkout. Try again.")
@@ -156,6 +167,22 @@ export function PricingSection() {
       return
     }
     checkoutMutation.mutate({ tier, period: isAnnual ? "annual" : "monthly" })
+  }
+
+  if (isAdmin) {
+    return (
+      <section aria-labelledby="pricing-heading" className="py-24 bg-background">
+        <div className="max-w-5xl mx-auto px-6 text-center space-y-4">
+          <p className="font-mono text-xs text-muted-foreground tracking-wider">◆ ADMIN_ACCOUNT</p>
+          <h2 id="pricing-heading" className="font-serif text-3xl text-foreground">
+            Full access bypass active
+          </h2>
+          <p className="text-muted-foreground">
+            All features are unlocked. Credits are disabled for your account.
+          </p>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -280,7 +307,7 @@ export function PricingSection() {
                                px-6 py-3 rounded-full font-sans text-sm font-medium
                                hover:bg-secondary/80 transition-colors h-11"
                   >
-                    {isCurrentPlan ? "Open dashboard" : tier.cta}
+                    {isCurrentPlan ? "Open workspace" : tier.cta}
                   </a>
                 ) : (
                   <Button

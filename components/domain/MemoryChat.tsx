@@ -51,6 +51,14 @@ export function MemoryChat() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
   const [sessionsOpen, setSessionsOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null)
+
+  // Cancel active stream on unmount to prevent memory leak (BUG-022)
+  useEffect(() => {
+    return () => {
+      readerRef.current?.cancel().catch(() => null)
+    }
+  }, [])
 
   // Session list query
   const { data: sessionList, isLoading } = useQuery({
@@ -159,6 +167,7 @@ export function MemoryChat() {
     }
 
     const reader = response.body!.getReader()
+    readerRef.current = reader
     const decoder = new TextDecoder()
 
     try {
@@ -217,6 +226,8 @@ export function MemoryChat() {
           m.id === asstMsgId ? { ...m, isStreaming: false, isError: true } : m
         )
       )
+    } finally {
+      readerRef.current = null
     }
   }, [
     input,

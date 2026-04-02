@@ -7,59 +7,191 @@
 
 ---
 
-## Goal
+## Purpose
 
-The Workstation is the dedicated workspace for generating, viewing, and exporting Meta-Documents. It provides a split-panel layout (document history sidebar + editor), a real-time streaming Markdown editor that renders tokens as they arrive via SSE, and export functionality (Markdown file download, PDF via browser print). It is the primary output surface for Ravenbase's generative AI capabilities.
-
----
-
-## Product Requirements
-
-1. **Route:** Accessible at `/dashboard/workstation`. Two-panel layout on desktop: history sidebar (left) + editor (right). On mobile (< 768px): history hidden by default, accessible via bottom Sheet.
-
-2. **Prompt Input:** Fixed at bottom of the editor area. Controlled `<textarea>` with a "Generate" button (no `<form>` tags). On submit, calls `POST /v1/metadoc/generate` to get `job_id`, then opens SSE stream.
-
-3. **SSE Streaming:** `EventSource` connects to `/api/v1/metadoc/stream/{job_id}?token={clerk_token}`. Tokens stream in and render as Markdown in real-time using `react-markdown` + `remark-gfm`. Streaming status shown in editor header.
-
-4. **Streaming Indicator:** Shows `◆ GENERATING...` while streaming. Shows `◆ SAVED` after completion with auto-save confirmation.
-
-5. **Export as Markdown:** "Export" button creates a `Blob` with `text/markdown` and triggers anchor download. Filename: `meta-doc-{timestamp}.md`.
-
-6. **Export as PDF:** "Print" button calls `window.print()` with `@media print` CSS that hides navigation chrome and formats for A4.
-
-7. **Document History Panel:** Left sidebar lists all previous Meta-Docs for the active profile. Click to load into editor. Each item shows: title (first line of doc), created date. Sorted by most recent first.
-
-8. **Sources Panel:** "Sources" button shows which Memory nodes contributed to the current document — links to Graph Explorer nodes. Fetches from `GET /v1/metadoc/{id}/sources`.
-
-9. **Mobile Layout (< 768px):** History sidebar hidden. Sticky prompt input at bottom with `pb-[max(1rem,env(safe-area-inset-bottom))]`. "History" button in header opens a shadcn `Sheet` from the bottom.
-
-10. **Auto-Save:** Document auto-saves to localStorage every 30 seconds while editing. Shows `◆ SAVED_JUST_NOW` → `◆ SAVED_2_MIN_AGO` → `◆ UNSAVED_CHANGES` (on write failure) in editor header per RULE-19.
-
-11. **Active Profile Context:** Meta-Docs are scoped to `activeProfile.id`. Switching profile via Omnibar refetches history.
-
-12. **aria-live Region:** Streaming content wrapped in `aria-live="polite"` for screen reader announcements.
+The Workstation is the dedicated workspace for generating, viewing, and exporting Meta-Documents. It provides a split-panel layout (document history sidebar + editor), a real-time streaming Markdown editor that renders tokens as they arrive via SSE, and export functionality. It is the primary output surface for Ravenbase's generative AI capabilities. Accessible at `/workstation`.
 
 ---
 
-## Criteria and Tests
+## User Journey
 
-| Criterion | Test |
-|---|---|
-| Workstation renders at /dashboard/workstation | Navigate → two-panel layout visible |
-| Prompt submit triggers generation | Type prompt + click Generate → job_id returned, SSE stream opens |
-| Markdown streams in real-time | Tokens appear in editor as they arrive, not all at once |
-| react-markdown renders correctly | **bold**, `code`, lists, blockquotes all render formatted |
-| Export as Markdown downloads .md file | Click Export → file downloads with correct content |
-| Export as PDF opens print dialog | Click Print → browser print dialog opens |
-| History panel lists previous docs | Previous Meta-Docs appear in left sidebar |
-| Click history item loads doc | Click a history item → content loads in editor |
-| Sources button shows contributing memories | Click Sources → panel shows Graph Explorer links |
-| Mobile: history in bottom Sheet | Resize to 375px → History button opens Sheet |
-| Mobile: prompt sticky at bottom | Resize to 375px → prompt input sticky with safe-area padding |
-| Streaming shows ◆ GENERATING indicator | Start generation → header shows streaming status |
-| Auto-save saves to localStorage | Edit doc → wait 30s → localStorage updated |
-| ◆ SAVED_JUST_NOW / UNSAVED_CHANGES indicator | See save status in editor header |
-| Active profile change refetches history | Switch profile in Omnibar → history panel updates |
+1. User navigates to `/workstation`
+2. Left panel: history of previous Meta-Docs for active profile
+3. User types prompt in `PromptInput`:
+   - Example: "Summarize my technical decisions from Q3 2024"
+4. Clicks "Generate":
+   a. `POST /v1/metadoc/generate {prompt, profile_id, model?}` → `{job_id, estimated_credits}`
+   b. `◆ GENERATING...` status indicator appears (with `animate-pulse`)
+   c. SSE stream opens: `GET /v1/metadoc/stream/{job_id}?token={clerk_jwt}`
+   d. Tokens render in real-time to MetaDocEditor (`ReactMarkdown`)
+5. Completion:
+   a. SSE sends `{type: "done", doc_id, credits_consumed}`
+   b. `◆ SAVED_JUST_NOW` indicator
+   c. History panel updates
+   d. Sidebar credit balance decrements (admin: no change)
+6. Export options:
+   a. Download `.md` → `Blob({content}, type: "text/markdown")`
+   b. Print → `window.print()` with `@media print` CSS
+
+**History panel:**
+- Left sidebar lists all previous Meta-Docs for active profile
+- Click item → `GET /v1/metadoc/{doc_id}` → loads content into editor
+- **BUG-017:** Clicking sets `activeContent=""` — content never loaded (must fix)
+
+**Admin bypass:**
+- Meta-Doc generation costs 18 (Haiku) or 45 (Sonnet) credits
+- Admin users: backend credit check skipped → tokens stream, doc saves, 0 credits deducted
+- Frontend: same UI, sidebar shows `◆ ADMIN_ACCESS`
+
+---
+
+## Subcomponents
+
+```
+components/domain/
+  Workstation.tsx        — Main layout (history panel + editor + prompt)
+  MetaDocEditor.tsx      — SSE stream consumer + Markdown renderer (BUG-016: auto-save missing)
+  MetaDocHistory.tsx     — Left panel, document list (BUG-017: content never loaded on click)
+  SourcesPanel.tsx       — Slide-over showing contributing Memory nodes
+  PromptInput.tsx        — Bottom prompt textarea + Generate button
+  SaveStatus.tsx         — ◆ SAVED_JUST_NOW / ◆ UNSAVED_CHANGES indicator
+
+hooks/
+  use-sse.ts             — Reusable SSE hook (also used by IngestionProgress)
+  use-autosave.ts        — Auto-save to localStorage every 30s (BUG-016 fix lives here)
+  use-document-history.ts — TanStack Query wrapper for Meta-Doc list
+
+app/(dashboard)/workstation/
+  page.tsx               — Page composing Workstation component
+  loading.tsx            — Skeleton loading state
+```
+
+---
+
+## API Contracts
+
+```
+POST /v1/metadoc/generate
+  Request:  { prompt: string, profile_id?: string, model?: "haiku" | "sonnet" }
+  Response: { job_id: string, estimated_credits: number }
+  Auth:     Required
+  Cost:     18 credits (Haiku), 45 credits (Sonnet) — 0 for admin
+
+GET /v1/metadoc/stream/{job_id}?token={clerk_jwt}
+  Type:     SSE (text/event-stream)
+  Events:
+    { type: "token", content: string }
+    { type: "done", doc_id: string, credits_consumed: number }
+    { type: "error", message: string }
+  Note:     token as query param — EventSource cannot set headers
+
+GET /v1/metadoc
+  Response: { documents: [{id, title, original_prompt, generated_at, credits_consumed}] }
+  Auth:     Required
+  staleTime: 30_000
+
+GET /v1/metadoc/{doc_id}
+  Response: { id, title, content_markdown, original_prompt, generated_at, credits_consumed }
+  Auth:     Required
+  Used by:  MetaDocHistory onClick (BUG-017 — must actually call this)
+```
+
+---
+
+## Admin Bypass
+
+Generation costs 18 (Haiku) or 45 (Sonnet) credits per call.
+Admin users: backend `CreditService.check_or_raise()` returns early → LLM runs → no credit deduction.
+Frontend: same UI — sidebar shows `◆ ADMIN_ACCESS` instead of credit balance.
+
+---
+
+## Auto-save State Machine (RULE-19)
+
+The Workstation MUST implement the auto-save state machine per RULE-19. This is NOT optional.
+
+States shown as mono label in editor header:
+```
+◆ SAVED_JUST_NOW     → immediately after SSE done event + localStorage save
+◆ SAVED_2_MIN_AGO    → 2 min after last save (set by setTimeout)
+◆ UNSAVED_CHANGES    → SSE disconnected before done (network error) OR localStorage write failed
+◆ GENERATING...      → while SSE is active (animate-pulse)
+```
+
+Save to `localStorage` every 30 seconds while editing. Key: `ravenbase-draft-${profileId}`.
+
+**BUG-016 prevents this from working** — see Known Bugs below.
+
+---
+
+## Design System Rules
+
+Cross-reference: `docs/design/AGENT_DESIGN_PREAMBLE.md` (READ FIRST)
+Cross-reference: `docs/design/04-ux-patterns.md` — streaming SSE patterns
+
+Specific rules:
+- **Layout:** `flex h-dvh` — use `h-dvh` not `h-screen` (RULE-12)
+- **History sidebar:** `hidden md:flex w-64 flex-col border-r border-border bg-card`
+- **Prompt input sticky:** `sticky bottom-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]` (RULE-13)
+- **Streaming content:** wrapped in `aria-live="polite" aria-atomic="false"` (RULE-17)
+- **Save status label:** `font-mono text-xs text-muted-foreground` + `◆` prefix (RULE-19)
+- **Generating status:** `animate-pulse` on the `◆ GENERATING...` label
+- **History item active:** `bg-primary/10 border border-primary/20 rounded-lg`
+- **History item hover:** `hover:bg-secondary rounded-lg`
+- **Export buttons:** `rounded-full` — never `rounded-md`
+- **Markdown area:** `prose prose-sm max-w-none` — shadcn typography plugin
+
+---
+
+## Known Bugs / Current State
+
+**BUG-016 (HIGH — RULE-19 VIOLATION):** MetaDocEditor auto-save NOT implemented.
+- **Root cause:** `components/domain/MetaDocEditor.tsx` shows the `◆ SAVED_JUST_NOW` / `◆ UNSAVED_CHANGES` status labels but never actually calls `localStorage.setItem()`. The `use-autosave.ts` hook exists but is not connected to the editor content. The labels update based on SSE status alone, not actual save operations.
+- **Fix:** Wire `useAutosave(content, `ravenbase-draft-${profileId}`, 30_000)` in `MetaDocEditor.tsx`. The `use-autosave.ts` hook must call `localStorage.setItem(key, content)` on the 30s interval and update status accordingly.
+- **Story:** STORY-039
+
+**BUG-017 (HIGH):** MetaDocHistory clicking a previous doc sets `activeContent=""` — content never loaded.
+- **Root cause:** `components/domain/MetaDocHistory.tsx` calls `onSelect(doc.id)` when a history item is clicked. In `Workstation.tsx`, the `onSelect` handler sets `setActiveDocId(docId)` but `MetaDocEditor`'s `useEffect([docId])` that fetches `GET /v1/metadoc/{docId}` is broken — it sets `content=""` before the fetch resolves and the fetch result never updates the state correctly.
+- **Fix:** In `MetaDocEditor.tsx`, fix the `useEffect` that loads existing docs:
+  ```typescript
+  useEffect(() => {
+    if (!docId) return
+    setContent("")  // clear while loading — OK
+    apiFetch<{ content_markdown: string }>(`/v1/metadoc/${docId}`)
+      .then((d) => setContent(d.content_markdown))  // must use content_markdown field
+      .catch(() => toast.error("Failed to load document"))
+  }, [docId])
+  ```
+- **Story:** STORY-039
+
+---
+
+## Acceptance Criteria
+
+- [ ] `/workstation` renders two-panel layout (history + editor) on desktop
+- [ ] Type prompt + click Generate → `POST /v1/metadoc/generate` fires
+- [ ] `◆ GENERATING...` (with `animate-pulse`) shows while SSE is active
+- [ ] Tokens stream into editor in real-time via SSE
+- [ ] Markdown renders: **bold**, `code`, headings, lists, blockquotes
+- [ ] After SSE done: `◆ SAVED_JUST_NOW` shown + `localStorage.setItem` called (BUG-016 fixed)
+- [ ] Click history item → `GET /v1/metadoc/{id}` fires → `content_markdown` loaded (BUG-017 fixed)
+- [ ] Export `.md` → file downloads with correct content and filename
+- [ ] Print → browser print dialog opens
+- [ ] Mobile (375px): history hidden, `History` button opens bottom Sheet
+- [ ] Prompt input sticky at bottom with safe-area padding
+- [ ] Streaming content in `aria-live="polite"` region
+- [ ] Admin user generates doc → credit balance unchanged
+
+---
+
+## Cross-references
+
+- `docs/design/AGENT_DESIGN_PREAMBLE.md` — MANDATORY read before any JSX
+- `docs/design/04-ux-patterns.md` — streaming patterns, auto-save state machine
+- `BE-COMP-04-GenerationEngine.md` — Meta-Doc generation pipeline, SSE streaming
+- `BE-COMP-06-CreditSystem.md` — credit costs (18 Haiku / 45 Sonnet), admin bypass
+- `docs/architecture/03-api-contract.md` — metadoc endpoints
+- `docs/components/REFACTOR_PLAN.md` — BUG-016, BUG-017 fix details
 
 ---
 
@@ -67,31 +199,10 @@ The Workstation is the dedicated workspace for generating, viewing, and exportin
 
 | Story | Title | Type | Description |
 |---|---|---|---|
-| [STORY-017](docs/stories/EPIC-05-metadoc/STORY-017.md) | Workstation UI (Streaming + Markdown + Export) | Frontend | Full Workstation implementation |
+| [STORY-017](docs/stories/EPIC-05-metadoc/STORY-017.md) | Workstation UI | Frontend | Full Workstation implementation |
 | [STORY-016](docs/stories/EPIC-05-metadoc/STORY-016.md) | Meta-Doc Generation Pipeline | Backend | SSE streaming + generation API |
 
 ---
-
-## Component Files
-
-```
-components/domain/
-  Workstation.tsx        — Main layout (history panel + editor + prompt)
-  MetaDocEditor.tsx     — SSE stream consumer + Markdown renderer
-  MetaDocHistory.tsx    — Left panel, document list
-  SourcesPanel.tsx      — Slide-over showing contributing memories
-  PromptInput.tsx       — Bottom prompt textarea + Generate button
-  SaveStatus.tsx        — ◆ SAVED_JUST_NOW / UNSAVED_CHANGES indicator
-
-hooks/
-  use-sse.ts            — Reusable SSE hook (also used in IngestionProgress)
-  use-autosave.ts       — Auto-save to localStorage every 30s
-  use-document-history.ts — TanStack Query wrapper for Meta-Doc list
-
-app/(dashboard)/workstation/
-  page.tsx              — Page composing Workstation component
-  loading.tsx           — Skeleton loading state
-```
 
 ## useSSE Hook (Reusable)
 
@@ -115,269 +226,24 @@ export function useSSE(url: string | null) {
 
     es.onmessage = (e) => {
       const parsed = JSON.parse(e.data)
-      if (parsed.type === "token") {
-        setData((prev) => prev + parsed.content)
-      }
-      if (parsed.type === "done") {
-        setStatus("done")
-        es.close()
-      }
-      if (parsed.type === "error") {
-        setStatus("error")
-        es.close()
-      }
+      if (parsed.type === "token") setData((prev) => prev + parsed.content)
+      if (parsed.type === "done") { setStatus("done"); es.close() }
+      if (parsed.type === "error") { setStatus("error"); es.close() }
     }
 
-    es.onerror = () => {
-      setStatus("error")
-      es.close()
-    }
+    es.onerror = () => { setStatus("error"); es.close() }
 
-    return () => es.close()
+    return () => es.close()  // cleanup on unmount — prevents memory leak
   }, [url])
 
   return { data, status }
 }
 ```
 
-## MetaDocEditor Pattern
+## Auto-save Hook (BUG-016 fix)
 
 ```tsx
-// components/domain/MetaDocEditor.tsx
-"use client"
-import { useState } from "react"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import { useSSE } from "@/hooks/use-sse"
-import { useApiFetch } from "@/lib/api-client"
-import { useAuth } from "@clerk/nextjs"
-import { SaveStatus } from "./SaveStatus"
-
-interface MetaDocEditorProps {
-  docId: string | null
-  profileId: string
-  onSourceClick: (nodeId: string) => void
-}
-
-export function MetaDocEditor({ docId, profileId, onSourceClick }: MetaDocEditorProps) {
-  const [streamUrl, setStreamUrl] = useState<string | null>(null)
-  const [content, setContent] = useState("")
-  const { getToken } = useAuth()
-  const apiFetch = useApiFetch()
-  const { data: streamedContent, status } = useSSE(streamUrl)
-
-  // Load existing doc when docId changes
-  useEffect(() => {
-    if (!docId) return
-    apiFetch<{ content: string }>(`/v1/metadoc/${docId}`).then((d) => setContent(d.content))
-  }, [docId])
-
-  const handleGenerate = async (prompt: string) => {
-    const { job_id } = await apiFetch<{ job_id: string }>("/v1/metadoc/generate", {
-      method: "POST",
-      body: JSON.stringify({ prompt, profile_id: profileId }),
-    })
-    const token = await getToken()
-    setStreamUrl(`/api/v1/metadoc/stream/${job_id}?token=${token}`)
-  }
-
-  const displayContent = streamUrl ? streamedContent : content
-
-  return (
-    <div className="flex flex-col h-full">
-      {/* Editor header */}
-      <div className="flex justify-between items-center px-4 py-2 border-b border-border">
-        <SaveStatus lastSaved={lastSaved} hasError={status === "error"} />
-        <div className="flex gap-2">
-          <SourcesPanel docId={docId} onNodeClick={onSourceClick} />
-          <Button size="sm" variant="outline" onClick={handleExportMarkdown}>
-            <Download className="w-4 h-4 mr-1" /> Export
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => window.print()}>
-            <Printer className="w-4 h-4 mr-1" /> Print
-          </Button>
-        </div>
-      </div>
-
-      {/* Markdown content — streaming and static */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {status === "streaming" && (
-          <div className="mb-4">
-            <span className="font-mono text-xs text-muted-foreground animate-pulse">
-              ◆ GENERATING...
-            </span>
-          </div>
-        )}
-        <article
-          aria-live="polite"
-          aria-atomic="false"
-          className="prose prose-sm max-w-none"
-        >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {displayContent}
-          </ReactMarkdown>
-        </article>
-      </div>
-    </div>
-  )
-}
-```
-
-## Prompt Input Pattern
-
-```tsx
-// components/domain/PromptInput.tsx
-"use client"
-import { useState } from "react"
-import { Send, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-
-interface PromptInputProps {
-  onSubmit: (prompt: string) => Promise<void>
-  disabled?: boolean
-}
-
-export function PromptInput({ onSubmit, disabled }: PromptInputProps) {
-  const [prompt, setPrompt] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleSubmit = async () => {
-    if (!prompt.trim() || isLoading) return
-    setIsLoading(true)
-    try {
-      await onSubmit(prompt.trim())
-      setPrompt("")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <div className="flex gap-2 p-4 border-t border-border bg-background">
-      <Textarea
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault()
-            handleSubmit()
-          }
-        }}
-        placeholder="Ask Ravenbase to synthesize your memories..."
-        className="min-h-[44px] max-h-[200px] resize-none"
-        rows={1}
-        disabled={disabled}
-      />
-      <Button
-        size="icon"
-        onClick={handleSubmit}
-        disabled={!prompt.trim() || isLoading || disabled}
-        className="h-[44px] w-[44px] shrink-0"
-      >
-        {isLoading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : (
-          <Send className="w-4 h-4" />
-        )}
-      </Button>
-    </div>
-  )
-}
-```
-
-## MetaDocHistory Pattern
-
-```tsx
-// components/domain/MetaDocHistory.tsx
-"use client"
-import { useQuery } from "@tanstack/react-query"
-import { useApiFetch } from "@/lib/api-client"
-import { Skeleton } from "@/components/ui/skeleton"
-import { FileText } from "lucide-react"
-
-interface MetaDocHistoryProps {
-  profileId: string
-  activeDocId: string | null
-  onSelect: (docId: string) => void
-}
-
-export function MetaDocHistory({ profileId, activeDocId, onSelect }: MetaDocHistoryProps) {
-  const apiFetch = useApiFetch()
-
-  const { data: docs, isLoading } = useQuery({
-    queryKey: ["metadocs", profileId],
-    queryFn: () => apiFetch<{ documents: MetaDoc[] }>("/v1/metadoc"),
-    staleTime: 30_000,
-  })
-
-  return (
-    <aside className="w-64 border-r border-border bg-card flex flex-col">
-      <div className="p-4 border-b border-border">
-        <h2 className="font-serif text-sm">Documents</h2>
-      </div>
-      <div className="flex-1 overflow-y-auto p-2">
-        {isLoading && (
-          [...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full mb-2 rounded-lg" />
-          ))
-        )}
-        {docs?.documents.map((doc) => (
-          <button
-            key={doc.id}
-            onClick={() => onSelect(doc.id)}
-            className={`
-              w-full text-left p-3 rounded-lg mb-1 transition-colors
-              ${doc.id === activeDocId ? "bg-primary/10 border border-primary/20" : "hover:bg-secondary"}
-            `}
-          >
-            <div className="flex items-start gap-2">
-              <FileText className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
-              <div className="min-w-0">
-                <p className="text-sm font-medium truncate">{doc.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(doc.created_at).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </button>
-        ))}
-        {docs?.documents.length === 0 && (
-          <p className="text-sm text-muted-foreground p-4 text-center">
-            No documents yet. Generate your first above.
-          </p>
-        )}
-      </div>
-    </aside>
-  )
-}
-```
-
-## Export Pattern
-
-```tsx
-// Export as Markdown
-const handleExportMarkdown = (content: string, title?: string) => {
-  const filename = title
-    ? `${title.toLowerCase().replace(/\s+/g, "-")}.md`
-    : `meta-doc-${Date.now()}.md`
-  const blob = new Blob([content], { type: "text/markdown;charset=utf-8" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
-// Print CSS — add to globals.css or inline
-// @media print { hide nav, show A4 layout }
-```
-
-## Auto-Save Pattern
-
-```tsx
-// hooks/use-autosave.ts
+// hooks/use-autosave.ts — connect this to MetaDocEditor content
 "use client"
 import { useEffect, useRef, useState } from "react"
 
@@ -391,13 +257,16 @@ export function useAutosave(content: string, key: string, intervalMs = 30_000) {
   useEffect(() => {
     timerRef.current = setInterval(() => {
       if (content !== lastSavedRef.current) {
-        localStorage.setItem(key, content)
-        lastSavedRef.current = content
-        setStatus("saved_just_now")
-        setTimeout(() => setStatus("saved_2_min_ago"), 2 * 60 * 1000)
+        try {
+          localStorage.setItem(key, content)  // BUG-016 fix: actually save
+          lastSavedRef.current = content
+          setStatus("saved_just_now")
+          setTimeout(() => setStatus("saved_2_min_ago"), 2 * 60 * 1000)
+        } catch {
+          setStatus("unsaved_changes")  // localStorage write failed
+        }
       }
     }, intervalMs)
-
     return () => clearInterval(timerRef.current)
   }, [content, key, intervalMs])
 
@@ -405,21 +274,23 @@ export function useAutosave(content: string, key: string, intervalMs = 30_000) {
 }
 ```
 
-## API Endpoints Used
+## MetaDocHistory onClick Fix (BUG-017)
 
-| Method | Path | Purpose |
-|---|---|---|
-| POST | `/v1/metadoc/generate` | Enqueue Meta-Doc generation, returns job_id |
-| GET | `/api/v1/metadoc/stream/{job_id}` | SSE stream of generated tokens |
-| GET | `/v1/metadoc` | List all Meta-Docs for active profile |
-| GET | `/v1/metadoc/{id}` | Fetch single Meta-Doc content |
-| GET | `/v1/metadoc/{id}/sources` | Fetch contributing Memory nodes |
+```tsx
+// In MetaDocEditor.tsx — FIXED useEffect that loads existing docs
+useEffect(() => {
+  if (!docId) { setContent(""); return }
+  apiFetch<{ content_markdown: string }>(`/v1/metadoc/${docId}`)
+    .then((d) => setContent(d.content_markdown))  // BUG-017 fix: was setting ""
+    .catch(() => toast.error("Failed to load document"))
+}, [docId, apiFetch])
+```
 
 ## Mobile Layout
 
 ```tsx
 // app/(dashboard)/workstation/page.tsx
-<div className="flex h-[100dvh]">
+<div className="flex h-dvh">
   {/* Desktop: history sidebar */}
   <aside className="hidden md:flex w-64 flex-col border-r border-border">
     <MetaDocHistory profileId={profileId} activeDocId={activeDocId} onSelect={setActiveDocId} />
@@ -427,11 +298,10 @@ export function useAutosave(content: string, key: string, intervalMs = 30_000) {
 
   {/* Editor area */}
   <main className="flex-1 flex flex-col min-w-0">
-    <MetaDocEditor docId={activeDocId} profileId={profileId} onSourceClick={openGraphNode} />
-
-    {/* Prompt — sticky bottom with safe-area padding */}
-    <div className="sticky bottom-0 p-4 border-t bg-background
-                    pb-[max(1rem,env(safe-area-inset-bottom))]">
+    <MetaDocEditor docId={activeDocId} profileId={profileId} />
+    {/* Sticky prompt with safe-area padding (RULE-13) */}
+    <div className="sticky bottom-0 border-t bg-background
+                    pb-[max(1rem,env(safe-area-inset-bottom))] p-4">
       <PromptInput onSubmit={handleGenerate} disabled={isGenerating} />
     </div>
   </main>
@@ -440,7 +310,8 @@ export function useAutosave(content: string, key: string, intervalMs = 30_000) {
   <Sheet open={showHistory} onOpenChange={setShowHistory}>
     <SheetContent side="bottom" className="h-[80vh]">
       <SheetTitle>Document History</SheetTitle>
-      <MetaDocHistory profileId={profileId} activeDocId={activeDocId} onSelect={(id) => { setActiveDocId(id); setShowHistory(false) }} />
+      <MetaDocHistory profileId={profileId} activeDocId={activeDocId}
+        onSelect={(id) => { setActiveDocId(id); setShowHistory(false) }} />
     </SheetContent>
   </Sheet>
 </div>

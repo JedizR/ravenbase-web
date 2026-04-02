@@ -29,7 +29,7 @@ COMP-04: GenerationEngine
 As a user, I want a dedicated workspace where I can generate, view, and export my Meta-Documents.
 
 ## Acceptance Criteria
-- [ ] AC-1: Workstation accessible at `/dashboard/workstation`
+- [ ] AC-1: Workstation accessible at `/workstation`
 - [ ] AC-2: Prompt input at bottom; on submit, opens SSE stream and streams Markdown to editor
 - [ ] AC-3: Streaming text renders as formatted Markdown in real-time (not raw text)
 - [ ] AC-4: "Export as Markdown" button downloads `.md` file
@@ -170,7 +170,7 @@ npm run dev
 **Step 3 — Verify no runtime errors:**
 - Open http://localhost:3000 in the browser
 - Sign in if redirected to /login
-- Navigate to `/dashboard/workstation`
+- Navigate to `/workstation`
 - Confirm NO "Internal Server Error" or webpack runtime errors
 - Confirm CSS loads correctly (no unstyled content)
 - Open browser DevTools → Console tab
@@ -189,7 +189,7 @@ Only commit the docs update (epics.md, story-counter, project-status, journal) A
 npm run build
 
 # Manual test:
-# 1. Open http://localhost:3000/dashboard/workstation
+# 1. Open http://localhost:3000/workstation
 # 2. Type a prompt: "Summarize my skills in Python and machine learning"
 # 3. Click Generate — verify Markdown streams in real-time
 # 4. Click "Export as Markdown" — verify .md file downloads

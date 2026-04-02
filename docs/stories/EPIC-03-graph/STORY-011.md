@@ -169,7 +169,7 @@ npm run dev
 **Step 3 — Verify no runtime errors:**
 - Open http://localhost:3000 in the browser
 - Sign in if redirected to /login
-- Navigate to `/dashboard/graph`
+- Navigate to `/graph`
 - Confirm NO "Internal Server Error" or webpack runtime errors
 - Confirm CSS loads correctly (no unstyled content)
 - Open browser DevTools → Console tab
@@ -189,7 +189,7 @@ npm run build
 
 # Manual test:
 # 1. Seed data: uv run python scripts/seed_dev_data.py
-# 2. Open http://localhost:3000/dashboard/graph
+# 2. Open http://localhost:3000/graph
 # 3. Verify graph renders with nodes and edges
 # 4. Click a concept node — verify right panel opens
 # 5. Resize to 375px — verify list view renders

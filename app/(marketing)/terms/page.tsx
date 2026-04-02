@@ -1,6 +1,4 @@
 import type { Metadata } from "next"
-import { Header } from "@/components/marketing/Header"
-import { Footer } from "@/components/marketing/Footer"
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -20,7 +18,6 @@ export default function TermsPage() {
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:font-medium focus:text-sm">
         Skip to main content
       </a>
-      <Header />
       <main id="main-content" className="mx-auto max-w-3xl px-4 sm:px-6 py-16 lg:py-24">
         <article className="prose prose-stone max-w-none">
           <h1 className="font-serif text-4xl lg:text-5xl text-foreground mb-2">
@@ -199,7 +196,6 @@ export default function TermsPage() {
           </p>
         </article>
       </main>
-      <Footer />
     </div>
   )
 }

@@ -19,6 +19,12 @@ export default function DashboardLayout({
   return (
     <ProfileContextProvider>
       <Providers>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:font-medium focus:text-sm"
+        >
+          Skip to main content
+        </a>
         <div className="flex h-[100dvh] bg-background overflow-hidden">
           {/* Desktop sidebar — hidden on mobile */}
           <div className="hidden lg:block shrink-0">

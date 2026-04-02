@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 38 / 38 |
-| Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 36 |
-| Active repo | ravenbase-web |
+| Total stories complete | 41 / 43 |
+| Current phase | Phase B — Production Launch (EPIC-10) |
+| Current sprint | 41 |
+| Active repo | ravenbase-web + ravenbase-api |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-02 (STORY-036-FE: Admin Dashboard UI — API contract fixes across 3 admin pages, ban/credit dialogs, pagination, status filter, [id]/loading.tsx created) |
+| Last entry | 2026-04-02 (STORY-041: Sources page upload wired, deployment config files created, UX gaps closed) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -815,7 +815,7 @@ Backend: `GET/POST/PATCH/DELETE /v1/profiles` CRUD endpoints (`src/api/routes/pr
 **Commit:** `2add09a`
 
 **What was built:**
-Sources page at `/dashboard/sources` with two tabs (Upload Files + Import from AI Chat). Import tab has: profile selector (shadcn Select), personalized extraction prompt loaded from GET /v1/ingest/import-prompt via TanStack Query (falls back to generic prompt on error), GeneratedPromptBox with one-click Clipboard API copy + 2-second "Copied" feedback, collapsible numbered instructions on mobile, paste-back textarea (100k char limit, char counter), Import button calling POST /v1/ingest/text with SSE-driven IngestionProgress replacing the button on submit. State machine: idle → pending → streaming → complete → idle.
+Sources page at `/sources` with two tabs (Upload Files + Import from AI Chat). Import tab has: profile selector (shadcn Select), personalized extraction prompt loaded from GET /v1/ingest/import-prompt via TanStack Query (falls back to generic prompt on error), GeneratedPromptBox with one-click Clipboard API copy + 2-second "Copied" feedback, collapsible numbered instructions on mobile, paste-back textarea (100k char limit, char counter), Import button calling POST /v1/ingest/text with SSE-driven IngestionProgress replacing the button on submit. State machine: idle → pending → streaming → complete → idle.
 
 **Key decisions:**
 - Used `vi.hoisted()` for mock functions in tests — required because vitest hoists `vi.mock()` calls before module evaluation, making `mockGetImportPrompt` unavailable to the factory without hoisting.
@@ -919,7 +919,7 @@ _No entries yet._
 **Commit:** `747c30b`
 
 **What was built:**
-Workstation page at `/dashboard/workstation` with two-panel layout (history sidebar + editor). MetaDocEditor streams SSE tokens and renders Markdown progressively via `react-markdown` (dynamic import, SSR disabled). Auto-save status indicator per RULE 19 (`◆ GENERATING` / `◆ SAVED_JUST_NOW` / `◆ SAVED_2_MIN_AGO`). Export to .md via Blob anchor download, export to PDF via `window.print()` with `@media print` CSS. Mobile collapses history into a shadcn Sheet. `useSSEStream` hook created as separate from existing `useSSE` (ingestion) for token accumulation.
+Workstation page at `/workstation` with two-panel layout (history sidebar + editor). MetaDocEditor streams SSE tokens and renders Markdown progressively via `react-markdown` (dynamic import, SSR disabled). Auto-save status indicator per RULE 19 (`◆ GENERATING` / `◆ SAVED_JUST_NOW` / `◆ SAVED_2_MIN_AGO`). Export to .md via Blob anchor download, export to PDF via `window.print()` with `@media print` CSS. Mobile collapses history into a shadcn Sheet. `useSSEStream` hook created as separate from existing `useSSE` (ingestion) for token accumulation.
 
 **Key decisions:**
 - `use-sse-stream.ts` created as a new hook separate from `use-sse.ts` (which handles ingestion progress with `progress_pct/message` fields). New hook accumulates `type: "token"` events into a string.
@@ -1315,7 +1315,7 @@ Chat page at `/chat` with SSE streaming via `fetch()` + `ReadableStream` reader 
 - Mobile layout uses `h-[100dvh]` and `pb-[max(1rem,env(safe-area-inset-bottom))]` per CLAUDE.md RULE 12/13
 
 **Gotchas:**
-- `(dashboard)` route group does not add a URL segment — `(dashboard)/chat` maps to `/chat`, not `/dashboard/chat`. Sidebar link uses `/dashboard/chat` to match spec but actual URL is `/chat`. This is consistent with existing sidebar links (all `/dashboard/*` URLs point to non-existent routes — pre-existing issue).
+- `(dashboard)` route group does not add a URL segment — `(dashboard)/chat` maps to `/chat`, not `/dashboard/chat`. All sidebar links and specs now use correct URLs (`/chat`, `/inbox`, `/graph`, etc.).
 - `@testing-library/user-event` not installed — tests use `userEvent.setup()` + vitest-compatible assertions instead of jest-dom matchers
 - `pb-[max(1rem,env(safe-area-inset-bottom))]` used directly in className (not `style={}`) — Tailwind arbitrary value syntax works with CSS calc/functions
 
@@ -1384,6 +1384,93 @@ Backend: `ExportService` collects PostgreSQL (sources, meta_documents, profiles,
 **Gotchas:**
 - Tailwind v4 canonical classes: `min-h-[44px]` → `min-h-11`, `min-w-[180px]` → `min-w-45`
 - `AdminUserListResponse` has no `limit` field, only `total` and `page`
+
+---
+
+## Sprint 39 — Critical Bug Fixes
+
+> EPIC-10 launch hardening: double Header/Footer, auth redirects, broken routes, memory leaks,
+> admin/marketing page fixes, deployment config, and more.
+> Sprint 39 covers STORY-039.
+
+### STORY-039 — Critical Bug Fixes (BUG-001 through BUG-033)
+**Date:** 2026-04-02 | **Sprint:** 39 | **Phase:** B | **Repo:** ravenbase-web + ravenbase-api
+**Quality gate:** ✅ clean — 350 tests passing, 0 ruff errors, 0 pyright errors, 0 TypeScript errors (24 routes compiled)
+**Commit:** `TBD`
+
+**What was built:**
+Fixed 20+ production blockers across both repos. Key fixes: removed double Header/Footer renders on all marketing pages (layout.tsx already renders them); created `app/dashboard/page.tsx` (top-level, not inside route group) to redirect `/dashboard` → `/chat`; stripped `backdrop-blur-sm` from Header scroll state (design system violation); patched `middleware.ts` to redirect authenticated users from `/` to `/chat`; changed all OnboardingWizard completion redirects from `/dashboard` to `/chat`; fixed `DELETE /v1/account` call from Settings → Data (was showing success toast without calling any API — CRITICAL); added skip link to dashboard layout (WCAG 2.1 AA); fixed MemoryChat SSE reader leak via `readerRef`; clamped MemoryInbox `activeIndex` to `Math.max(0,...)` to prevent out-of-bounds; removed unimplemented `/search` and `/generate` Omnibar commands; made GraphQueryBar example clicks auto-execute; fixed admin progress bar to use `w-(--progress-width)` CSS custom property (Tailwind v4 canonical); fixed COLOR_OPTIONS in profiles page (removed duplicate `var(--accent)`, switched from inline `style={{ backgroundColor }}` to `className`); fixed `bg-white` in PricingToggle to `bg-secondary`; replaced fake testimonials with `null` render; fixed Header NAV_LINKS to use absolute anchor paths (`/#how-it-works`); validated checkout URL before redirect (BUG-033); fixed Dockerfile.api `--reload` → `--workers 2`.
+
+**Key decisions:**
+- `app/(dashboard)/page.tsx` CONFLICTS with `app/(marketing)/page.tsx` (both resolve to `/`) — correct location for the dashboard redirect is `app/dashboard/page.tsx` (outside any route group). This is a Next.js App Router constraint: route groups don't add URL segments but they also cannot host conflicting root-level routes.
+- BUG-015 (Delete Account) was marked CRITICAL — it showed a success toast and did nothing. Fixed to call `DELETE /v1/account` via `apiFetch`, with loading state + error handling, then `router.push("/")` on success.
+- MemoryChat SSE reader stored in `useRef<ReadableStreamDefaultReader>` (not `useState`) — avoids re-render loop. Cleanup via `useEffect` return that calls `readerRef.current?.cancel().catch(() => null)`.
+- Tailwind v4 canonical: `[width:var(--progress-width)]` → `w-(--progress-width)` per IDE diagnostic.
+
+**Gotchas:**
+- Two route files resolving to `/` is a silent build error in Next.js — the error message says "two parallel pages that resolve to the same path" but doesn't name which two. Had to deduce that `(dashboard)/page.tsx` and `(marketing)/page.tsx` both resolve to `/`.
+- `TestimonialsSection` replaced with `return null` — fake testimonials are a launch blocker per BUG-014.
+- Settings loading.tsx skeleton structure was mismatched against actual page — replaced with accurate skeleton.
+
+**Tech debt noted:**
+- BUG-016/017/018/019/023/024/027/029/030 all deferred to STORY-043 (Final UX Polish Pass).
+
+---
+
+## Sprint 40 — Admin Bypass System
+
+> Zero-credit access for admin users: backend bypass, GET /v1/users/me endpoint, frontend indicators.
+> Sprint 40 covers STORY-040.
+
+### STORY-040 — Admin Bypass System (ADMIN-001 through ADMIN-004)
+**Date:** 2026-04-02 | **Sprint:** 40 | **Phase:** B | **Repo:** ravenbase-api + ravenbase-web
+**Quality gate:** ✅ clean — 350 tests passing, 0 ruff errors, 0 pyright errors, 0 TypeScript errors
+**Commit:** `TBD`
+
+**What was built:**
+Full admin bypass system. Backend: `CreditService.deduct()` returns a zero-amount `CreditTransaction` with `balance_after=-1` (sentinel) for any `user_id` in `ADMIN_USER_IDS` env var — admin users never blocked by credit checks. New `GET /v1/users/me` endpoint (on `users_router` with prefix `/v1/users`) returns `{id, email, display_name, tier, credits_balance, preferred_model, is_admin, has_completed_onboarding}` — both flags computed at request time from env var and profile existence. `POST /v1/users/me/complete-onboarding` added as no-op idempotent endpoint. Frontend: Sidebar queries `GET /v1/users/me` and shows `◆ ADMIN_ACCESS` in the credits footer for admin users. Pricing page shows an admin bypass message (no tier cards, no upgrade CTAs) when `is_admin: true`.
+
+**Key decisions:**
+- `is_admin` computed from env var at request time — no DB field, no migration required.
+- `users_router` prefix `/v1/users` is separate from `account.router` prefix `/v1/account` — both registered in `main.py`.
+- `CreditTransaction.user_id` is `str` — Clerk IDs are strings; plan document's suggestion of `_uuid.UUID(user_id)` was wrong.
+- `SystemProfile` is the correct model class name — aliased as `Profile` via `from src.models.profile import SystemProfile as Profile`.
+
+**Gotchas:**
+- `select` was used inside `get_current_user` without module-level import — added as lazy import `from sqlmodel import select as _select` inside function body (RULE 6).
+- `complete_onboarding` endpoint uses `_user` (underscore prefix) to silence ruff ARG001 for unused parameter.
+- Pyright `reportAttributeAccessIssue` on `Profile` import — class is `SystemProfile` not `Profile`.
+
+**Tech debt noted:**
+- No tests for the new `/v1/users/me` endpoint — add in STORY-043 or a future hardening story.
+
+---
+
+## Sprint 41 — Sources Page + UX Gaps + Deployment Config
+
+> Wire IngestionDropzone into Sources Upload tab, create vercel.json, update next.config.mjs.
+> Sprint 41 covers STORY-041.
+
+### STORY-041 — Sources Page Upload + UX Gaps + Deployment Config
+**Date:** 2026-04-02 | **Sprint:** 41 | **Phase:** B | **Repo:** ravenbase-web
+**Quality gate:** ✅ clean — 0 TypeScript errors, 24 routes compiled
+**Commit:** `TBD`
+
+**What was built:**
+Sources page Upload tab now renders `<IngestionDropzone>` with full upload flow: `POST /v1/ingest/upload` via `useApiUpload`, `<IngestionProgress sourceId={...}>` conditionally rendered after upload. Created `ravenbase-web/vercel.json` with 6 security headers (X-Content-Type-Options, X-Frame-Options DENY, X-XSS-Protection, Referrer-Policy, HSTS, Permissions-Policy), `Cache-Control: no-store` on `/api/(.*)` routes, and `/dashboard` → `/chat` redirect. Updated `next.config.mjs` with `images.remotePatterns` for `img.clerk.com`, `*.supabase.co`, and `images.unsplash.com` (required for production Vercel image optimization).
+
+**Key decisions:**
+- `vercel.json` redirect uses `permanent: false` (307) — same behavior as `app/dashboard/page.tsx`. Using 301 would cache in browser.
+- `next.config.mjs` uses `remotePatterns` (not deprecated `domains`) — `domains` is removed in Next.js 15.
+- `IngestionProgress` receives `sourceId` (not `jobId`) — matches SSE stream endpoint signature.
+
+**Gotchas:**
+- Sources page must use `useApiUpload` hook (client component) — cannot use `apiFetch` (server-only).
+- `IngestionDropzone` requires `profileId?: string` from `useProfile()` context.
+
+**Tech debt noted:**
+- Sources page has no error boundary — add in STORY-043.
+- `IngestionProgress` polling interval hardcoded at 2s.
 
 ---
 

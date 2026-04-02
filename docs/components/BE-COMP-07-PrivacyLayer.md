@@ -1,9 +1,110 @@
-# COMP-07: PrivacyLayer
+# PrivacyLayer
 
 > **Component ID:** BE-COMP-07
 > **Epic:** EPIC-08 — Polish & Production Hardening
 > **Stories:** STORY-024, STORY-025, STORY-035, STORY-037
 > **Type:** Backend (with frontend deletion UI)
+
+---
+
+## Purpose
+
+The PrivacyLayer owns two distinct concerns: (1) GDPR-compliant cascade deletion that permanently wipes user data across all four stores (Supabase, Qdrant, Neo4j, PostgreSQL) plus Clerk; and (2) deterministic PII masking with Presidio that prevents personally identifiable information from reaching external AI APIs. It also handles data export (ZIP download via email link) and inactivity archival for Free-tier users.
+
+---
+
+## User Journey
+
+**GDPR Account Deletion:**
+1. User navigates to `/settings/data`
+2. Clicks "Delete Account" button → `AlertDialog` confirms they understand
+3. User types "DELETE" in confirmation input → button enables
+4. Clicks "Confirm" → `DELETE /v1/account` fires → `202` returned immediately
+5. ARQ `cascade_delete_account` task queued
+6. Frontend redirects to `/` with `toast.success("Account deleted")`
+7. Backend deletes: Supabase files → Qdrant vectors → Neo4j nodes → PostgreSQL tables → Clerk account
+8. Total time: < 60 seconds for typical account
+
+**PII Masking (automatic, invisible to user):**
+1. User generates Meta-Doc or sends Chat message
+2. `RAGService.retrieve()` returns chunks from Qdrant
+3. `PresidioAdapter.mask()` scans chunks for PII entities
+4. "John Smith" → `Entity_000`, "john@example.com" → `Entity_001` consistently across chunks
+5. Masked chunks sent to Anthropic/Gemini API — PII never leaves Ravenbase
+6. Generated output uses entity placeholders; user sees originals in UI (reverse map applied)
+
+**Data Export:**
+1. User navigates to `/settings/data` → clicks "Export My Data"
+2. `GET /v1/account/export` fires → `202` with job_id
+3. ARQ task builds ZIP: PostgreSQL JSON + Qdrant JSON + Neo4j Cypher dump + Supabase files
+4. Download link emailed to user via Resend
+5. Link expires after 24 hours
+
+---
+
+## Admin Bypass
+
+No credit costs in privacy/deletion operations — no bypass needed.
+
+Admin users can test the full deletion flow via a test account without any special handling. PII masking runs the same for admin users (controlled by `ENABLE_PII_MASKING` env var, not user identity).
+
+**Testing PII masking:**
+```bash
+# Set in .envs/.env.dev:
+ENABLE_PII_MASKING=true
+
+# Upload document containing PII, then run generation:
+# POST /v1/ingest/text {content: "Meeting with John Smith (john@company.com) on project X"}
+# POST /v1/metadoc/generate {prompt: "Summarize my meetings"}
+# Check logs — LLM payload must NOT contain "John Smith" or the email
+```
+
+---
+
+## Known Bugs / Current State
+
+**BUG-015 (CRITICAL):** "Delete Account" button shows success toast WITHOUT calling any API.
+- **Root cause:** `app/(dashboard)/settings/data/page.tsx:120-123` — the delete confirmation handler calls `toast.success("Account deleted")` and `router.push("/")` with no `DELETE /v1/account` API call. User data is NOT deleted.
+- **Fix:** Add the API call before the toast and redirect:
+  ```typescript
+  // In settings/data/page.tsx — handleDeleteAccount:
+  await apiFetch("/v1/account", { method: "DELETE" })
+  toast.success("Account deleted. Goodbye!")
+  router.push("/")
+  ```
+- **Story:** STORY-039
+
+**BUG-024 (MEDIUM):** Data export status polling uses wrong URL format.
+- **Root cause:** `app/(dashboard)/settings/data/page.tsx:102` — polls `GET /v1/account/export?job_id=xxx` (query param) but backend likely expects `GET /v1/jobs/{job_id}` (path param).
+- **Fix:** Verify actual backend endpoint format, update polling URL.
+- **Story:** STORY-039
+
+---
+
+## Acceptance Criteria
+
+- [ ] `DELETE /v1/account` returns 202 immediately and enqueues ARQ job
+- [ ] Cascade runs in order: Supabase → Qdrant → Neo4j → PostgreSQL → Clerk
+- [ ] All 4 stores empty after deletion for the deleted user
+- [ ] Partial failure continues cascade (log + continue)
+- [ ] Audit log entry for each deletion step
+- [ ] Frontend "Delete Account" button calls `DELETE /v1/account` before showing success toast (BUG-015 fixed)
+- [ ] User must type "DELETE" in confirmation dialog before deletion fires
+- [ ] Post-deletion: redirect to `/` with "Account deleted" toast
+- [ ] PII masked before ALL LLM calls when `ENABLE_PII_MASKING=true`
+- [ ] Same PII entity → same alias across all chunks in one generation (deterministic)
+- [ ] Entity map in Redis with 1hr TTL, deleted after job
+- [ ] Data export creates ZIP and emails download link
+
+---
+
+## Cross-references
+
+- `docs/design/AGENT_DESIGN_PREAMBLE.md` — MANDATORY read before any JSX
+- `FE-COMP-07-Workstation.md` — workstation uses PII-masked generation
+- `BE-COMP-04-GenerationEngine.md` — PII masking integrated in generation pipeline
+- `docs/architecture/03-api-contract.md` — `DELETE /v1/account`, `GET /v1/account/export`
+- `docs/components/REFACTOR_PLAN.md` — BUG-015 (critical), BUG-024 fix details
 
 ---
 

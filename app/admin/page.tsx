@@ -103,10 +103,8 @@ export default function AdminDashboardPage() {
           </div>
           <div className="h-2.5 bg-secondary rounded-full overflow-hidden">
             <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
-              style={{
-                width: `${Math.min(100, (stats.daily_llm_spend_usd / stats.llm_spend_cap_usd) * 100)}%`,
-              }}
+              className="h-full bg-primary rounded-full transition-all duration-500 w-(--progress-width)"
+              style={{ "--progress-width": `${Math.min(100, (stats.daily_llm_spend_usd / stats.llm_spend_cap_usd) * 100)}%` } as React.CSSProperties}
             />
           </div>
           {stats.daily_llm_spend_usd > stats.llm_spend_cap_usd * 0.9 && (

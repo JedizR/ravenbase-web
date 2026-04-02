@@ -50,12 +50,12 @@ with conversations I have across different platforms.
 - **Backend:** One new endpoint that generates a customized extraction prompt based on the
   user's existing knowledge graph concepts. Knows what to ask for.
 - **Frontend:** Two-panel ingestion UI: (1) file upload dropzone (existing), (2) AI chat
-  import helper (new). Both live on `/dashboard/sources` as tabs.
+  import helper (new). Both live on `/sources` as tabs.
 
 ## Acceptance Criteria
 - [ ] AC-1: `GET /v1/ingest/import-prompt?profile_id=` returns `{prompt_text, detected_concepts[]}` — the extraction prompt is personalized based on the user's existing Neo4j Concept nodes
 - [ ] AC-2: If the user has no concepts yet (new user), the endpoint returns a generic extraction prompt (not a 404)
-- [ ] AC-3: Frontend: `/dashboard/sources` has two tabs: "Upload Files" (existing) and "Import from AI Chat" (new)
+- [ ] AC-3: Frontend: `/sources` has two tabs: "Upload Files" (existing) and "Import from AI Chat" (new)
 - [ ] AC-4: "Import from AI Chat" tab shows: (1) generated extraction prompt in a read-only textarea with one-click Copy button, (2) numbered instructions panel, (3) large paste-back textarea, (4) Submit button
 - [ ] AC-5: Copy button copies the prompt text and shows "Copied ✓" feedback for 2 seconds (using Clipboard API)
 - [ ] AC-6: User pastes AI response into the paste-back textarea → Submit → calls `/v1/ingest/text` → shows same SSE progress as file upload
@@ -237,7 +237,7 @@ npm run dev
 **Step 3 — Verify no runtime errors:**
 - Open http://localhost:3000 in the browser
 - Sign in if redirected to /login
-- Navigate to `/dashboard/sources`
+- Navigate to `/sources`
 - Click "Import from AI Chat" tab
 - Confirm NO "Internal Server Error" or webpack runtime errors
 - Confirm CSS loads correctly (no unstyled content)
@@ -266,7 +266,7 @@ curl "http://localhost:8000/v1/ingest/import-prompt" \
 # Expected: {"prompt_text": "...Summarize all key topics...", "detected_concepts": []}
 
 # Frontend:
-# 1. Navigate to /dashboard/sources
+# 1. Navigate to /sources
 # 2. Click "Import from AI Chat" tab
 # 3. Verify prompt textarea shows personalized prompt
 # 4. Click Copy — verify "Copied ✓" appears for 2 seconds
@@ -313,7 +313,7 @@ Read first:
 7. docs/stories/EPIC-09-memory-intelligence/STORY-028.md (this file)
 
 Key constraints:
-- Add Tabs to /dashboard/sources/page.tsx (Upload Files | Import from AI Chat)
+- Add Tabs to /sources/page.tsx (Upload Files | Import from AI Chat)
 - Clipboard API in GeneratedPromptBox — no third-party clipboard package needed
 - Textarea maxLength={100000} — large AI responses expected
 - Submit calls existing /v1/ingest/text endpoint — no new endpoint needed

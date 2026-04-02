@@ -18,7 +18,7 @@
 | PrivacyLayer | BE-COMP-07 | FR-11 | src/services/privacy_service.py, src/adapters/presidio_adapter.py | 024, 025 |
 | LandingPage | FE-COMP-01 | — | app/(marketing)/page.tsx, components/marketing/*.tsx | 021 |
 | PricingPage | FE-COMP-02 | — | app/(marketing)/pricing/page.tsx, components/marketing/Pricing*.tsx | 022 |
-| OnboardingWizard | FE-COMP-03 | — | app/(dashboard)/onboarding/page.tsx, components/domain/OnboardingWizard.tsx | 019 |
+| OnboardingWizard | FE-COMP-03 | — | app/(auth)/onboarding/page.tsx, components/domain/OnboardingWizard.tsx | 019 |
 | Omnibar | FE-COMP-04 | — | components/domain/Omnibar.tsx, hooks/use-omnibar.ts | 008, 020 |
 | MemoryInbox | FE-COMP-05 | — | components/domain/MemoryInbox.tsx, components/domain/ConflictCard.tsx | 014 |
 | GraphExplorer | FE-COMP-06 | — | components/domain/GraphExplorer.tsx, components/domain/GraphNodePanel.tsx | 011, 030 |
@@ -196,3 +196,87 @@ require_user/verify_token_query_param FastAPI dependencies.
 **Boundaries:**
 - Owns: Streaming editor, document history, prompt input, export (MD/PDF)
 - Does NOT own: Meta-Doc generation pipeline (BE-COMP-04), retrieval (BE-COMP-03)
+
+---
+
+## Authoritative Route Map
+
+**CRITICAL:** Next.js route groups `(auth)`, `(marketing)`, `(dashboard)` are FOLDER grouping ONLY. They do NOT appear in the URL. `/dashboard/chat` does NOT exist — the correct URL is `/chat`.
+
+```
+/                         → app/(marketing)/page.tsx
+/pricing                  → app/(marketing)/pricing/page.tsx
+/privacy                  → app/(marketing)/privacy/page.tsx
+/terms                    → app/(marketing)/terms/page.tsx
+/login                    → app/(auth)/login/[[...rest]]/page.tsx
+/register                 → app/(auth)/register/[[...rest]]/page.tsx
+/onboarding               → app/(auth)/onboarding/page.tsx      ← NOT under (dashboard)
+/chat                     → app/(dashboard)/chat/page.tsx
+/inbox                    → app/(dashboard)/inbox/page.tsx
+/graph                    → app/(dashboard)/graph/page.tsx
+/sources                  → app/(dashboard)/sources/page.tsx
+/workstation              → app/(dashboard)/workstation/page.tsx
+/settings/*               → app/(dashboard)/settings/*/page.tsx
+/admin/*                  → app/admin/*/page.tsx
+/dashboard                → app/(dashboard)/page.tsx  [needs creation → redirect("/chat")]
+```
+
+**Forbidden URL patterns** (these do NOT exist):
+```
+/dashboard/chat           ← WRONG — use /chat
+/dashboard/inbox          ← WRONG — use /inbox
+/dashboard/graph          ← WRONG — use /graph
+/dashboard/sources        ← WRONG — use /sources
+/dashboard/workstation    ← WRONG — use /workstation
+/dashboard/onboarding     ← WRONG — use /onboarding
+```
+
+---
+
+## Admin Bypass System Overview
+
+Admin users are identified by the `ADMIN_USER_IDS` env var (comma-separated Clerk user IDs).
+
+**Backend behavior:**
+- `CreditService.check_or_raise()` returns early for admin users — never blocks
+- `CreditService.deduct()` returns a zero-amount `CreditTransaction` — balance unchanged
+- `GET /v1/me` returns `{is_admin: true}` for admin users
+- All features work for admins without any credits or subscription
+
+**Frontend behavior:**
+- Sidebar: shows `◆ ADMIN_ACCESS` instead of credit balance when `user.is_admin = true`
+- Pricing page: shows "Admin Account — Full Access Bypass Active" instead of tier cards
+- All other UI unchanged — admin users see the same interface as regular users
+
+**BUG-006:** Admin bypass is NOT YET IMPLEMENTED in `src/services/credit_service.py`. This blocks all end-to-end testing of LLM features. Fix in STORY-040.
+
+---
+
+## Cross-Reference Map
+
+When implementing any feature, read docs in this order:
+
+1. **Component spec** (`docs/components/[COMP-ID]-[Name].md`) — user journey, API contracts, admin bypass, known bugs
+2. **Design preamble** (`docs/design/AGENT_DESIGN_PREAMBLE.md`) — ALWAYS before any JSX
+3. **Design system** (`docs/design/01-design-system.md`) — color tokens, typography, spacing
+4. **API contract** (`docs/architecture/03-api-contract.md`) — endpoint schemas
+5. **Database schema** (`docs/architecture/02-database-schema.md`) — data model
+6. **REFACTOR_PLAN.md** (`docs/components/REFACTOR_PLAN.md`) — specific bug fix instructions
+
+**Component-to-component dependencies:**
+```
+FE-COMP-01 (Landing)        → reads: design/*
+FE-COMP-02 (Pricing)        → reads: BE-COMP-06 (credits/admin bypass)
+FE-COMP-03 (Onboarding)     → reads: BE-COMP-05 (auth), BE-COMP-01 (ingest)
+FE-COMP-04 (Omnibar)        → reads: BE-COMP-01 (text ingest)
+FE-COMP-05 (MemoryInbox)    → reads: BE-COMP-02 (conflict detection/resolution)
+FE-COMP-06 (GraphExplorer)  → reads: BE-COMP-02 (graph API)
+FE-COMP-07 (Workstation)    → reads: BE-COMP-04 (generation), BE-COMP-06 (credits)
+BE-COMP-01 (Ingestion)      → reads: BE-COMP-06 (credits)
+BE-COMP-02 (GraphEngine)    → reads: BE-COMP-06 (credits for NL queries)
+BE-COMP-03 (Retrieval)      → reads: BE-COMP-01, BE-COMP-02 (sources for retrieval)
+BE-COMP-04 (Generation)     → reads: BE-COMP-03 (retrieval), BE-COMP-06 (credits), BE-COMP-07 (PII)
+BE-COMP-05 (Auth)           → reads: BE-COMP-06 (signup bonus)
+BE-COMP-06 (Credits)        → reads: all other BE-COMP files (credit costs)
+BE-COMP-07 (Privacy)        → reads: BE-COMP-04 (PII masking in generation)
+```

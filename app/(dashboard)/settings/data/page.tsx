@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Download,
@@ -57,8 +58,10 @@ const formats = [
 export default function DataSettingsPage() {
   const [selectedFormat, setSelectedFormat] = useState<"json" | "csv" | "zip">("json")
   const [confirmText, setConfirmText] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
   const queryClient = useQueryClient()
   const apiFetch = useApiFetch()
+  const router = useRouter()
 
   // Export mutation — triggers POST /v1/account/export
   const exportMutation = useMutation({
@@ -118,8 +121,16 @@ export default function DataSettingsPage() {
   const downloadUrl = exportStatus?.download_url ?? null
 
   const handleDeleteAccount = async () => {
-    toast.success("Account deletion initiated. You'll receive a confirmation email.")
-    setConfirmText("")
+    try {
+      setIsDeleting(true)
+      await apiFetch("/v1/account", { method: "DELETE" })
+      toast.success("Account deleted. All your data has been permanently removed.")
+      router.push("/")
+    } catch {
+      setIsDeleting(false)
+      setConfirmText("")
+      toast.error("Failed to delete account. Please try again or contact support.")
+    }
   }
 
   return (

@@ -7,25 +7,57 @@
 
 ## Current State
 
-**Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 36
-**Status:** In progress — 38 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033, STORY-034, STORY-035, STORY-036-FE done)
+**Phase:** B — Production Launch
+**Current sprint:** 42
+**Status:** DEPLOYMENT READY — STORY-039/040/041 complete. All critical bugs fixed, admin bypass implemented, deployment configs created. Next: STORY-042 Production Deployment.
 
-**Next story to implement:** STORY-038 (Sprint 38 — Final UX Polish Pass)
-**Story file:** `docs/stories/EPIC-08-polish/STORY-038.md`
+**Next story to implement:** STORY-042 (Production Deployment — Railway + Vercel)
+**Story file:** `docs/stories/EPIC-10-production-launch/STORY-042.md`
+
+**State:** All critical bugs fixed. System is code-complete and ready for deployment.
+- ✅ BUG-001: Double Header/Footer removed from marketing pages
+- ✅ BUG-002: /dashboard → redirects to /chat (app/dashboard/page.tsx)
+- ✅ BUG-003: Header backdrop-blur removed (solid bg-background)
+- ✅ BUG-004: Authenticated users visiting / redirect to /chat
+- ✅ BUG-005: Onboarding completion → /chat (not /dashboard)
+- ✅ BUG-009: Dockerfile.api --reload → --workers 2
+- ✅ BUG-010: vercel.json created with security headers
+- ✅ BUG-013: Nav links now absolute paths (/#how-it-works)
+- ✅ BUG-014: Fake testimonials removed
+- ✅ BUG-015: Delete Account now calls API (CRITICAL fix)
+- ✅ BUG-021: /search and /generate removed from Omnibar
+- ✅ BUG-022: MemoryChat reader cancelled on unmount
+- ✅ BUG-025: GraphQueryBar example clicks auto-execute
+- ✅ BUG-026: Admin progress bar uses CSS custom property
+- ✅ BUG-028: MemoryInbox activeIndex clamped to 0
+- ✅ BUG-033: Checkout URL validated before redirect
+- ✅ ADMIN-001: CreditService admin bypass
+- ✅ ADMIN-002: GET /v1/users/me returns is_admin
+- ✅ ADMIN-003: Sidebar shows ◆ ADMIN_ACCESS for admin users
+- ✅ ADMIN-004: Pricing page shows admin bypass message
+- ✅ UX-001: Sources Upload tab wired to IngestionDropzone
+- ✅ DEPLOY-001: vercel.json created
+- ✅ DEPLOY-002: next.config.mjs updated with image remotePatterns
 
 ---
 
-## Last Completed Story
+## Last Completed Stories
 
-**STORY-036-FE — Admin Dashboard UI (Sprint 36)** (2026-04-02)
-Frontend: Fixed API contract mismatches in all 3 admin pages. Stats page corrected to use `active_today`, `new_today`, `daily_llm_spend_usd`, `llm_spend_cap_usd`, `sources_today`, `metadocs_today`. Users list fixed paginated response type, corrected toggle-active URL to `POST /v1/admin/users/{user_id}/toggle-active` with `{ active: boolean }` body, added status filter pills (Active/Disabled), skeleton table rows, DropdownMenuSeparator. User detail page fixed `recent_transactions`/`operation` field names, added ban/unban confirmation dialog, restructured credit adjustment as proper dialog, added `balance_after` column to transaction table. Created missing `app/admin/users/[id]/loading.tsx`.
+**STORY-041 (2026-04-02)** — Sources Page Upload + UX Gaps + Deployment Config
+**STORY-040 (2026-04-02)** — Admin Bypass System
+**STORY-039 (2026-04-02)** — Critical Bug Fixes
 
 ---
 
 ## Context for Next Session
 
-STORY-036-FE complete. Frontend build passes (0 TypeScript errors). All 6 ACs verified. Next: STORY-038 (Final UX Polish Pass).
+Documentation is now authoritative. All bugs documented with exact fix instructions in `docs/components/REFACTOR_PLAN.md`. Story counter set to 039. Begin STORY-039 (Critical Bug Fixes). Key context:
+
+1. Routes: `/dashboard/xxx` does NOT exist — correct URLs are `/chat`, `/inbox`, `/graph`, etc.
+2. Onboarding is at `app/(auth)/onboarding/` — NOT under `(dashboard)`
+3. Admin bypass MUST be implemented before any LLM feature testing (BUG-006)
+4. `REFACTOR_PLAN.md` has exact code changes for every bug — use it as the implementation guide
+5. `npm run build` must pass (0 TypeScript errors) before committing any story
 
 ---
 

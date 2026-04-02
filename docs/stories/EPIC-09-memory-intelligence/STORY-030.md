@@ -222,7 +222,7 @@ npm run dev
 **Step 3 — Verify no runtime errors:**
 - Open http://localhost:3000 in the browser
 - Sign in if redirected to /login
-- Navigate to `/dashboard/graph`
+- Navigate to `/graph`
 - Confirm NO "Internal Server Error" or webpack runtime errors
 - Confirm CSS loads correctly (no unstyled content)
 - Open browser DevTools → Console tab
@@ -241,7 +241,7 @@ Only commit the docs update (epics.md, story-counter, project-status, journal) A
 npm run build
 
 # Manual test:
-# 1. Navigate to /dashboard/graph
+# 1. Navigate to /graph
 # 2. Verify query bar appears above filter row
 # 3. Click an example chip — verify it fills the query input
 # 4. Submit query "Show my Python projects"

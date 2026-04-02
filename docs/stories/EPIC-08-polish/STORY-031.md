@@ -280,7 +280,7 @@ npm run dev
 **Step 3 — Verify no runtime errors:**
 - Open http://localhost:3000 in the browser
 - Sign in if redirected to /login
-- Navigate to any dashboard page (e.g., `/dashboard/inbox`)
+- Navigate to any dashboard page (e.g., `/inbox`)
 - Confirm NO "Internal Server Error" or webpack runtime errors
 - Confirm CSS loads correctly (no unstyled content)
 - Open browser DevTools → Console tab

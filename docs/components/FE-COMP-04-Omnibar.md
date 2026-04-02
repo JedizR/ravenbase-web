@@ -7,52 +7,137 @@
 
 ---
 
-## Goal
+## Purpose
 
-The Omnibar is the central command interface for Ravenbase. It provides slash commands for quick actions without navigating through menus. It is always accessible via a keyboard shortcut (Cmd+K or Ctrl+K) and appears as a floating input at the top of the dashboard. The two primary commands are `/ingest [text]` for quick text capture and `/profile` for switching between System Profiles.
-
----
-
-## Product Requirements
-
-1. **Omnibar Trigger:** Opens with `Cmd+K` (Mac) or `Ctrl+K` (Windows/Linux). Also clickable via a button in the dashboard header. Closes with `Escape`.
-
-2. **Visual Appearance:** Floating modal/popover with search input at top, command list below. Appears centered at top of viewport. Warm cream background (`bg-card`), `rounded-2xl`, shadow-lg. Max height with scroll.
-
-3. **`/ingest [text]` Command:** Typing `/ingest ` (with a space) followed by text captures it. Pressing Enter captures the text, shows a confirmation toast "Captured to [Profile Name]" within 2 seconds, and creates a `Source` record with `file_type="direct_input"` via `POST /v1/ingest/text`.
-
-4. **Text Capture Limit:** 50,000 character limit. Over limit shows inline error "Text exceeds 50,000 characters" below the input.
-
-5. **`/profile` Command:** Shows a dropdown of all user profiles with the active profile highlighted. Clicking a profile switches the active context. Keyboard: `↑/↓` to navigate, `Enter` to select.
-
-6. **`/profile` Switch Behavior:** After switching, the Omnibar closes and the new profile is active for all subsequent API calls. The sidebar and page headers reflect the active profile name.
-
-7. **Command List:** When input is empty, shows all available commands: `/ingest [text]`, `/profile`, and any future commands. Each command shows: name, keyboard shortcut, description.
-
-8. **Real-time Parsing:** As user types, the Omnibar detects `↑` commands and shows the appropriate UI (text capture for `/ingest`, profile list for `/profile`).
-
-9. **Toast Confirmation:** After text capture, uses `sonner` `toast()` to show: "Captured to [Profile Name]" with a checkmark icon. Auto-dismisses after 3 seconds.
-
-10. **Active Profile Context:** The active System Profile is stored in React context and included in all data-fetching query keys for proper cache invalidation.
+The Omnibar is the central keyboard-driven command interface for Ravenbase. It opens on `Cmd+K` / `Ctrl+K` and provides slash commands for quick actions without navigating menus. The two core commands: `/ingest [text]` captures text to the active profile, `/profile` switches the active System Profile. Other commands (`/search`, `/generate`) exist in the UI but are currently not implemented (BUG-021).
 
 ---
 
-## Criteria and Tests
+## User Journey
 
-| Criterion | Test |
-|---|---|
-| Cmd+K opens Omnibar | Press Cmd+K → Omnibar modal appears |
-| Escape closes Omnibar | Press Escape → Omnibar closes |
-| `/ingest Hello world` + Enter → toast | Type `/ingest Hello world`, Enter → "Captured to [Profile]" toast |
-| Text > 50,000 chars → error | Paste 50,001 chars → inline error shown |
-| `/profile` shows profile list | Type `/profile` → dropdown of all profiles |
-| Profile switch updates context | Switch profile → subsequent API calls use new profile_id |
-| Omnibar closes after action | After capture or profile switch → closes automatically |
-| Empty state shows command list | Open Omnibar with empty input → shows all commands |
-| Keyboard navigation works | Type `/profile` → ↑/↓ to navigate, Enter to select |
-| Mobile: tap to open | Mobile: header button opens Omnibar |
-| Active profile highlighted in list | `/profile` → active profile shows checkmark |
-| Omnibar is focus-trapped | Tab cycles through items within Omnibar |
+**Text ingest flow:**
+1. User on any dashboard page → `Cmd+K` (Mac) or `Ctrl+K` (Windows)
+2. Omnibar opens centered at top of viewport
+3. Types: `/ingest My meeting today was about the React migration`
+4. Presses Enter
+5. `POST /v1/ingest/text {content: "...", profile_id: activeProfileId}`
+6. Toast: "◆ CAPTURED — Added to [Profile Name]"
+7. Cost: 0 credits (text ingest is always free — no admin bypass needed)
+8. Omnibar closes
+
+**Profile switch flow:**
+1. `Cmd+K` → types `/profile`
+2. Dropdown shows all profiles with active profile highlighted (✓ checkmark)
+3. Arrow keys navigate, Enter selects
+4. `ProfileContext.setActiveProfile(id)` updates all queries immediately
+5. Toast: "◆ SWITCHED — Now in [Profile Name]"
+6. Omnibar closes
+
+**Command list (empty input):**
+1. `Cmd+K` without typing → shows all available commands
+2. `/ingest [text]` — Quick text capture (0 credits)
+3. `/profile` — Switch active profile
+4. `/search [query]` — Search memories (shows "not yet implemented" — BUG-021)
+5. `/generate [prompt]` — Generate Meta-Doc (shows "not yet implemented" — BUG-021)
+
+---
+
+## Subcomponents
+
+```
+components/domain/
+  Omnibar.tsx           — Main Omnibar container with keyboard handler
+  OmnibarInput.tsx      — Search input with slash command detection
+  CommandList.tsx       — Command list when input is empty
+  ProfileSwitchList.tsx — Profile list for /profile command
+  IngestConfirm.tsx     — Inline preview before /ingest capture
+
+hooks/
+  use-omnibar.ts        — Cmd+K/Ctrl+K open/close, keyboard navigation
+
+lib/
+  omnibar-commands.ts   — Command definitions: /ingest, /profile
+```
+
+---
+
+## API Contracts
+
+```
+POST /v1/ingest/text
+  Request:  { content: string, profile_id?: string, tags?: string[] }
+  Response: { job_id: string }
+  Auth:     Required
+  Cost:     0 credits (text ingest is always free)
+  Limit:    50,000 chars max — show inline error if exceeded
+
+GET /v1/profiles
+  Response: { profiles: [{ id, name, is_default, icon, color }] }
+  Auth:     Required
+  Used by:  Populate /profile dropdown (fetched from ProfileContext, not directly)
+```
+
+---
+
+## Admin Bypass
+
+Text ingest: 0 credits — no bypass needed.
+Profile switching: no cost — no bypass needed.
+Omnibar is fully functional for all users without any special admin handling.
+
+---
+
+## Design System Rules
+
+Cross-reference: `docs/design/AGENT_DESIGN_PREAMBLE.md` (READ FIRST)
+
+Specific rules:
+- **Omnibar container:** `bg-card rounded-2xl shadow-lg border border-border` — warm cream card, not modal overlay
+- **Position:** Fixed, centered at top of viewport: `fixed top-4 left-1/2 -translate-x-1/2 z-50`
+- **Width:** `w-full max-w-lg` (not full-width on desktop)
+- **Input:** no ring, no border — seamless inside the Omnibar container
+- **Command items:** hover state `bg-secondary`, active `bg-primary/10 text-primary`
+- **Command prefix text:** `font-mono text-sm` for `/ingest`, `/profile` etc.
+- **Toast confirmation:** `sonner` — `toast.success("◆ CAPTURED — Added to [Profile Name]")`
+- **Active profile checkmark:** `text-primary` — `✓` or `CheckCircle2` icon
+- **Max height:** `max-h-[400px] overflow-y-auto` for profile list
+
+---
+
+## Known Bugs / Current State
+
+**BUG-021 (MEDIUM):** `/search` and `/generate` commands show "not yet implemented" toast without doing anything.
+- **Root cause:** `components/domain/Omnibar.tsx:221-225` has placeholder handlers that call `toast.info("not yet implemented")`.
+- **Fix:** Either implement the commands (link `/search` to search page, `/generate` to workstation with the query pre-filled) OR hide these commands from the command list entirely until implemented.
+- **Recommended fix:** Remove `/search` and `/generate` from the CommandList until they're implemented. Showing unimplemented features creates user confusion.
+- **Story:** STORY-041
+
+**BUG-022 (MEDIUM — Memory Leak):** `ReadableStream.getReader()` in MemoryChat not cancelled on unmount.
+- **Note:** This is in MemoryChat, not Omnibar — but related to SSE/stream cleanup. See FE-COMP-08 (MemoryChat).
+
+---
+
+## Acceptance Criteria
+
+- [ ] `Cmd+K` opens Omnibar; `Escape` closes it
+- [ ] Empty input → shows command list (`/ingest`, `/profile`)
+- [ ] `/ingest Hello world` + Enter → `POST /v1/ingest/text` fires → toast "Captured to [Profile]"
+- [ ] Text > 50,000 chars → inline error "Text exceeds 50,000 characters" (not a toast)
+- [ ] `/profile` → shows all profiles, active one has `✓`
+- [ ] Profile switch → all dashboard queries refetch with new `profile_id`
+- [ ] After any command → Omnibar closes automatically
+- [ ] Focus trapped inside Omnibar (Tab cycles through items)
+- [ ] Mobile: header button opens Omnibar (no keyboard shortcut on mobile)
+- [ ] Unimplemented commands (`/search`, `/generate`) either removed OR clearly marked
+
+---
+
+## Cross-references
+
+- `docs/design/AGENT_DESIGN_PREAMBLE.md` — MANDATORY read before any JSX
+- `BE-COMP-01-IngestionPipeline.md` — text ingest endpoint details
+- `docs/architecture/03-api-contract.md` — `/v1/ingest/text` endpoint
+- `docs/components/REFACTOR_PLAN.md` — BUG-021 fix details
 
 ---
 
@@ -73,42 +158,27 @@ components/domain/
   OmnibarInput.tsx      — Search input with slash command detection
   CommandList.tsx       — Command list when input is empty
   ProfileSwitchList.tsx — Profile list for /profile command
-  IngestConfirm.tsx     — Inline preview before /ingest capture
 
 hooks/
   use-omnibar.ts        — Cmd+K/Ctrl+K open/close, keyboard navigation
 
 lib/
-  omnibar-commands.ts   — Command definitions: /ingest, /profile
+  omnibar-commands.ts   — Command definitions
 ```
 
 ## Slash Command Detection
 
 ```tsx
-// use-omnibar.ts
-const COMMANDS = ["/ingest", "/profile"] as const
+const COMMANDS = ["/ingest", "/profile"] as const  // /search, /generate removed (BUG-021 fix)
 
 function detectCommand(input: string): { command: string | null; args: string } {
   const trimmed = input.trim()
   for (const cmd of COMMANDS) {
     if (trimmed.startsWith(`${cmd} `) || trimmed === cmd) {
-      return {
-        command: cmd,
-        args: trimmed.slice(cmd.length).trim()
-      }
+      return { command: cmd, args: trimmed.slice(cmd.length).trim() }
     }
   }
   return { command: null, args: "" }
-}
-
-// In component:
-const { command, args } = detectCommand(input)
-if (command === "/ingest") {
-  setView("ingest")
-} else if (command === "/profile") {
-  setView("profile")
-} else {
-  setView("commands")
 }
 ```
 
@@ -117,19 +187,18 @@ if (command === "/ingest") {
 ```tsx
 // Omnibar.tsx
 "use client"
-import { useEffect, useRef, useState } from "react"
-import { useHotkeys } from "~/hooks/use-hotkeys"  // or custom
+import { useEffect, useState } from "react"
 import { CommandDialog, CommandInput, CommandList, CommandItem } from "~/components/ui/command"
 import { toast } from "sonner"
 import { useProfileContext } from "~/contexts/profile-context"
+import { useApiFetch } from "@/lib/api-client"
 
 export function Omnibar() {
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState("")
-  const apiUpload = useApiUpload()
+  const apiFetch = useApiFetch()
   const { profiles, activeProfile, switchProfile } = useProfileContext()
 
-  // Global keyboard shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -143,38 +212,22 @@ export function Omnibar() {
 
   const handleSubmit = async () => {
     const { command, args } = detectCommand(input)
-
     if (command === "/ingest") {
-      if (args.length > 50_000) {
-        setError("Text exceeds 50,000 characters")
-        return
-      }
-      await apiUpload("/v1/ingest/text", {
-        body: JSON.stringify({ content: args, profile_id: activeProfile?.id, tags: [] }),
+      if (args.length > 50_000) { setError("Text exceeds 50,000 characters"); return }
+      await apiFetch("/v1/ingest/text", {
+        method: "POST",
+        body: JSON.stringify({ content: args, profile_id: activeProfile?.id })
       })
-      toast.success(`Captured to ${activeProfile?.name ?? "Default"}`)
+      toast.success(`◆ CAPTURED — Added to ${activeProfile?.name ?? "Default"}`)
       setOpen(false)
       setInput("")
     }
-
-    if (command === "/profile") {
-      setView("profile")
-    }
   }
-
-  if (!open) return null
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput
-        value={input}
-        onValueChange={setInput}
-        onKeyDown={e => {
-          if (e.key === "Enter") handleSubmit()
-          if (e.key === "Escape") setOpen(false)
-        }}
-        placeholder="Type /ingest or /profile..."
-      />
+      <CommandInput value={input} onValueChange={setInput}
+        placeholder="Type /ingest or /profile..." />
       <CommandList>
         {input === "" && (
           <>
@@ -188,21 +241,16 @@ export function Omnibar() {
             </CommandItem>
           </>
         )}
-        {view === "profile" && (
-          profiles.map(p => (
-            <CommandItem
-              key={p.id}
-              onSelect={() => {
-                switchProfile(p.id)
-                toast.success(`Switched to ${p.name}`)
-                setOpen(false)
-              }}
-            >
-              {p.name}
-              {p.id === activeProfile?.id && <span className="ml-auto text-primary">✓</span>}
-            </CommandItem>
-          ))
-        )}
+        {input.startsWith("/profile") && profiles.map(p => (
+          <CommandItem key={p.id} onSelect={() => {
+            switchProfile(p.id)
+            toast.success(`◆ SWITCHED — Now in ${p.name}`)
+            setOpen(false)
+          }}>
+            {p.name}
+            {p.id === activeProfile?.id && <span className="ml-auto text-primary">✓</span>}
+          </CommandItem>
+        ))}
       </CommandList>
     </CommandDialog>
   )
@@ -213,45 +261,31 @@ export function Omnibar() {
 
 ```tsx
 // contexts/profile-context.tsx
-"use client"
-import { createContext, useContext, useState } from "react"
-
-interface Profile {
-  id: string
-  name: string
-}
-
-interface ProfileContextValue {
-  profiles: Profile[]
-  activeProfile: Profile | null
-  switchProfile: (id: string) => void
-}
-
-const ProfileContext = createContext<ProfileContextValue | null>(null)
-
 export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [activeProfileId, setActiveProfileId] = useState<string | null>(null)
+  const apiFetch = useApiFetch()
+  const queryClient = useQueryClient()
 
   const { data: profiles } = useQuery({
     queryKey: ["profiles"],
     queryFn: () => apiFetch<{ profiles: Profile[] }>("/v1/profiles"),
   })
 
-  const activeProfile = profiles?.find(p => p.id === activeProfileId) ?? profiles?.[0] ?? null
+  const activeProfile = profiles?.profiles.find(p => p.id === activeProfileId)
+    ?? profiles?.profiles.find(p => p.is_default)
+    ?? null
 
   const switchProfile = (id: string) => {
     setActiveProfileId(id)
-    // Invalidate all queries so they refetch with new profile_id
     queryClient.invalidateQueries({ queryKey: ["sources"] })
     queryClient.invalidateQueries({ queryKey: ["graph"] })
+    queryClient.invalidateQueries({ queryKey: ["metadocs"] })
   }
 
   return (
-    <ProfileContext.Provider value={{ profiles: profiles ?? [], activeProfile, switchProfile }}>
+    <ProfileContext.Provider value={{ profiles: profiles?.profiles ?? [], activeProfile, switchProfile }}>
       {children}
     </ProfileContext.Provider>
   )
 }
-
-export const useProfileContext = () => useContext(ProfileContext)!
 ```

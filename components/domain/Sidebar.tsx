@@ -18,6 +18,7 @@ import { ProfileSwitcher } from "@/components/domain/ProfileSwitcher"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { getCreditsBalanceV1CreditsBalanceGet, listConflictsV1ConflictsGet } from "@/src/lib/api-client/services.gen"
+import { useApiFetch } from "@/lib/api-client"
 
 interface NavItem {
   href: string
@@ -29,6 +30,7 @@ interface NavItem {
 
 export function Sidebar() {
   const pathname = usePathname()
+  const apiFetch = useApiFetch()
 
   // Poll conflict count every 30 seconds (AC-5)
   const { data: conflictData } = useQuery({
@@ -43,6 +45,13 @@ export function Sidebar() {
     queryKey: ["credits", "balance"],
     queryFn: () => getCreditsBalanceV1CreditsBalanceGet(),
     staleTime: 15_000,
+  })
+
+  // Fetch user profile to check admin status (ADMIN-003)
+  const { data: userProfile } = useQuery({
+    queryKey: ["users", "me"],
+    queryFn: () => apiFetch<{ is_admin: boolean }>("/v1/users/me"),
+    staleTime: 60_000,
   })
 
   const pendingCount = conflictData?.items.length ?? 0
@@ -157,15 +166,21 @@ export function Sidebar() {
 
       <Separator className="bg-primary-foreground/10" />
 
-      {/* Credits footer */}
+      {/* Credits footer — shows ADMIN_ACCESS for admin users */}
       <div className="p-4">
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
-          <Coins className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
-          <span className="font-mono">◆ CREDITS</span>
-          <span className="ml-auto font-mono text-primary-foreground/80">
-            {creditsData?.balance ?? "—"}
-          </span>
-        </div>
+        {userProfile?.is_admin ? (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
+            <span className="font-mono text-primary-foreground/80">◆ ADMIN_ACCESS</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
+            <Coins className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
+            <span className="font-mono">◆ CREDITS</span>
+            <span className="ml-auto font-mono text-primary-foreground/80">
+              {creditsData?.balance ?? "—"}
+            </span>
+          </div>
+        )}
       </div>
     </aside>
   )

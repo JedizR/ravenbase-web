@@ -1,9 +1,73 @@
-# COMP-03: RetrievalEngine
+# RetrievalEngine
 
 > **Component ID:** BE-COMP-03
 > **Epic:** EPIC-05 — Meta-Document Generation
 > **Stories:** STORY-015, STORY-016 (retrieval portion)
 > **Type:** Backend
+
+---
+
+## Purpose
+
+The RetrievalEngine is the context-grounding layer used by every LLM operation in Ravenbase. `RAGService.retrieve()` implements hybrid retrieval: Qdrant semantic search (kNN) + Neo4j graph-neighbor traversal + re-ranking by weighted formula. Both the Meta-Document generator and the Memory Chat system call this service to build grounded context before sending anything to an LLM.
+
+---
+
+## User Journey
+
+The retrieval pipeline is invisible to users — it runs automatically before any LLM call:
+
+1. User triggers a generation (Meta-Doc, Chat message)
+2. `GenerationEngine` calls `RAGService.retrieve(prompt, profile_id, tenant_id, limit)`
+3. Phase 1: Qdrant kNN search returns top-30 semantically similar chunks
+4. Phase 2: Neo4j Cypher traversal finds related Memory nodes via concept edges
+5. Phase 3: Results merged, deduplicated by content hash, re-ranked:
+   `final_score = (semantic_score × 0.6) + (recency_weight × 0.3) + (profile_match × 0.1)`
+6. Top-N unique chunks returned with attribution (`source_id`, `memory_id`, page number)
+7. These chunks become the LLM's context window — grounding the AI's output in real user data
+8. If no relevant memories exist: returns `[]` — LLM told "no relevant memories found"
+
+---
+
+## Admin Bypass
+
+No credits consumed by retrieval — admin bypass not needed.
+
+Retrieval runs identically for admin and regular users. Tenant isolation (`tenant_id` filtering) applies to all users including admins — this is a security invariant, not a feature to bypass.
+
+---
+
+## Known Bugs / Current State
+
+No known bugs in RetrievalEngine. Implementation is complete per STORY-015.
+
+**Verify before relying on retrieval:**
+- All Qdrant queries include `tenant_id` filter (security check)
+- All Neo4j queries use `WHERE n.tenant_id = $tenant_id` (never string-interpolated)
+- Profile scoping: `profile_id` filter applied when provided
+- Performance: must complete in < 3 seconds for 10,000-chunk corpus
+
+---
+
+## Acceptance Criteria
+
+- [ ] `RAGService.retrieve()` returns `list[RetrievedChunk]` sorted by `final_score`
+- [ ] Re-ranking formula: `semantic×0.6 + recency×0.3 + profile×0.1`
+- [ ] Qdrant search scoped to `tenant_id` — no cross-tenant data
+- [ ] Neo4j traversal scoped to `tenant_id` — no cross-tenant nodes
+- [ ] Deduplication: same content appearing in both Qdrant + Neo4j results appears once
+- [ ] Empty result returns `[]` — no error, no hallucination
+- [ ] Performance: < 3 seconds for 10,000-chunk corpus
+- [ ] Each returned chunk includes `source_id`, `memory_id`, page number for citation
+
+---
+
+## Cross-references
+
+- `BE-COMP-04-GenerationEngine.md` — primary consumer of `RAGService.retrieve()`
+- `BE-COMP-01-IngestionPipeline.md` — creates the chunks that retrieval searches
+- `BE-COMP-02-GraphEngine.md` — Neo4j graph that retrieval traverses
+- `docs/architecture/03-api-contract.md` — no direct HTTP endpoints (internal service)
 
 ---
 

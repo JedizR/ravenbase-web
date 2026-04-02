@@ -94,7 +94,7 @@ export function OnboardingWizard() {
 
   useEffect(() => {
     if (userData?.has_completed_onboarding) {
-      router.replace("/dashboard")
+      router.replace("/chat")
     }
   }, [userData, router])
 
@@ -131,7 +131,7 @@ export function OnboardingWizard() {
     } catch {
       // Best-effort — don't block navigation if backend isn't ready
     }
-    router.push("/dashboard?first_run=true")
+    router.push("/chat?first_run=true")
   }
 
   function validateProfileName(value: string): string | null {
@@ -597,7 +597,7 @@ function StepProgress({ sseState, onForceContinue, isComplete }: StepProgressPro
         </h1>
         <p className="text-sm text-muted-foreground">
           {isComplete
-            ? "Your knowledge graph is ready. Redirecting to dashboard..."
+            ? "Your knowledge graph is ready. Redirecting to your workspace..."
             : "Ravenbase is extracting entities and relationships from your document."}
         </p>
       </div>
@@ -652,7 +652,7 @@ function StepProgress({ sseState, onForceContinue, isComplete }: StepProgressPro
 
       {/* Status for screen readers */}
       <div role="status" aria-live="polite" className="sr-only">
-        {status === "complete" && "Processing complete. Redirecting to dashboard."}
+        {status === "complete" && "Processing complete. Redirecting to your workspace."}
         {status === "error" && "Processing encountered an error."}
         {status === "processing" && `Processing: ${progress}%`}
       </div>
@@ -661,14 +661,14 @@ function StepProgress({ sseState, onForceContinue, isComplete }: StepProgressPro
         <div className="space-y-3">
           <p className="text-sm text-destructive" role="alert">
             Processing encountered an error. Your file was saved — you can retry
-            from the dashboard.
+            from your workspace.
           </p>
           <Button
             type="button"
             onClick={onForceContinue}
             className="w-full rounded-full h-11"
           >
-            Go to dashboard →
+            Go to workspace →
           </Button>
         </div>
       )}

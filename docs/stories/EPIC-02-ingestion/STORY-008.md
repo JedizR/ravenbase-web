@@ -93,8 +93,8 @@ const COMMANDS = {
   "/search": handleSearch,
   "/profile": handleProfile,
   "/generate": handleGenerate,
-  "/inbox": () => router.push("/dashboard/inbox"),
-  "/graph": () => router.push("/dashboard/graph"),
+  "/inbox": () => router.push("/inbox"),
+  "/graph": () => router.push("/graph"),
 };
 
 function parseCommand(input: string): { command: string; args: string } {

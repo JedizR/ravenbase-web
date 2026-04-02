@@ -7,6 +7,67 @@
 
 ---
 
+## Purpose
+
+The GraphEngine owns knowledge graph construction, exploration, conflict detection and resolution, and natural language graph queries. It transforms raw ingested content into a living, queryable knowledge graph stored in Neo4j, surfaces contradictions to users via the Memory Inbox, and enables natural language exploration of graph data via Text-to-Cypher.
+
+---
+
+## User Journey
+
+**Graph is built automatically (no user action required):**
+1. User uploads a file → IngestionPipeline completes → automatically enqueues `graph_extraction` ARQ task
+2. LLM extracts entities, memories, relationships from chunks → writes to Neo4j
+3. After graph write, `scan_for_conflicts` task runs automatically
+4. If contradictions found → `Conflict` records created → sidebar badge increments
+
+**User browses graph (FE-COMP-06):**
+- `/graph` → `GET /v1/graph/nodes` → Cytoscape.js renders
+- Click node → `GET /v1/graph/neighborhood/{id}` → detail panel
+- Type NL query → `POST /v1/graph/query` → amber-highlighted subgraph (costs 2 credits)
+
+**User resolves conflicts (FE-COMP-05):**
+- `/inbox` → `GET /v1/conflicts?status=pending` → keyboard triage
+- `J/K/Enter/Backspace` → `POST /v1/conflicts/{id}/resolve` → `ACCEPT_NEW | KEEP_OLD | CUSTOM`
+- 30-second undo window → `POST /v1/conflicts/{id}/undo`
+
+---
+
+## Admin Bypass
+
+NL graph queries (`POST /v1/graph/query`) cost 2 credits per call.
+
+Admin users (identified by `ADMIN_USER_IDS` env var): `CreditService.check_or_raise()` returns early → queries run for free. Frontend: no change needed — sidebar shows `◆ ADMIN_ACCESS` instead of credit count.
+
+All other graph operations (browse, conflict triage, resolution) are free — no bypass needed.
+
+---
+
+## Known Bugs / Current State
+
+**BUG-018 (HIGH):** Date range filter UI exists in Graph Explorer but `filteredNodes` never applies it.
+- **Root cause:** `app/(dashboard)/graph/GraphPageClient.tsx:38-70` — `dateRange.from/to` collected but ignored in `filteredNodes` useMemo.
+- **Fix:** Add date filtering to `filteredNodes` — see FE-COMP-06 for exact fix.
+- **Story:** STORY-039
+
+**Cypher safety invariants (already implemented, must not regress):**
+- `tenant_id` ALWAYS a Neo4j query parameter, NEVER string-interpolated
+- Generated Cypher rejected if it contains any write keyword (`CREATE`, `MERGE`, `SET`, `DELETE`)
+- `limit` capped at 50 in code — never from LLM output
+
+---
+
+## Cross-references
+
+- `FE-COMP-05-MemoryInbox.md` — keyboard-first conflict resolution UI
+- `FE-COMP-06-GraphExplorer.md` — Cytoscape.js visualization, NL query UI
+- `BE-COMP-06-CreditSystem.md` — 2 credit cost for NL queries
+- `docs/architecture/02-database-schema.md` — Neo4j node/edge types
+- `docs/architecture/03-api-contract.md` — graph and conflict endpoints
+- `docs/components/REFACTOR_PLAN.md` — BUG-018 fix details
+
+---
+
 ## Goal
 
 The GraphEngine owns knowledge graph construction, exploration, conflict detection and resolution, and natural language graph queries. It transforms raw ingested content into a living, queryable knowledge graph stored in Neo4j, surfaces contradictions to users via the Memory Inbox, and enables natural language exploration of graph data.
@@ -101,7 +162,7 @@ The GraphEngine owns knowledge graph construction, exploration, conflict detecti
 | `POST /v1/conflicts/{id}/resolve` ACCEPT_NEW works | Call with action=ACCEPT_NEW → SUPERSEDES edge in Neo4j, old is_valid=false |
 | `POST /v1/conflicts/{id}/undo` works within 30s | Undo within window → Neo4j state reverted |
 | `POST /v1/conflicts/{id}/undo` returns 409 after 30s | Undo after 30s → 409 Conflict |
-| Graph Explorer renders Cytoscape graph | Navigate to /dashboard/graph → force-directed graph visible |
+| Graph Explorer renders Cytoscape graph | Navigate to /graph → force-directed graph visible |
 | Conflict nodes pulse amber | Conflict exists → amber pulsing animation visible |
 | Memory Inbox J/K navigation works | Press J → next card selected, K → previous |
 | Memory Inbox optimistic UI reverts on error | Disconnect network mid-resolve → card animates back in |
@@ -265,7 +326,7 @@ The Graph Explorer renders the knowledge graph as a force-directed visualization
 ```bash
 # Manual test:
 # 1. uv run python scripts/seed_dev_data.py
-# 2. Open http://localhost:3000/dashboard/graph
+# 2. Open http://localhost:3000/graph
 # 3. Verify force-directed graph renders
 # 4. Click a concept node → verify right panel opens
 # 5. Resize to 375px → verify list view renders
@@ -397,7 +458,7 @@ make quality
 The Memory Inbox is the signature differentiator of Ravenbase. It surfaces contradictory facts for explicit human resolution through three flows: (1) Binary Triage with keyboard shortcuts J/K/Enter/Backspace, (2) Conversational Clarification with inline chat for nuanced resolutions, and (3) Optimistic Auto-Resolution with 30-second undo toast. All interactions use optimistic UI for sub-200ms perceived latency.
 
 #### Criteria of Done
-- [ ] Memory Inbox accessible at `/dashboard/inbox`
+- [ ] Memory Inbox accessible at `/inbox`
 - [ ] Flow 1 — Binary Triage: J/K cycles cards, Enter accepts AI resolution, Backspace keeps old
 - [ ] Flow 2 — Conversational: C key expands card to inline chat; typing + Enter calls CUSTOM resolve
 - [ ] Flow 3 — Auto-resolved: toast with 30-second countdown, Undo button
@@ -425,7 +486,7 @@ The Memory Inbox is the signature differentiator of Ravenbase. It surfaces contr
 ```bash
 # Manual test (requires seeded conflict data):
 # 1. uv run python scripts/seed_dev_data.py (seed 3+ conflicts)
-# 2. Open http://localhost:3000/dashboard/inbox
+# 2. Open http://localhost:3000/inbox
 # 3. Press J — move to next conflict
 # 4. Press K — move to previous conflict
 # 5. Press Enter — resolve with ACCEPT_NEW
@@ -535,7 +596,7 @@ The NL Graph Query frontend extends the Graph Explorer with a query bar above th
 #### Testing
 ```bash
 # Manual test:
-# 1. Navigate to /dashboard/graph
+# 1. Navigate to /graph
 # 2. Verify query bar appears above filter row
 # 3. Click an example chip — verify it fills the query input
 # 4. Submit query "Show my Python projects"

@@ -30,7 +30,7 @@ export function PricingToggle({ isAnnual, onToggle }: PricingToggleProps) {
         aria-label="Toggle annual billing"
       >
         <span
-          className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+          className={`inline-block h-4 w-4 rounded-full bg-secondary transition-transform ${
             isAnnual ? "translate-x-6" : "translate-x-1"
           }`}
         />

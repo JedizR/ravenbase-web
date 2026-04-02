@@ -20,7 +20,7 @@ import type { Profile } from "@/contexts/ProfileContext"
 // Slash command types
 // ---------------------------------------------------------------------------
 
-type CommandType = "profile" | "search" | "ingest" | "generate" | "inbox" | "graph" | "unknown"
+type CommandType = "profile" | "ingest" | "inbox" | "graph" | "unknown"
 
 interface ParsedCommand {
   type: CommandType
@@ -44,9 +44,7 @@ function parseSlashCommand(input: string): ParsedCommand {
 
   const MAP: Record<string, CommandType> = {
     profile: "profile",
-    search: "search",
     ingest: "ingest",
-    generate: "generate",
     inbox: "inbox",
     graph: "graph",
   }
@@ -218,15 +216,10 @@ export function Omnibar({ className }: OmnibarProps) {
                     handleIngestText(text)
                   } else if (trimmed === "/ingest") {
                     toast.info("Type some text after /ingest")
-                  } else if (
-                    trimmed.startsWith("/search") ||
-                    trimmed.startsWith("/generate")
-                  ) {
-                    toast.info("Command not yet implemented", { duration: 2000 })
                   }
                 }
               }}
-              placeholder="Type /profile, /search, /ingest…"
+              placeholder="Type /profile or /ingest…"
               className="rounded-none border-0 border-b border-border"
             />
             <CommandList className="max-h-[320px]">
@@ -278,7 +271,7 @@ export function Omnibar({ className }: OmnibarProps) {
               )}
 
               {/* Navigation commands */}
-              {(cmd.type === "unknown" || cmd.type === "ingest" || cmd.type === "search" || cmd.type === "generate" || cmd.type === "inbox" || cmd.type === "graph") && (
+              {(cmd.type === "unknown" || cmd.type === "ingest" || cmd.type === "inbox" || cmd.type === "graph") && (
                 <CommandGroup heading="NAVIGATION" className="p-2">
                   <CommandItem
                     value="nav inbox"

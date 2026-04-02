@@ -49,6 +49,23 @@ The IngestionPipeline is the entry point for all user data. It accepts diverse i
 
 ---
 
+## Admin Bypass
+
+**Ingestion credit cost:** 1 credit per page of PDF content. Text ingest: 0 credits (always free).
+
+Admin users (identified by `ADMIN_USER_IDS` env var): `CreditService.deduct()` returns a zero-amount transaction — no actual credits are consumed during file processing. The ingestion pipeline itself runs identically for admin users.
+
+**PDF upload admin bypass:**
+- Admin uploads PDF → `parse_document` worker runs → Docling parses → chunks embedded → Qdrant upsert
+- Credit deduction step: `CreditService.deduct(user_id, pages, "ingestion")` → returns `amount=0` for admin
+- Balance unchanged; `credit_transactions` row has `operation="admin_bypass:ingestion"`
+
+**Text ingest:** always 0 credits for all users — no bypass needed.
+
+See `BE-COMP-06-CreditSystem.md` for the admin bypass implementation in `CreditService`.
+
+---
+
 ## Criteria and Tests
 
 | Criterion | Test |
@@ -242,7 +259,7 @@ Text quick-capture enables users to paste text directly into the Omnibar and hav
 - [ ] `GET /v1/ingest/import-prompt?profile_id=` returns `{prompt_text, detected_concepts[]}`
 - [ ] Personalized prompt based on user's existing Neo4j Concept nodes
 - [ ] New user (no concepts): returns generic extraction prompt (not a 404)
-- [ ] Frontend tabs: "Upload Files" / "Import from AI Chat" on `/dashboard/sources`
+- [ ] Frontend tabs: "Upload Files" / "Import from AI Chat" on `/sources`
 - [ ] Copy button copies prompt with 2-second "Copied ✓" feedback
 - [ ] Paste + Submit calls `/v1/ingest/text` and shows SSE progress
 - [ ] Profile selector in Import tab; text area accepts up to 100,000 characters
@@ -258,7 +275,7 @@ Text quick-capture enables users to paste text directly into the Omnibar and hav
 - [ ] `ImportPromptResponse` schema in `src/schemas/ingest.py`
 - [ ] Neo4j query to fetch existing Concept nodes for tenant
 - [ ] Personalized prompt includes concept list; generic prompt if no concepts
-- [ ] Frontend `ImportFromAIChat` tab added to `/dashboard/sources`
+- [ ] Frontend `ImportFromAIChat` tab added to `/sources`
 - [ ] `GeneratedPromptBox` with Clipboard API copy + 2s feedback
 
 #### Testing (STORY-008)

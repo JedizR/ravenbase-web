@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Script from "next/script"
-import { Header } from "@/components/marketing/Header"
 import { HeroSection } from "@/components/marketing/HeroSection"
 import { WorkflowSection } from "@/components/marketing/WorkflowSection"
 import { FeaturesSection } from "@/components/marketing/FeaturesSection"
@@ -9,7 +8,6 @@ import { TestimonialsSection } from "@/components/marketing/TestimonialsSection"
 import { FAQSection } from "@/components/marketing/FAQSection"
 import { PricingSection } from "@/components/marketing/PricingSection"
 import { CTASection } from "@/components/marketing/CTASection"
-import { Footer } from "@/components/marketing/Footer"
 
 export const metadata: Metadata = {
   title: "Ravenbase — Your Permanent Memory",
@@ -63,7 +61,6 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         strategy="afterInteractive"
       />
-      <Header />
       <main id="main-content" tabIndex={-1} className="bg-background">
         <HeroSection />
         <WorkflowSection />
@@ -78,7 +75,6 @@ export default function LandingPage() {
         </section>
         <CTASection />
       </main>
-      <Footer />
     </>
   )
 }

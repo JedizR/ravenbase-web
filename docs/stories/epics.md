@@ -1,8 +1,8 @@
 # Stories — Epics & Story Master List
 
-> **Status key:** 🔲 DRAFT | ✅ DONE | 🔄 IN_PROGRESS | 🔍 IN_REVIEW | ✅ BE / 🔲 FE PARTIAL (cross-repo story, backend done, frontend pending Phase B)
+> **Status key:** 🔲 DRAFT | ✅ DONE | 🔄 IN_PROGRESS | 🔍 IN_REVIEW | ✅ BE / 🔲 FE PARTIAL (cross-repo story, backend done, frontend pending Phase B) | 🚫 BLOCKED
 >
-> **Total stories:** 38 | **Total epics:** 9
+> **Total stories:** 42 | **Total epics:** 10
 >
 > **Execution order:** Stories within each epic must be completed in order (each builds on the previous). Epics must be completed before moving to the next epic.
 
@@ -117,7 +117,7 @@
 | STORY-035 | Data export / portability (multi-store ZIP, email link, Settings → Data) | P1 | Medium | ✅ |
 | STORY-036 | Internal admin dashboard (user management, credit adjustment, stats) | P1 | Medium | ✅ |
 | STORY-037 | Cold data lifecycle — inactivity archival for Free-tier users (CRON, warning email, data purge) | P1 | Medium | ✅ |
-| STORY-038 | Final UX Polish Pass — Lighthouse audit, axe-core, cross-browser, brand audit | P0 | Large | 🔲 |
+| STORY-038 | Final UX Polish Pass — Lighthouse audit, axe-core, cross-browser, brand audit | P0 | Large | 🚫 BLOCKED by STORY-039 |
 
 ---
 
@@ -139,6 +139,23 @@ see highlighted results.
 | STORY-028 | AI chat context import helper | P1 | Medium | ✅ |
 | STORY-029 | Natural language graph query — backend | P1 | Medium | ✅ |
 | STORY-030 | Natural language graph query — frontend | P1 | Medium | ✅ |
+
+---
+
+---
+
+## EPIC-10: Production Launch
+
+**Goal:** Fix all critical bugs, implement admin bypass, deploy to Railway + Vercel. Live production system at ravenbase.app.
+**Completion signal:** All smoke tests in `docs/components/REFACTOR_PLAN.md PART 10` pass.
+
+| Story | Title | Priority | Complexity | Status |
+|---|---|---|---|---|
+| STORY-039 | Critical Bug Fixes (BUG-001 through BUG-033) | P0 | Large | ✅ |
+| STORY-040 | Admin Bypass System (ADMIN-001 through ADMIN-004) | P0 | Medium | ✅ |
+| STORY-041 | Sources Page Upload + UX Gaps + Deployment Config | P1 | Medium | ✅ |
+| STORY-042 | Production Deployment (Railway + Vercel) | P0 | Large | 🔲 |
+| STORY-043 | Final UX Polish Pass (renamed from STORY-038) | P1 | Large | 🔲 BLOCKED by STORY-042 |
 
 ---
 
@@ -186,10 +203,16 @@ docs/stories/
 │   ├── STORY-035.md
 │   ├── STORY-036.md
 │   └── STORY-037.md
-└── EPIC-09-memory-intelligence/
-    ├── STORY-026.md
-    ├── STORY-027.md
-    ├── STORY-028.md
-    ├── STORY-029.md
-    └── STORY-030.md
+├── EPIC-09-memory-intelligence/
+│   ├── STORY-026.md
+│   ├── STORY-027.md
+│   ├── STORY-028.md
+│   ├── STORY-029.md
+│   └── STORY-030.md
+└── EPIC-10-production-launch/
+    ├── STORY-039.md
+    ├── STORY-040.md
+    ├── STORY-041.md
+    ├── STORY-042.md
+    └── STORY-043.md
 ```

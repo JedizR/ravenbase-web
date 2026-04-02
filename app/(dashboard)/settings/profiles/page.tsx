@@ -18,14 +18,13 @@ import type { ProfileCreate, ProfileUpdate } from "@/src/lib/api-client/types.ge
 // ---------------------------------------------------------------------------
 
 const COLOR_OPTIONS = [
-  { value: "var(--primary)", label: "Forest Green" },
-  { value: "var(--success)", label: "Green" },
-  { value: "var(--info)", label: "Blue" },
-  { value: "var(--accent)", label: "Violet" },
-  { value: "var(--destructive)", label: "Red" },
-  { value: "var(--warning)", label: "Amber" },
-  { value: "var(--accent)", label: "Sage" },
-  { value: "var(--muted)", label: "Gray" },
+  { value: "var(--primary)", label: "Forest Green", className: "bg-primary" },
+  { value: "var(--success)", label: "Green", className: "bg-success" },
+  { value: "var(--info)", label: "Blue", className: "bg-info" },
+  { value: "var(--warning)", label: "Amber", className: "bg-warning" },
+  { value: "var(--destructive)", label: "Red", className: "bg-destructive" },
+  { value: "var(--accent)", label: "Sage", className: "bg-accent" },
+  { value: "var(--muted-foreground)", label: "Gray", className: "bg-muted-foreground" },
 ]
 
 // ---------------------------------------------------------------------------
@@ -148,10 +147,9 @@ function ProfileFormDialog({
                   key={c.value}
                   type="button"
                   onClick={() => setColor(c.value)}
-                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform ${
+                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform ${c.className} ${
                     color === c.value ? "scale-125 ring-2 ring-offset-2 ring-primary" : ""
                   }`}
-                  style={{ backgroundColor: c.value }}
                   aria-label={`Color ${c.label}`}
                   aria-pressed={color === c.value}
                 >

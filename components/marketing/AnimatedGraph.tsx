@@ -391,7 +391,7 @@ export function AnimatedGraph({ className }: { className?: string }) {
                   width={pillWidth}
                   height={pillHeight}
                   rx={pillHeight / 2}
-                  fill="currentColor"
+                  fill="var(--primary)"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3, delay: node.entranceDelay + 0.15 }}
@@ -405,7 +405,7 @@ export function AnimatedGraph({ className }: { className?: string }) {
                   fontSize={fontSize}
                   fontFamily="var(--font-mono, monospace)"
                   fontWeight={fontWeight}
-                  fill="white"
+                  fill="var(--primary-foreground)"
                   letterSpacing="0.03em"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

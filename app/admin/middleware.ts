@@ -9,7 +9,7 @@ export async function middleware() {
     .filter(Boolean)
 
   if (!userId || !adminIds.includes(userId)) {
-    return NextResponse.redirect(new URL("/dashboard", process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"))
+    return NextResponse.redirect(new URL("/chat", process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"))
   }
 
   return NextResponse.next()

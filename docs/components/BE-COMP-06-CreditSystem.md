@@ -1,9 +1,123 @@
-# COMP-06: CreditSystem
+# CreditSystem
 
 > **Component ID:** BE-COMP-06
 > **Epic:** EPIC-08 — Polish & Production Hardening
 > **Stories:** STORY-023
 > **Type:** Backend (with frontend balance display)
+
+---
+
+## Purpose
+
+The CreditSystem is the financial gate for all AI operations in Ravenbase. It enforces per-operation credit deduction with a ledger for auditability, prevents race conditions using `SELECT FOR UPDATE`, and integrates Stripe webhooks for credit top-ups. Every component that calls an LLM routes through `CreditService.check_or_raise()` (before the operation) and `CreditService.deduct()` (after success). The frontend sidebar displays the live balance.
+
+---
+
+## User Journey
+
+Credits flow automatically — users rarely interact with them directly:
+
+1. New user registers → Clerk webhook fires → backend creates User + 500 credits (`signup_bonus` transaction)
+2. User performs a paid operation (e.g., generate Meta-Doc):
+   a. API calls `CreditService.check_or_raise(user_id, 18)` — raises `402` if balance < 18
+   b. Operation runs (LLM streams tokens)
+   c. On success: `CreditService.deduct(user_id, 18, "meta_doc_haiku")` — atomic deduction
+   d. Sidebar balance updates on next `GET /v1/credits/balance` poll
+3. User buys credit top-up via Stripe:
+   a. Stripe `checkout.session.completed` webhook fires
+   b. `CreditService.add_credits(user_id, amount, "stripe_topup")` runs
+   c. Sidebar balance increments
+4. Credits reach 0 → next paid operation returns `402 INSUFFICIENT_CREDITS`
+5. Sidebar shows `⚠ LOW CREDITS` warning when balance < 50
+
+**Admin users:** `CreditService.check_or_raise()` and `CreditService.deduct()` return early — no credits consumed. Sidebar shows `◆ ADMIN_ACCESS` instead of balance.
+
+---
+
+## Admin Bypass
+
+**CRITICAL — BUG-006: Admin bypass NOT YET IMPLEMENTED**
+
+The `CreditService` currently has no admin bypass. Admin users consume real credits during testing, which blocks end-to-end testing of all LLM features.
+
+**Required implementation in `src/services/credit_service.py`:**
+
+```python
+async def check_or_raise(self, db: AsyncSession, user_id: str, amount: int) -> None:
+    admin_ids = {u.strip() for u in settings.ADMIN_USER_IDS.split(",") if u.strip()}
+    if user_id in admin_ids:
+        log.info("credit.admin_bypass.check", user_id=user_id, amount=amount)
+        return  # Admin users never blocked
+    # ... existing implementation ...
+
+async def deduct(self, db, user_id: str, amount: int, operation: str, reference_id=None):
+    admin_ids = {u.strip() for u in settings.ADMIN_USER_IDS.split(",") if u.strip()}
+    if user_id in admin_ids:
+        log.info("credit.admin_bypass.deduct", user_id=user_id, operation=operation)
+        return CreditTransaction(
+            user_id=uuid.UUID(user_id),
+            amount=0,
+            balance_after=-1,  # -1 sentinel = admin bypass
+            operation=f"admin_bypass:{operation}",
+        )
+    # ... existing implementation ...
+```
+
+**Frontend admin indicator** (Sidebar.tsx):
+```tsx
+{user?.is_admin ? (
+  <p className="font-mono text-xs text-muted-foreground">◆ ADMIN_ACCESS</p>
+) : (
+  <p className="font-mono text-xs">{creditsBalance} credits remaining</p>
+)}
+```
+
+`GET /v1/me` must return `{is_admin: boolean}` for the frontend to detect admin users.
+
+**Verification after fix:**
+- Set `ADMIN_USER_IDS=your_clerk_user_id` in `.envs/.env.dev`
+- Generate a Meta-Doc → credit balance in DB unchanged
+- `credit_transactions` table → row with `operation="admin_bypass:meta_doc_haiku"`
+
+---
+
+## Known Bugs / Current State
+
+**BUG-006 (HIGH — blocks all testing):** No admin credit bypass.
+- **Root cause:** `src/services/credit_service.py` has no `ADMIN_USER_IDS` check in `check_or_raise()` or `deduct()`. Admin users get 402 errors after their initial 500 credits are spent, blocking all LLM feature testing.
+- **Fix:** Add admin bypass as shown in Admin Bypass section above.
+- **Story:** STORY-040
+
+**BUG-011 (HIGH):** `ADMIN_USER_IDS` is a placeholder in both repos.
+- **Root cause:** `ravenbase-web/.env.local` has `ADMIN_USER_IDS=placeholder` and `ravenbase-api/.envs/.env.dev` similarly. No real Clerk user ID is set.
+- **Fix:** User must retrieve their Clerk user ID from Clerk Dashboard → Users → click account → copy `user_xxx` ID. Set in BOTH repos' env files.
+- **Story:** STORY-040
+
+---
+
+## Acceptance Criteria
+
+- [ ] `CreditService.check_or_raise()` raises 402 before any paid operation
+- [ ] `CreditService.deduct()` uses `SELECT FOR UPDATE` — concurrent deductions never double-spend
+- [ ] `CreditTransaction` record created for every credit change (deduction, addition, bypass)
+- [ ] Admin users: `check_or_raise()` returns early, `deduct()` returns zero-amount transaction
+- [ ] `GET /v1/credits/balance` returns `{balance, transactions: [...]}` (last 20)
+- [ ] Stripe `checkout.session.completed` webhook adds credits
+- [ ] Free signup bonus: 500 credits via `signup_bonus` transaction
+- [ ] Referral bonuses: +200 on signup via referral, +200 to referrer on first upload
+- [ ] Concurrent deduction test: 10 simultaneous → exact expected balance
+- [ ] Frontend sidebar shows `◆ ADMIN_ACCESS` for admin users
+
+---
+
+## Cross-references
+
+- `docs/design/AGENT_DESIGN_PREAMBLE.md` — MANDATORY read before any JSX
+- `BE-COMP-01-IngestionPipeline.md` — ingestion credits (1/page)
+- `BE-COMP-02-GraphEngine.md` — NL graph query credits (2)
+- `BE-COMP-04-GenerationEngine.md` — Meta-Doc (18/45) and Chat (3/8) credits
+- `docs/architecture/03-api-contract.md` — `/v1/credits/balance` endpoint
+- `docs/components/REFACTOR_PLAN.md` — BUG-006, BUG-011, ADMIN-001 fix details
 
 ---
 

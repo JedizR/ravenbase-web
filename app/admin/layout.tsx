@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .filter(Boolean)
 
   if (!userId || !adminIds.includes(userId)) {
-    redirect("/dashboard")
+    redirect("/chat")
   }
 
   return (

@@ -25,13 +25,13 @@ export function GraphQueryBar({ onResults, profileId }: GraphQueryBarProps) {
   const [loading, setLoading] = useState(false)
   const apiFetch = useApiFetch()
 
-  const handleSearch = async () => {
-    if (!query.trim()) return
+  const executeSearch = async (q: string) => {
+    if (!q.trim()) return
     setLoading(true)
     try {
       const data = await apiFetch<GraphQueryResponse>("/v1/graph/query", {
         method: "POST",
-        body: JSON.stringify({ query, profile_id: profileId, limit: 20 }),
+        body: JSON.stringify({ query: q, profile_id: profileId, limit: 20 }),
       })
       onResults(data)
     } catch {
@@ -40,6 +40,8 @@ export function GraphQueryBar({ onResults, profileId }: GraphQueryBarProps) {
       setLoading(false)
     }
   }
+
+  const handleSearch = () => executeSearch(query)
 
   const handleClear = () => {
     setQuery("")
@@ -88,7 +90,7 @@ export function GraphQueryBar({ onResults, profileId }: GraphQueryBarProps) {
             <button
               key={eq}
               type="button"
-              onClick={() => setQuery(eq)}
+              onClick={() => { setQuery(eq); executeSearch(eq) }}
               className="text-xs font-mono text-muted-foreground border border-border
                          rounded px-2 py-0.5 hover:border-primary hover:text-primary transition-colors"
             >

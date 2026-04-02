@@ -37,7 +37,7 @@ As a user, I want to review and resolve conflicts from a keyboard-navigable inbo
 - API: STORY-013 endpoints (`GET /v1/conflicts`, `POST /v1/conflicts/{id}/resolve`, `POST /v1/conflicts/{id}/undo`)
 
 ## Acceptance Criteria
-- [ ] AC-1: Memory Inbox accessible at `/dashboard/inbox`
+- [ ] AC-1: Memory Inbox accessible at `/inbox`
 - [ ] AC-2: **Flow 1 (Binary Triage):** J/K cycles through conflicts, Enter accepts AI resolution, Backspace rejects (keep old), all with < 200ms UI update
 - [ ] AC-3: **Flow 2 (Conversational):** C key expands active card to inline chat; typing custom text and pressing Enter calls `CUSTOM` resolve action
 - [ ] AC-4: **Flow 3 (Auto-resolved):** Auto-resolved conflicts appear as toast "Updated [X]. Undo?" with 30-second countdown
@@ -195,7 +195,7 @@ npm run dev
 **Step 3 — Verify no runtime errors:**
 - Open http://localhost:3000 in the browser
 - Sign in if redirected to /login
-- Navigate to `/dashboard/inbox`
+- Navigate to `/inbox`
 - Confirm NO "Internal Server Error" or webpack runtime errors
 - Confirm CSS loads correctly (no unstyled content)
 - Open browser DevTools → Console tab
@@ -215,7 +215,7 @@ npm run build
 
 # Manual test (requires seeded conflict data):
 # 1. uv run python scripts/seed_dev_data.py (seed 3+ conflicts)
-# 2. Open http://localhost:3000/dashboard/inbox
+# 2. Open http://localhost:3000/inbox
 # 3. Press J — move to next conflict
 # 4. Press K — move to previous conflict
 # 5. Press Enter — resolve with ACCEPT_NEW (verify optimistic update + API call)

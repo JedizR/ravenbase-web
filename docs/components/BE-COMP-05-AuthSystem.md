@@ -1,9 +1,117 @@
-# COMP-05: AuthSystem
+# AuthSystem
 
 > **Component ID:** BE-COMP-05
 > **Epic:** EPIC-06 — Authentication & System Profiles
 > **Stories:** STORY-018, STORY-019, STORY-020
 > **Type:** Cross-repo (Backend + Frontend)
+
+---
+
+## Purpose
+
+The AuthSystem is the thin authentication boundary for Ravenbase. On the backend: validates Clerk JWTs via JWKS endpoint, handles Clerk webhooks to provision/deprovision User records, and provides the `require_user` FastAPI dependency used by every protected route. On the frontend: Clerk `<SignIn>`/`<SignUp>` pages with Ravenbase branding, `middleware.ts` that protects dashboard routes, and `apiFetch`/`useApiFetch` wrappers that attach Bearer tokens to all API calls.
+
+---
+
+## User Journey
+
+**New user registration:**
+1. Visitor clicks "Start for free" → navigates to `/register`
+2. Clerk `<SignUp>` component renders inside Ravenbase-branded card
+3. User signs up → Clerk fires `user.created` webhook → `POST /webhooks/clerk`
+4. Backend creates `User` record in PostgreSQL with `id = clerk_user_id` + 500 credits
+5. `afterSignUpUrl="/onboarding"` in `<SignUp>` component prop → user redirected to `/onboarding`
+6. OnboardingWizard: user creates first System Profile → optionally uploads first file
+7. Completion: `router.push("/chat")` ← CORRECT (NOT `/dashboard`)
+
+**Returning user sign-in:**
+1. User visits `/login` → Clerk `<SignIn>` renders
+2. Signs in → `afterSignInUrl="/chat"` → directed to `/chat` dashboard
+
+**Unauthenticated user visiting protected route:**
+1. User visits `/chat` without session
+2. `middleware.ts` detects no `userId` → redirect to `/login`
+
+**Authenticated user visiting landing page:**
+1. User visits `/` while logged in
+2. `middleware.ts` detects `userId` + `pathname === "/"` → redirect to `/chat`
+
+---
+
+## Admin Bypass
+
+No credits consumed in auth operations — bypass not needed.
+
+Admin users follow the same auth flow as regular users. The only admin-specific behavior is the `is_admin: boolean` field in `GET /v1/me` which the frontend uses to show `◆ ADMIN_ACCESS` in the sidebar.
+
+**How to implement `is_admin` in `GET /v1/me`:**
+```python
+# In src/api/routes/account.py (or wherever GET /v1/me lives):
+admin_ids = {u.strip() for u in settings.ADMIN_USER_IDS.split(",") if u.strip()}
+is_admin = str(user.id) in admin_ids
+return MeResponse(**user_data, is_admin=is_admin)
+```
+
+---
+
+## Known Bugs / Current State
+
+**BUG-004 (HIGH):** Authenticated users visiting `/` see the landing page instead of being redirected to `/chat`.
+- **Root cause:** `ravenbase-web/middleware.ts` only handles unauthenticated users visiting protected routes. It has no branch for authenticated users visiting the landing page.
+- **Fix:**
+  ```typescript
+  // middleware.ts — add BEFORE the unauthenticated redirect:
+  const { userId } = await auth()
+  if (userId && request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/chat", request.url))
+  }
+  ```
+- **Story:** STORY-039
+
+**BUG-005 (HIGH):** OnboardingWizard completion redirects to `/dashboard` → 404.
+- **Root cause:** `components/domain/OnboardingWizard.tsx` (lines 97 and 134) calls `router.push("/dashboard")`. The route `/dashboard` does not exist — it is not a valid URL in the Next.js route group structure.
+- **Fix:** Change all instances to `router.push("/chat")`.
+- **Story:** STORY-039
+
+**⚠️ ROUTE LOCATION WARNING:**
+```
+CORRECT location for onboarding: app/(auth)/onboarding/page.tsx
+WRONG:  app/(dashboard)/onboarding/page.tsx
+```
+The onboarding page has NO sidebar, NO DashboardHeader. It lives under `(auth)` not `(dashboard)`.
+
+**Stale docs references (non-code bugs):**
+- `BE-COMP-05-AuthSystem.md` SubComp 05B says redirect to `/dashboard` (incorrect)
+- `BE-COMP-05-AuthSystem.md` SubComp 05C lists route as `app/(dashboard)/onboarding/page.tsx` (incorrect)
+- `SubComp 05C` says "Completion redirects to `/dashboard`" (incorrect — must be `/chat`)
+
+---
+
+## Acceptance Criteria
+
+- [ ] Authenticated user visits `/` → immediately redirects to `/chat` (BUG-004 fixed)
+- [ ] New user registers → Clerk webhook creates User + 500 credits in DB
+- [ ] New user after registration → `/onboarding` (not `/chat` directly)
+- [ ] OnboardingWizard completion → `router.push("/chat")` (BUG-005 fixed, not `/dashboard`)
+- [ ] Unauthenticated user visits `/chat` → redirect to `/login`
+- [ ] `/login` and `/register` render Clerk components with Ravenbase branding
+- [ ] `require_user` dependency extracts `user_id` from JWT `sub` claim
+- [ ] Expired JWT → `403 TOKEN_EXPIRED`
+- [ ] Invalid JWT → `403 INVALID_TOKEN`
+- [ ] Missing auth header → `401 MISSING_AUTH`
+- [ ] Clerk webhook with invalid `svix` signature → `400`
+- [ ] `GET /v1/me` returns `{is_admin: boolean}` based on `ADMIN_USER_IDS`
+- [ ] SSE endpoints accept JWT via `?token=` query param
+
+---
+
+## Cross-references
+
+- `docs/design/AGENT_DESIGN_PREAMBLE.md` — MANDATORY read before any JSX
+- `FE-COMP-03-OnboardingWizard.md` — onboarding route, BUG-005 fix details
+- `BE-COMP-06-CreditSystem.md` — 500 signup credit bonus
+- `docs/architecture/03-api-contract.md` — `/webhooks/clerk`, `GET /v1/me`
+- `docs/components/REFACTOR_PLAN.md` — BUG-004, BUG-005 fix details
 
 ---
 
@@ -139,7 +247,7 @@ The frontend auth layer provides Clerk-wrapped SignIn/SignUp pages at `/login` a
 - [ ] `middleware.ts` protects `/dashboard/*` → redirects to `/login` if unauthenticated
 - [ ] `lib/api.ts` (Server): `apiFetch<T>()` using `auth().getToken()`
 - [ ] `lib/api-client.ts` (Client): `useApiFetch()` hook using `useAuth().getToken()`
-- [ ] After login: redirect to `/dashboard` (if onboarded) or `/onboarding` (if new)
+- [ ] After login: redirect to `/chat` (if onboarded) or `/onboarding` (if new)
 - [ ] `npm run build` passes (0 TypeScript errors)
 
 #### Checklist
@@ -162,7 +270,7 @@ The frontend auth layer provides Clerk-wrapped SignIn/SignUp pages at `/login` a
 
 # Middleware test:
 # 1. Clear cookies/session
-# 2. Navigate to http://localhost:3000/dashboard/graph
+# 2. Navigate to http://localhost:3000/graph
 # 3. Verify: redirected to /login
 
 npm run build
@@ -174,7 +282,7 @@ npm run build
 ### SUBCOMP-05C: Onboarding Wizard + Profile Switching
 
 **Stories:** STORY-019, STORY-020
-**Files:** `app/(dashboard)/onboarding/page.tsx`, `components/domain/OnboardingWizard.tsx`, `components/domain/ProfileSwitcher.tsx`, `components/domain/Omnibar.tsx`
+**Files:** `app/(auth)/onboarding/page.tsx`, `components/domain/OnboardingWizard.tsx`, `components/domain/ProfileSwitcher.tsx`, `components/domain/Omnibar.tsx`
 
 #### Details
 The Onboarding Wizard guides new users through profile creation and their first file upload. Profile Switching allows users to switch between System Profiles via the Omnibar `/profile` command. All API calls are scoped to the active `profile_id` in the request context.
@@ -185,7 +293,7 @@ The Onboarding Wizard guides new users through profile creation and their first 
 - [ ] Profile name required, minimum 2 characters
 - [ ] Onboarding creates first System Profile in PostgreSQL
 - [ ] Optional file upload triggers ingestion flow
-- [ ] Completion redirects to `/dashboard`
+- [ ] Completion redirects to `/chat` (NOT `/dashboard` — see BUG-005)
 - [ ] Onboarding shows skip option for file upload
 
 #### Criteria of Done (STORY-020)

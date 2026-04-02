@@ -1,9 +1,111 @@
-# COMP-04: GenerationEngine
+# GenerationEngine
 
 > **Component ID:** BE-COMP-04
 > **Epic:** EPIC-05 — Meta-Document Generation, EPIC-09 — Memory Intelligence
 > **Stories:** STORY-016, STORY-017, STORY-026, STORY-027
 > **Type:** Cross-repo (Backend + Frontend)
+
+---
+
+## Purpose
+
+The GenerationEngine owns all LLM-driven synthesis in Ravenbase: streaming Meta-Document generation (via ARQ + Redis pub/sub SSE) and Conversational Memory Chat (direct SSE, no queue). It retrieves context from `RAGService`, masks PII via Presidio, streams tokens to the browser, persists results to PostgreSQL and Neo4j, and deducts credits from the user's balance on success.
+
+---
+
+## User Journey
+
+**Meta-Document generation:**
+1. User navigates to `/workstation`, types a prompt
+2. Clicks "Generate" → `POST /v1/metadoc/generate {prompt, profile_id, model?}`
+3. Backend checks credits (402 if insufficient)
+4. Returns `{job_id, estimated_credits}` immediately
+5. Frontend opens SSE: `GET /v1/metadoc/stream/{job_id}?token={clerk_jwt}`
+6. ARQ worker: retrieves context → masks PII → streams tokens via Redis pub/sub
+7. Browser renders Markdown tokens in real-time
+8. `{type: "done", doc_id, credits_consumed}` event → document saved, credits deducted
+9. Editor shows `◆ SAVED_JUST_NOW`; history panel refreshes
+
+**Memory Chat:**
+1. User navigates to `/chat`, types a message
+2. `POST /v1/chat/message {message, session_id?, profile_id, model}` — direct SSE (no ARQ)
+3. Backend checks credits → retrieves context → streams tokens directly
+4. First token within 3 seconds
+5. `{type: "done", citations: [...], credits_consumed}` — citation cards appear
+6. Clicking citation navigates to `/graph?node={memory_id}`
+
+---
+
+## Admin Bypass
+
+Credit costs per operation:
+- Meta-Doc: 18 credits (Haiku), 45 credits (Sonnet)
+- Chat: 3 credits (Haiku), 8 credits (Sonnet)
+
+Admin users: `CreditService.check_or_raise()` returns early → LLM runs → `CreditService.deduct()` returns zero-amount transaction → balance unchanged.
+
+Frontend behavior for admin users: same UI, sidebar shows `◆ ADMIN_ACCESS` instead of credit count.
+
+See `BE-COMP-06-CreditSystem.md` for the full admin bypass implementation.
+
+---
+
+## Known Bugs / Current State
+
+**⚠️ ROUTE CORRECTIONS (docs errors in this file):**
+The following routes are referenced incorrectly throughout this file's subcomponents:
+- `WRONG: /workstation` → `CORRECT: /workstation`
+- `WRONG: /chat` → `CORRECT: /chat`
+- `WRONG: /graph` → `CORRECT: /graph`
+Next.js route groups do NOT add URL segments. See CLAUDE.md Architecture section.
+
+**BUG-016 (HIGH — RULE-19 violation):** Workstation auto-save not implemented.
+- MetaDocEditor shows `◆ SAVED_JUST_NOW` / `◆ UNSAVED_CHANGES` labels but never calls `localStorage.setItem()`. The `use-autosave.ts` hook exists but is not connected to editor content.
+- **Fix:** Wire `useAutosave(content, "ravenbase-draft-${profileId}", 30_000)` in `MetaDocEditor.tsx`.
+- **Story:** STORY-039. See `FE-COMP-07-Workstation.md` for full fix.
+
+**BUG-017 (HIGH):** MetaDocHistory clicking a previous doc loads empty content.
+- Clicking history item sets `activeContent=""` — fetch result never updates state correctly.
+- **Fix:** See `FE-COMP-07-Workstation.md` for the `useEffect` fix.
+- **Story:** STORY-039
+
+**BUG-022 (MEDIUM — memory leak):** MemoryChat `ReadableStream.getReader()` not cancelled on unmount.
+- **Root cause:** `components/domain/MemoryChat.tsx:161` — the stream reader is not closed in a cleanup function when the component unmounts. If user navigates away during streaming, the reader continues consuming.
+- **Fix:** Store reader in `useRef`, call `reader.cancel()` in the `useEffect` cleanup.
+- **Story:** STORY-039
+
+---
+
+## Acceptance Criteria
+
+- [ ] `POST /v1/metadoc/generate` returns `{job_id, estimated_credits}` immediately
+- [ ] SSE stream delivers tokens in real-time via `GET /v1/metadoc/stream/{job_id}?token=`
+- [ ] `402` returned before ANY LLM call when credits insufficient
+- [ ] Credits deducted AFTER successful generation, not before
+- [ ] PII masked in LLM input when `ENABLE_PII_MASKING=true`
+- [ ] `MetaDocument` saved to PostgreSQL after generation
+- [ ] `CONTAINS` edges written to Neo4j for each contributing memory
+- [ ] Admin users: generation runs, 0 credits deducted
+- [ ] Chat first token within 3 seconds of POST
+- [ ] Chat session auto-created when no `session_id` provided
+- [ ] Multi-turn: last 6 messages passed to LLM as conversation history
+- [ ] Citation data in `done` event: `{memory_id, content_preview, source_filename}`
+- [ ] Auto-save to localStorage every 30 seconds in Workstation (BUG-016 fixed)
+- [ ] Click history item → `content_markdown` loaded correctly (BUG-017 fixed)
+- [ ] Stream reader cancelled on component unmount (BUG-022 fixed)
+
+---
+
+## Cross-references
+
+- `docs/design/AGENT_DESIGN_PREAMBLE.md` — MANDATORY read before any JSX
+- `docs/design/04-ux-patterns.md` — streaming SSE patterns, auto-save state machine
+- `BE-COMP-03-RetrievalEngine.md` — `RAGService.retrieve()` used by both generation flows
+- `BE-COMP-06-CreditSystem.md` — credit costs, admin bypass
+- `BE-COMP-07-PrivacyLayer.md` — PII masking (Presidio) integration
+- `FE-COMP-07-Workstation.md` — workstation UI, BUG-016, BUG-017 fixes
+- `docs/architecture/03-api-contract.md` — `/v1/metadoc/generate`, `/v1/chat/message` endpoints
+- `docs/components/REFACTOR_PLAN.md` — BUG-016, BUG-017, BUG-022 fix details
 
 ---
 
@@ -43,9 +145,9 @@ The GenerationEngine owns all LLM-driven synthesis in Ravenbase: Meta-Document g
 
 14. **Chat Citations:** Final SSE `{type: "done"}` event includes `citations: [{memory_id, content_preview, source_filename}]`. Clicking a citation opens Graph Explorer with that node.
 
-15. **Workstation UI:** `/dashboard/workstation` renders streaming Meta-Doc output with Markdown rendering, export to MD, and "Last saved" status indicator using ◆ mono label pattern.
+15. **Workstation UI:** `/workstation` renders streaming Meta-Doc output with Markdown rendering, export to MD, and "Last saved" status indicator using ◆ mono label pattern.
 
-16. **Chat UI:** `/dashboard/chat` renders with sidebar (session list) + main chat area. Token streaming with cursor. Citation cards after each AI message. Mobile: session drawer, fixed input.
+16. **Chat UI:** `/chat` renders with sidebar (session list) + main chat area. Token streaming with cursor. Citation cards after each AI message. Mobile: session drawer, fixed input.
 
 17. **Model Selector:** Both Meta-Doc and Chat UIs show Haiku/Sonnet selector with credit cost displayed next to each option.
 
@@ -68,7 +170,7 @@ The GenerationEngine owns all LLM-driven synthesis in Ravenbase: Meta-Document g
 | Chat credits deducted | Send message → check CreditTransaction for deduction |
 | 402 for chat insufficient credits | Credits to 0 → send chat message → 402 before retrieval |
 | Session auto-created | POST without session_id → session created, id in first event |
-| Citation opens Graph Explorer | Click citation → router.push to /dashboard/graph?node={memory_id} |
+| Citation opens Graph Explorer | Click citation → router.push to /graph?node={memory_id} |
 | Workstation renders Markdown | Meta-Doc streams → Markdown renders in real-time |
 | Mobile chat: fixed input | Resize to 375px → input sticky at bottom |
 
@@ -162,7 +264,7 @@ make quality
 The Workstation is where users generate and refine Meta-Documents. It renders streaming Markdown output as tokens arrive, shows a "Last saved" status indicator in the header, and provides MD export. The SSE streaming pattern reuses the `use-sse.ts` hook from STORY-007. On mobile, the layout stacks vertically with a fixed bottom input area.
 
 #### Criteria of Done
-- [ ] Workstation accessible at `/dashboard/workstation`
+- [ ] Workstation accessible at `/workstation`
 - [ ] SSE stream renders Markdown tokens in real-time (streaming cursor ▌ visible)
 - [ ] Markdown rendered with `react-markdown` + `remark-gfm`
 - [ ] "Last saved" status indicator in header: "◆ SAVED_JUST_NOW" → "◆ SAVED_2_MIN_AGO" → "◆ UNSAVED_CHANGES"
@@ -190,7 +292,7 @@ The Workstation is where users generate and refine Meta-Documents. It renders st
 #### Testing
 ```bash
 # Manual test:
-# 1. Navigate to http://localhost:3000/dashboard/workstation
+# 1. Navigate to http://localhost:3000/workstation
 # 2. Type prompt "Generate my resume"
 # 3. Verify: tokens stream in real-time with cursor
 # 4. Verify: Markdown renders as tokens arrive
@@ -274,15 +376,15 @@ make quality
 **Files:** `app/(dashboard)/chat/page.tsx`, `components/domain/MemoryChat.tsx`, `components/domain/ChatSessionSidebar.tsx`, `components/domain/ChatMessage.tsx`, `components/domain/CitationCard.tsx`
 
 #### Details
-The Memory Chat UI provides a conversational interface at `/dashboard/chat` with a session sidebar, real-time token streaming, and clickable citation cards that navigate to the Graph Explorer. It uses the `useApiFetch()` hook for non-streaming calls and native `fetch` with streaming reader for the chat SSE endpoint.
+The Memory Chat UI provides a conversational interface at `/chat` with a session sidebar, real-time token streaming, and clickable citation cards that navigate to the Graph Explorer. It uses the `useApiFetch()` hook for non-streaming calls and native `fetch` with streaming reader for the chat SSE endpoint.
 
 #### Criteria of Done
-- [ ] Chat page at `/dashboard/chat` renders with sidebar (session list) + main chat area
+- [ ] Chat page at `/chat` renders with sidebar (session list) + main chat area
 - [ ] User types message, presses Enter → tokens stream in real-time with cursor ▌
 - [ ] First SSE event `session` captures `session_id` for multi-turn tracking
 - [ ] AI message bubble fills token-by-token as streaming response arrives
 - [ ] Final `done` event renders citation footnotes below the message
-- [ ] Clicking citation card navigates to `/dashboard/graph?node={memory_id}`
+- [ ] Clicking citation card navigates to `/graph?node={memory_id}`
 - [ ] Sidebar shows all past sessions; clicking loads and resumes that conversation
 - [ ] Session title = first 60 chars of first user message
 - [ ] Model selector (Haiku/Sonnet) with credit cost shown
@@ -297,7 +399,7 @@ The Memory Chat UI provides a conversational interface at `/dashboard/chat` with
 - [ ] `fetch()` with streaming reader for POST SSE (NOT `EventSource` — POST requires fetch)
 - [ ] `Enter` key sends message, `Shift+Enter` inserts newline in textarea
 - [ ] No `<form>` tags — textarea with `onKeyDown` handler
-- [ ] Citation click: `router.push('/dashboard/graph?node=${memory_id}')`
+- [ ] Citation click: `router.push('/graph?node=${memory_id}')`
 - [ ] `useApiFetch()` hook for session list, session load, delete
 - [ ] `ChatSessionSidebar`: session list sorted newest-first, click to load
 - [ ] Model selector: shadcn `<Select>` component with credit cost display
@@ -311,7 +413,7 @@ The Memory Chat UI provides a conversational interface at `/dashboard/chat` with
 #### Testing
 ```bash
 # Manual test:
-# 1. Navigate to http://localhost:3000/dashboard/chat
+# 1. Navigate to http://localhost:3000/chat
 # 2. Verify: empty state message renders
 # 3. Type "What Python projects have I worked on?"
 # 4. Verify: tokens appear one-by-one (streaming cursor visible)

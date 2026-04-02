@@ -45,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html
         lang="en"
         className={`${dmSans.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable}`}
+        suppressHydrationWarning
       >
         <head>
           {/* No-flash blocking script — must be first in <head> */}

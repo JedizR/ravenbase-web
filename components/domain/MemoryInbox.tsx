@@ -147,7 +147,7 @@ export function MemoryInbox() {
           })
           // Advance to next after brief animation delay
           setTimeout(() => {
-            setActiveIndex((i) => Math.min(i, conflicts.length - 2))
+            setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 2)))
           }, 150)
           break
         case "reject":
@@ -157,7 +157,7 @@ export function MemoryInbox() {
             action: "KEEP_OLD",
           })
           setTimeout(() => {
-            setActiveIndex((i) => Math.min(i, conflicts.length - 2))
+            setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 2)))
           }, 150)
           break
         case "chat":
@@ -191,7 +191,7 @@ export function MemoryInbox() {
       })
       setMode("triage")
       setTimeout(() => {
-        setActiveIndex((i) => Math.min(i, conflicts.length - 2))
+        setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 2)))
       }, 150)
     },
     [activeConflict, conflicts.length, resolveMutation]

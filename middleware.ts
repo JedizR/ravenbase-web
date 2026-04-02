@@ -14,11 +14,16 @@ const isPublicRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.redirect(new URL("/login", request.url))
-    }
+  const { userId } = await auth()
+
+  // Authenticated users visiting landing page → redirect to app
+  if (userId && request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/chat", request.url))
+  }
+
+  // Unauthenticated users visiting protected routes → login
+  if (!isPublicRoute(request) && !userId) {
+    return NextResponse.redirect(new URL("/login", request.url))
   }
 })
 
