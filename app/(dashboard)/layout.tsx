@@ -1,6 +1,7 @@
 "use client"
 
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Toaster } from "sonner"
 import { Providers } from "@/app/providers"
 import { DashboardHeader } from "@/components/domain/DashboardHeader"
@@ -15,6 +16,12 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Close mobile sidebar when user navigates to a new page
+  useEffect(() => {
+    setMobileNavOpen(false)
+  }, [pathname])
 
   return (
     <ProfileContextProvider>

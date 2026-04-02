@@ -37,8 +37,8 @@ export function IngestionDropzone({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: ACCEPTED_TYPES,
-    multiple: true,
-    maxFiles: 10,
+    multiple: false,
+    maxFiles: 1,
     maxSize: MAX_SIZE,
   })
 

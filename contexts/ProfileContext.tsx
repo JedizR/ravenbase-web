@@ -66,7 +66,7 @@ export function ProfileContextProvider({
   const [activeProfile, setActiveProfileState] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Fetch profiles on mount
+  // Fetch profiles on mount — restore persisted active profile from localStorage
   useEffect(() => {
     let cancelled = false
 
@@ -76,9 +76,24 @@ export function ProfileContextProvider({
         if (cancelled) return
         const items: Profile[] = res.items as unknown as Profile[]
         setProfiles(items)
-        const defaultProfile =
-          items.find((p) => p.is_default) ?? items[0] ?? null
-        setActiveProfileState(defaultProfile)
+
+        // Try to restore persisted active profile
+        let restoredProfile: Profile | null = null
+        try {
+          const savedId = localStorage.getItem("ravenbase-active-profile")
+          if (savedId) {
+            restoredProfile = items.find((p) => p.id === savedId) ?? null
+          }
+        } catch {
+          // localStorage unavailable
+        }
+
+        const activeProfile =
+          restoredProfile ??
+          items.find((p) => p.is_default) ??
+          items[0] ??
+          null
+        setActiveProfileState(activeProfile)
       } catch (err) {
         toast.error("Failed to load profiles", {
           description: err instanceof Error ? err.message : "Unknown error",
@@ -96,6 +111,12 @@ export function ProfileContextProvider({
 
   const setActiveProfile = useCallback((profile: Profile) => {
     setActiveProfileState(profile)
+    // Persist to localStorage so it survives page refresh
+    try {
+      localStorage.setItem("ravenbase-active-profile", profile.id)
+    } catch {
+      // localStorage unavailable
+    }
   }, [])
 
   const refetchProfiles = useCallback(async () => {
@@ -143,12 +164,18 @@ export function ProfileContextProvider({
     await deleteProfileV1ProfilesProfileIdDelete({ profileId: id })
     setProfiles((prev) => {
       const remaining = prev.filter((p) => p.id !== id)
+      // If deleted profile was active, switch to first remaining (not null)
+      setActiveProfileState((active) => {
+        if (active?.id !== id) return active
+        const fallback = remaining.find((p) => p.is_default) ?? remaining[0] ?? null
+        if (fallback) {
+          try { localStorage.setItem("ravenbase-active-profile", fallback.id) } catch { /* */ }
+        } else {
+          try { localStorage.removeItem("ravenbase-active-profile") } catch { /* */ }
+        }
+        return fallback
+      })
       return remaining
-    })
-    // If deleted profile was active, switch to first remaining
-    setActiveProfileState((prev) => {
-      if (prev?.id !== id) return prev
-      return null
     })
     toast.success("Profile deleted")
   }, [])

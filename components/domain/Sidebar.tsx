@@ -166,21 +166,20 @@ export function Sidebar() {
 
       <Separator className="bg-primary-foreground/10" />
 
-      {/* Credits footer — shows ADMIN_ACCESS for admin users */}
-      <div className="p-4">
-        {userProfile?.is_admin ? (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
+      {/* Credits footer — shows ADMIN badge + credits for all users */}
+      <div className="p-4 space-y-2">
+        {userProfile?.is_admin && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
             <span className="font-mono text-primary-foreground/80">◆ ADMIN_ACCESS</span>
           </div>
-        ) : (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
-            <Coins className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
-            <span className="font-mono">◆ CREDITS</span>
-            <span className="ml-auto font-mono text-primary-foreground/80">
-              {creditsData?.balance ?? "—"}
-            </span>
-          </div>
         )}
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
+          <Coins className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
+          <span className="font-mono">◆ CREDITS</span>
+          <span className="ml-auto font-mono text-primary-foreground/80">
+            {creditsData?.balance ?? "—"}
+          </span>
+        </div>
       </div>
     </aside>
   )

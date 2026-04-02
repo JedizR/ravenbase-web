@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useKeyboardInbox } from "@/hooks/use-keyboard-inbox"
@@ -140,24 +140,24 @@ export function MemoryInbox() {
           setActiveIndex((i) => Math.max(i - 1, 0))
           break
         case "accept":
-          if (mode !== "triage" || !activeConflict) return
+          if (mode !== "triage" || !activeConflict || resolveMutation.isPending) return
           resolveMutation.mutate({
             conflictId: activeConflict.id,
             action: "ACCEPT_NEW",
           })
-          // Advance to next after brief animation delay
+          // Advance to next after brief animation delay (fix off-by-one: use length - 1 not - 2)
           setTimeout(() => {
-            setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 2)))
+            setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 1)))
           }, 150)
           break
         case "reject":
-          if (mode !== "triage" || !activeConflict) return
+          if (mode !== "triage" || !activeConflict || resolveMutation.isPending) return
           resolveMutation.mutate({
             conflictId: activeConflict.id,
             action: "KEEP_OLD",
           })
           setTimeout(() => {
-            setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 2)))
+            setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 1)))
           }, 150)
           break
         case "chat":
@@ -183,15 +183,15 @@ export function MemoryInbox() {
   // ── Chat submit (Flow 2: CUSTOM resolution) ─────────────────────────
   const handleChatSubmit = useCallback(
     (text: string) => {
-      if (!activeConflict) return
+      if (!activeConflict || !text.trim() || resolveMutation.isPending) return
       resolveMutation.mutate({
         conflictId: activeConflict.id,
         action: "CUSTOM",
-        customText: text,
+        customText: text.trim(),
       })
       setMode("triage")
       setTimeout(() => {
-        setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 2)))
+        setActiveIndex((i) => Math.max(0, Math.min(i, conflicts.length - 1)))
       }, 150)
     },
     [activeConflict, conflicts.length, resolveMutation]
@@ -233,6 +233,22 @@ export function MemoryInbox() {
     return <InboxEmptyState />
   }
 
+  // ── Swipe detection via ref to avoid memory leaks ────────────────────
+  const touchStartRef = useRef<number | null>(null)
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartRef.current = e.touches[0].clientX
+  }, [])
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartRef.current === null) return
+      const delta = e.changedTouches[0].clientX - touchStartRef.current
+      touchStartRef.current = null
+      if (delta > 80) handleAction("accept")
+      if (delta < -80) handleAction("reject")
+    },
+    [handleAction]
+  )
+
   // ── Main inbox ──────────────────────────────────────────────────────
   const isSubmitting = resolveMutation.isPending || undoMutation.isPending
 
@@ -253,17 +269,8 @@ export function MemoryInbox() {
         {conflicts.map((conflict, i) => (
           <div
             key={conflict.id}
-            onTouchStart={(e) => {
-              // Mobile swipe detection (AC-12: progressive enhancement)
-              const startX = e.touches[0].clientX
-              const endHandler = (ev: TouchEvent) => {
-                const delta = ev.changedTouches[0].clientX - startX
-                if (delta > 80) handleAction("accept")
-                if (delta < -80) handleAction("reject")
-                window.removeEventListener("touchend", endHandler)
-              }
-              window.addEventListener("touchend", endHandler)
-            }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <ConflictCard
               conflict={conflict}

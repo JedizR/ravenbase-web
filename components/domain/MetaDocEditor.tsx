@@ -99,6 +99,7 @@ export function MetaDocEditor({
   // Save status (RULE 19)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle")
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const autoSaveTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Content ref for scrolling
   const contentRef = useRef<HTMLDivElement>(null)
@@ -109,6 +110,51 @@ export function MetaDocEditor({
     setPrompt(initialPrompt)
     setActiveDocId(initialDocId)
   }, [initialContent, initialPrompt, initialDocId])
+
+  // Draft recovery on mount — check localStorage for unsaved content
+  useEffect(() => {
+    if (initialDocId) {
+      const draftKey = `ravenbase-draft-${initialDocId}`
+      try {
+        const draft = localStorage.getItem(draftKey)
+        if (draft) {
+          const parsed = JSON.parse(draft) as { content: string; timestamp: number }
+          // Only restore if draft is newer than 24 hours
+          if (Date.now() - parsed.timestamp < 86_400_000 && parsed.content) {
+            setContent(parsed.content)
+            setSaveStatus("unsaved_changes")
+          }
+        }
+      } catch {
+        // Ignore localStorage errors
+      }
+    }
+  }, [initialDocId])
+
+  // Auto-save to localStorage every 30 seconds (RULE 19 — real implementation)
+  useEffect(() => {
+    if (autoSaveTimerRef.current) clearInterval(autoSaveTimerRef.current)
+
+    autoSaveTimerRef.current = setInterval(() => {
+      if (content && activeDocId) {
+        try {
+          localStorage.setItem(
+            `ravenbase-draft-${activeDocId}`,
+            JSON.stringify({ content, timestamp: Date.now() })
+          )
+          setSaveStatus((prev) =>
+            prev === "generating" ? prev : "saved_just_now"
+          )
+        } catch {
+          // localStorage full or unavailable — ignore
+        }
+      }
+    }, 30_000)
+
+    return () => {
+      if (autoSaveTimerRef.current) clearInterval(autoSaveTimerRef.current)
+    }
+  }, [content, activeDocId])
 
   // Update save status timer
   useEffect(() => {
@@ -164,8 +210,12 @@ export function MetaDocEditor({
       })
 
       const token = await getToken()
+      if (!token) {
+        setSaveStatus("unsaved_changes")
+        return
+      }
       const jobId = encodeURIComponent(res.job_id)
-      const esUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/metadoc/stream/${jobId}?token=${encodeURIComponent(token ?? "")}`
+      const esUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/metadoc/stream/${jobId}?token=${encodeURIComponent(token)}`
 
       const tempId = `temp_${Date.now()}`
       setActiveDocId(tempId)
@@ -201,7 +251,16 @@ export function MetaDocEditor({
     handleGenerate()
   }, [prompt, handleGenerate])
 
-  const streamingCursor = isStreaming ? "▌" : ""
+  // Clear localStorage draft when generation completes successfully
+  useEffect(() => {
+    if (status === "done" && activeDocId) {
+      try {
+        localStorage.removeItem(`ravenbase-draft-${activeDocId}`)
+      } catch {
+        // Ignore
+      }
+    }
+  }, [status, activeDocId])
 
   return (
     <div className="flex flex-col h-full">
@@ -272,7 +331,7 @@ export function MetaDocEditor({
         {content ? (
           <article className="prose prose-sm max-w-none font-sans">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {content + streamingCursor}
+              {isStreaming ? content + "▌" : content}
             </ReactMarkdown>
           </article>
         ) : isStreaming ? (

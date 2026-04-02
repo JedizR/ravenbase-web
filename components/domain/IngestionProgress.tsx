@@ -1,10 +1,11 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useAuth } from "@clerk/nextjs"
-import { CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, XCircle, RefreshCw } from "lucide-react"
 import { useSSE } from "@/hooks/use-sse"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 
 interface IngestionProgressProps {
   sourceId: string | null
@@ -13,22 +14,35 @@ interface IngestionProgressProps {
 export function IngestionProgress({ sourceId }: IngestionProgressProps) {
   const { getToken } = useAuth()
   const [token, setToken] = useState<string | null>(null)
+  const [tokenReady, setTokenReady] = useState(false)
 
   useEffect(() => {
-    if (!sourceId) return
+    if (!sourceId) {
+      setToken(null)
+      setTokenReady(false)
+      return
+    }
+    setTokenReady(false)
     getToken()
-      .then((t) => setToken(t))
-      .catch(() => setToken(null))
+      .then((t) => {
+        setToken(t)
+        setTokenReady(true)
+      })
+      .catch(() => {
+        setToken(null)
+        setTokenReady(true)
+      })
   }, [sourceId, getToken])
 
-  const url = sourceId ? `/v1/ingest/stream/${sourceId}` : null
-  const { progress, message, status } = useSSE(url, token)
+  // Only start SSE after token is ready to avoid race condition
+  const url = sourceId && tokenReady ? `/v1/ingest/stream/${sourceId}` : null
+  const { progress, message, status, retry } = useSSE(url, token)
 
   if (!sourceId || status === "idle") {
     return <Skeleton className="h-2 w-full" />
   }
 
-  if (status === "connecting") {
+  if (status === "connecting" || !tokenReady) {
     return <Skeleton className="h-2 w-full" />
   }
 
@@ -55,7 +69,17 @@ export function IngestionProgress({ sourceId }: IngestionProgressProps) {
           <XCircle className="ml-2 h-4 w-4 shrink-0 text-destructive" />
         )}
       </div>
-      <p className="font-mono text-xs text-muted-foreground">{message}</p>
+      <div className="flex items-center justify-between">
+        <p className="font-mono text-xs text-muted-foreground">
+          {message || (isError ? "Processing failed. Please try again." : "")}
+        </p>
+        {isError && retry && (
+          <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={retry}>
+            <RefreshCw className="w-3 h-3 mr-1" />
+            Retry
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

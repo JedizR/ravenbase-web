@@ -1,17 +1,19 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import dynamic from "next/dynamic"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { useProfile } from "@/contexts/ProfileContext"
 import { useApiFetch } from "@/lib/api-client"
+import { AlertCircle, RefreshCw } from "lucide-react"
 import { GraphFilters } from "@/components/domain/GraphFilters"
 import { GraphNodePanel } from "@/components/domain/GraphNodePanel"
 import { GraphEmptyState } from "@/components/domain/GraphEmptyState"
 import { ConceptList } from "@/components/domain/ConceptList"
 import { GraphQueryBar } from "@/components/domain/GraphQueryBar"
 import { GraphQueryResults } from "@/components/domain/GraphQueryResults"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { GraphResponse, GraphQueryResponse } from "@/src/lib/api-client/types.gen"
 
@@ -47,10 +49,14 @@ export function GraphPageClient() {
   // Query results state
   const [queryResults, setQueryResults] = useState<GraphQueryResponse | null>(null)
 
+  const queryClient = useQueryClient()
+
   // Build query string
   const profileId = activeProfile?.id ?? null
   const params = new URLSearchParams()
   if (profileId) params.set("profile_id", profileId)
+  if (dateRange.from) params.set("from", dateRange.from.toISOString())
+  if (dateRange.to) params.set("to", dateRange.to.toISOString())
   params.set("limit", "200")
   const queryString = params.toString()
 
@@ -58,10 +64,12 @@ export function GraphPageClient() {
     data: graphData,
     isLoading,
     error,
+    refetch,
   } = useQuery<GraphResponse>({
-    queryKey: ["graph", "nodes", profileId, nodeTypes],
+    queryKey: ["graph", "nodes", profileId, Array.from(nodeTypes).sort().join(","), dateRange.from?.toISOString() ?? "", dateRange.to?.toISOString() ?? ""],
     queryFn: () => apiFetch<GraphResponse>(`/v1/graph/nodes?${queryString}`),
     staleTime: 60_000,
+    retry: 1,
   })
 
   // Filter nodes by type
@@ -95,15 +103,36 @@ export function GraphPageClient() {
   const hasSources = (graphData?.nodes.length ?? 0) > 0
   const isEmpty = filteredNodes.length === 0 && !isLoading
 
+  // Clear selectedNodeId when filters change to avoid stale panel data
+  const handleNodeTypesChange = useCallback((types: Set<NodeType>) => {
+    setNodeTypes(types)
+    setSelectedNodeId(null)
+    setIsPanelOpen(false)
+  }, [])
+
+  const handleDateRangeChange = useCallback((range: { from: Date | null; to: Date | null }) => {
+    setDateRange(range)
+    setSelectedNodeId(null)
+    setIsPanelOpen(false)
+  }, [])
+
   // Determine which empty state to show
   const getEmptyState = () => {
     if (error) {
       return (
-        <GraphEmptyState
-          isProcessing={false}
-          hasSources={hasSources}
-          onClearFilters={handleClearFilters}
-        />
+        <div className="flex flex-col items-center justify-center h-100 text-center">
+          <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+            <AlertCircle className="w-8 h-8 text-destructive" />
+          </div>
+          <h3 className="font-serif text-xl mb-2">Knowledge graph unavailable</h3>
+          <p className="text-sm text-muted-foreground max-w-md mb-4">
+            Unable to load graph data. Your knowledge is safe — we&apos;re working on reconnecting the graph database.
+          </p>
+          <Button onClick={() => refetch()} variant="outline" className="gap-2">
+            <RefreshCw className="w-4 h-4" />
+            Try again
+          </Button>
+        </div>
       )
     }
     if (isEmpty) {
@@ -138,8 +167,8 @@ export function GraphPageClient() {
         profileId={profileId}
         nodeTypes={nodeTypes}
         dateRange={dateRange}
-        onNodeTypesChange={setNodeTypes}
-        onDateRangeChange={setDateRange}
+        onNodeTypesChange={handleNodeTypesChange}
+        onDateRangeChange={handleDateRangeChange}
       />
 
       {/* Main content */}

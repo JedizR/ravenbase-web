@@ -83,12 +83,13 @@ export function MemoryChat() {
           role: string
           content: string
           created_at: string
+          citations?: Citation[]
         }>
       ).map((m) => ({
         id: crypto.randomUUID(),
         role: m.role as "user" | "assistant",
         content: m.content,
-        citations: [],
+        citations: m.citations ?? [],
       }))
       setMessages(loaded)
       setSessionsOpen(false)
@@ -113,7 +114,7 @@ export function MemoryChat() {
   const handleSend = useCallback(async () => {
     if (!input.trim() || chatState === "streaming") return
     const userMessage = input.trim()
-    setInput("")
+    // Don't clear input yet — preserve it until stream starts successfully
     setChatState("streaming")
 
     // Optimistic user message
@@ -151,8 +152,9 @@ export function MemoryChat() {
     if (response.status === 402) {
       setChatState("error")
       setShowUpgradeDialog(true)
-      // Remove the streaming assistant message
-      setMessages((prev) => prev.filter((m) => m.id !== asstMsgId))
+      // Remove both optimistic messages — keep user's input for retry
+      setMessages((prev) => prev.filter((m) => m.id !== asstMsgId && m.id !== userMsgId))
+      setInput(userMessage) // Restore input so user can retry after upgrading
       return
     }
 
@@ -160,11 +162,16 @@ export function MemoryChat() {
       setChatState("error")
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === asstMsgId ? { ...m, isStreaming: false, isError: true } : m
+          m.id === asstMsgId
+            ? { ...m, content: "Failed to get a response. Please try again.", isStreaming: false, isError: true }
+            : m
         )
       )
       return
     }
+
+    // Stream started successfully — now safe to clear input
+    setInput("")
 
     const reader = response.body!.getReader()
     readerRef.current = reader
@@ -179,15 +186,20 @@ export function MemoryChat() {
           l.startsWith("data:")
         )
         for (const line of lines) {
-          const event = JSON.parse(line.slice(5).trim())
-          if (event.type === "session") {
+          let event: { type?: string; session_id?: string; content?: string; citations?: Citation[] }
+          try {
+            event = JSON.parse(line.slice(5).trim()) as typeof event
+          } catch {
+            continue // Skip malformed SSE events
+          }
+          if (event.type === "session" && event.session_id) {
             setSessionId(event.session_id)
           }
           if (event.type === "token") {
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === asstMsgId
-                  ? { ...m, content: m.content + event.content }
+                  ? { ...m, content: m.content + (event.content ?? "") }
                   : m
               )
             )
@@ -198,7 +210,7 @@ export function MemoryChat() {
                 m.id === asstMsgId
                   ? {
                       ...m,
-                      citations: event.citations as Citation[],
+                      citations: event.citations ?? [],
                       isStreaming: false,
                     }
                   : m
@@ -206,6 +218,7 @@ export function MemoryChat() {
             )
             setChatState("idle")
             queryClient.invalidateQueries({ queryKey: ["chat", "sessions"] })
+            queryClient.invalidateQueries({ queryKey: ["credits"] })
           }
           if (event.type === "error") {
             setChatState("error")
@@ -240,14 +253,15 @@ export function MemoryChat() {
   ])
 
   // Textarea key handler — Enter sends, Shift+Enter inserts newline
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLTextAreaElement>
-  ) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault()
+        handleSend()
+      }
+    },
+    [handleSend]
+  )
 
   return (
     <div className="flex h-[100dvh]">
