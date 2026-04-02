@@ -62,7 +62,7 @@ export function FeaturesSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
               variants={cardVariants}
-              className="bg-card border border-border rounded-2xl p-6 space-y-4"
+              className="bg-card border border-border rounded-2xl p-6 space-y-4 hover:shadow-lg hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-default"
             >
               <p className="text-xs font-mono text-muted-foreground tracking-wider">
                 ◆ {feature.label}
