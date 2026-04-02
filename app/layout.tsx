@@ -9,7 +9,7 @@ const playfairDisplay = Playfair_Display({ subsets: ["latin"], variable: "--font
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", display: "swap" })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ravenbase.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
   title: {
     default: "Ravenbase — What happened, where, and when. Always.",
     template: "%s | Ravenbase",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://ravenbase.app",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
     siteName: "Ravenbase",
     title: "Ravenbase — What happened, where, and when. Always.",
     description:
@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
           <link rel="preconnect" href="https://clerk.accounts.dev" />
           <link rel="preconnect" href="https://img.clerk.com" />
-          <link rel="dns-prefetch" href="https://api.ravenbase.app" />
+          <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_API_URL} />
         </head>
         <body className="font-sans antialiased scroll-smooth" suppressHydrationWarning>
           <a

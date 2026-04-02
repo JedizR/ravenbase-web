@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     "Capture, structure, and synthesize years of notes into a permanent, queryable knowledge graph. Ravenbase is the episodic memory layer for long-term thinkers.",
   openGraph: {
     type: "website",
-    url: "https://ravenbase.app",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
     title: "Ravenbase — Your Permanent Memory",
     description:
       "Years of scattered notes → one structured memory. Ravenbase captures, structures, and surfaces everything you've ever known.",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
     creator: "@ravenbase",
   },
-  alternates: { canonical: "https://ravenbase.app" },
+  alternates: { canonical: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000" },
 }
 
 const JSON_LD = {
@@ -39,7 +39,7 @@ const JSON_LD = {
   operatingSystem: "Web",
   description:
     "Human-AI long-term context memory. Capture, structure, and synthesize your knowledge permanently.",
-  url: "https://ravenbase.app",
+  url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   offers: [
     { "@type": "Offer", price: "0", priceCurrency: "USD", name: "Starter" },
     {

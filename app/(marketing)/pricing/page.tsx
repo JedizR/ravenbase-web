@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "Start free. Upgrade to Pro for unlimited sources, Meta-Documents, and Claude Sonnet access.",
   openGraph: {
     type: "website",
-    url: "https://ravenbase.app/pricing",
+    url: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/pricing`,
     title: "Pricing — Ravenbase",
     description:
       "Start free. Upgrade to Pro for unlimited sources, Meta-Documents, and Claude Sonnet access.",

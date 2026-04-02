@@ -30,7 +30,7 @@ export default function TermsPage() {
           <p className="text-base text-foreground leading-relaxed mb-8">
             Welcome to Ravenbase. These Terms of Service (&ldquo;Terms&rdquo;) are a legally binding agreement between
             Ravenbase, Inc. (&ldquo;Ravenbase,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) and you (&ldquo;you&rdquo; or &ldquo;your&rdquo;)
-            governing your access to and use of the Ravenbase service accessible at ravenbase.app
+            governing your access to and use of the Ravenbase service accessible at {(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace("https://", "").replace("http://", "")}
             and related applications (collectively, the &ldquo;Service&rdquo;).
           </p>
 
@@ -120,7 +120,7 @@ export default function TermsPage() {
           </ul>
           <p className="text-base text-foreground leading-relaxed mt-4">
             Refunds are provided within 7 days of a charge if you are not satisfied with the service,
-            at Ravenbase&apos;s sole discretion. Contact billing@ravenbase.app for refund requests.
+            at Ravenbase&apos;s sole discretion. Contact {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@ravenbase.space"} for refund requests.
           </p>
 
           <h2 className="font-serif text-2xl text-foreground mt-10 mb-4">7. Confidentiality</h2>
@@ -192,7 +192,7 @@ export default function TermsPage() {
             For questions regarding these Terms, contact us at:<br />
             Ravenbase, Inc.<br />
             548 Market St, Suite 60000, San Francisco, CA 94104<br />
-            legal@ravenbase.app
+            {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@ravenbase.space"}
           </p>
         </article>
       </main>

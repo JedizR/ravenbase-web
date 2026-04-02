@@ -29,7 +29,7 @@ export default function PrivacyPage() {
 
           <p className="text-base text-foreground leading-relaxed mb-8">
             Ravenbase, Inc. (&ldquo;Ravenbase,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the
-            website ravenbase.app and related services. This Privacy Policy explains how we
+            website {(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace("https://", "").replace("http://", "")} and related services. This Privacy Policy explains how we
             collect, use, disclose, and safeguard your information when you use our service.
           </p>
 
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
             <li><strong>Object:</strong> Object to processing of your personal data for certain purposes</li>
           </ul>
           <p className="text-base text-foreground leading-relaxed mt-4">
-            To exercise any of these rights, visit Settings → Data or contact privacy@ravenbase.app. We respond to all requests within 30 days.
+            To exercise any of these rights, visit Settings → Data or contact {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@ravenbase.space"}. We respond to all requests within 30 days.
           </p>
 
           <h2 className="font-serif text-2xl text-foreground mt-10 mb-4">7. Children&apos;s Privacy</h2>
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
             Ravenbase, Inc.<br />
             Attn: Privacy Team<br />
             548 Market St, Suite 60000, San Francisco, CA 94104<br />
-            privacy@ravenbase.app
+            {process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@ravenbase.space"}
           </p>
         </article>
       </main>
