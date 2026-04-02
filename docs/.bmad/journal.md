@@ -14,10 +14,10 @@
 |---|---|
 | Total stories complete | 38 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 35 |
+| Current sprint | 36 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-02 (STORY-035: Data Export — ExportService multi-store collection, ARQ task, pre-signed URL, completion email, Redis rate limit, Settings → Data page 7-bug fix) |
+| Last entry | 2026-04-02 (STORY-036-FE: Admin Dashboard UI — API contract fixes across 3 admin pages, ban/credit dialogs, pagination, status filter, [id]/loading.tsx created) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1354,6 +1354,36 @@ Backend: `ExportService` collects PostgreSQL (sources, meta_documents, profiles,
 
 **Tech debt noted:**
 - No dedicated export tests written yet (coverage gap).
+
+---
+
+## Sprint 36 — STORY-036-FE: Admin Dashboard UI
+
+**Date:** 2026-04-02
+**Sprint:** 36
+**Phase:** B — Frontend
+**Repo:** ravenbase-web
+
+**Quality gate:** `npm run build` — ✅ 0 TypeScript errors, all 3 admin pages compiled (`/admin`, `/admin/users`, `/admin/users/[id]`)
+
+**Commit:** _(see git log)_
+
+**What was built:**
+- Fixed API contract mismatches in all 3 admin pages against the live backend (`types.gen.ts` as source of truth)
+- Stats page (`app/admin/page.tsx`): corrected `AdminStats` interface — `active_today`, `new_today`, `daily_llm_spend_usd`, `llm_spend_cap_usd`, `sources_today`, `metadocs_today`. Removed nonexistent fields. Added 6-card grid, proper LLM spend format (`$X.XXXX / $Y`), `<Link>` for navigation
+- Users list (`app/admin/users/page.tsx`): fixed `AdminUserListResponse` paginated type, server-side search, client-side tier/status filtering, corrected toggle-active URL to `POST /v1/admin/users/${userId}/toggle-active` with `{ active: boolean }` body, added `StatusFilter` pills, skeleton table rows, `DropdownMenuSeparator`
+- User detail (`app/admin/users/[id]/page.tsx`): fixed `recent_transactions`/`operation` field names, corrected toggle-active URL/body, added ban/unban confirmation dialog, restructured credit adjustment as proper dialog, added `balance_after` column, replaced `animate-pulse` divs with `Skeleton`
+- Created missing `app/admin/users/[id]/loading.tsx` (RULE 10 compliance)
+- Fixed layout.tsx: skip link + `id="main-content"` (RULE 16), red accent bar in header
+
+**Key decisions:**
+- Tier/status filtering is client-side — backend only exposes `q`/`page`/`page_size`
+- Toggle-active uses path param, not body `user_id`
+- `app/admin/middleware.ts` is dead code — layout.tsx handles auth redirect
+
+**Gotchas:**
+- Tailwind v4 canonical classes: `min-h-[44px]` → `min-h-11`, `min-w-[180px]` → `min-w-45`
+- `AdminUserListResponse` has no `limit` field, only `total` and `page`
 
 ---
 

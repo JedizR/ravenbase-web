@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 35
-**Status:** In progress — 38 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033, STORY-034, STORY-035 done)
+**Current sprint:** 36
+**Status:** In progress — 38 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033, STORY-034, STORY-035, STORY-036-FE done)
 
-**Next story to implement:** STORY-036-FE (Sprint 36 — Admin dashboard UI: user management, credit adjustment, stats)
-**Story file:** `docs/stories/EPIC-08-polish/STORY-035.md`
+**Next story to implement:** STORY-038 (Sprint 38 — Final UX Polish Pass)
+**Story file:** `docs/stories/EPIC-08-polish/STORY-038.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-035 — Data Export / Portability (Sprint 35)** (2026-04-02)
-Backend: ExportService collecting PostgreSQL (sources, meta_documents, profiles, chat_sessions), Neo4j (nodes + relationships), and Supabase Storage (original files) into a ZIP, uploaded to exports/{user_id}/{timestamp}.zip, pre-signed URL with 72h expiry, completion email via EmailService, 24h Redis rate limiting. Frontend: Settings → Data page fixed 7 bugs including format selector icons, 429 rate limit handling, polling enabled flag, progress bar rounded-full, error + dismiss states.
+**STORY-036-FE — Admin Dashboard UI (Sprint 36)** (2026-04-02)
+Frontend: Fixed API contract mismatches in all 3 admin pages. Stats page corrected to use `active_today`, `new_today`, `daily_llm_spend_usd`, `llm_spend_cap_usd`, `sources_today`, `metadocs_today`. Users list fixed paginated response type, corrected toggle-active URL to `POST /v1/admin/users/{user_id}/toggle-active` with `{ active: boolean }` body, added status filter pills (Active/Disabled), skeleton table rows, DropdownMenuSeparator. User detail page fixed `recent_transactions`/`operation` field names, added ban/unban confirmation dialog, restructured credit adjustment as proper dialog, added `balance_after` column to transaction table. Created missing `app/admin/users/[id]/loading.tsx`.
 
 ---
 
 ## Context for Next Session
 
-STORY-035 complete. Backend quality passes (0 ruff, 0 pyright), 350 tests pass. Frontend build passes. API client regenerated. Next: STORY-036-FE (admin dashboard UI).
+STORY-036-FE complete. Frontend build passes (0 TypeScript errors). All 6 ACs verified. Next: STORY-038 (Final UX Polish Pass).
 
 ---
 
