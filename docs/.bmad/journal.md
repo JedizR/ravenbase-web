@@ -12,12 +12,12 @@
 
 | Field | Value |
 |---|---|
-| Total stories complete | 37 / 38 |
+| Total stories complete | 38 / 38 |
 | Current phase | Phase B — Frontend (Sprints 20–38) |
-| Current sprint | 34 |
+| Current sprint | 35 |
 | Active repo | ravenbase-web |
 | Project started | 2026-03-25 |
-| Last entry | 2026-04-02 (STORY-034: Referral System — backend ReferralService, two API endpoints, ARQ integration, monthly cap of 50, migration merge) |
+| Last entry | 2026-04-02 (STORY-035: Data Export — ExportService multi-store collection, ARQ task, pre-signed URL, completion email, Redis rate limit, Settings → Data page 7-bug fix) |
 
 > **Update this table** after every story entry. Increment stories complete,
 > update current sprint and phase when they change.
@@ -1322,6 +1322,38 @@ Chat page at `/chat` with SSE streaming via `fetch()` + `ReadableStream` reader 
 **Tech debt noted:**
 - No session title editing — session titles are auto-derived from first message (first 60 chars)
 - Model credit cost not displayed next to model options (backend doesn't expose per-model cost in API response)
+
+---
+
+## Sprint 35 — Data Export + Admin Dashboard
+
+> GDPR Article 20 data portability, Settings → Data page, final admin dashboard UI.
+> Sprint 35 covers STORY-035.
+
+### STORY-035 — Data Export / Right to Portability
+**Date:** 2026-04-02 | **Sprint:** 35 | **Phase:** B | **Repo:** ravenbase-api + ravenbase-web
+**Quality gate:** ✅ clean — 350 tests passing, 0 ruff errors, 0 pyright errors
+**Commit:** `d1a71e3` (backend), `e245dab` (frontend)
+
+**What was built:**
+Backend: `ExportService` collects PostgreSQL (sources, meta_documents, profiles, chat_sessions), Neo4j (nodes + relationships, excluding Qdrant vectors per GDPR), and original Supabase Storage files into a ZIP at `exports/{user_id}/{timestamp}.zip`, generates 72-hour pre-signed download URL, sends completion email via `EmailService.send_export_complete()`, and sets Redis rate limit key `export:cooldown:{user_id}` with 24h TTL. Two new API endpoints: `POST /v1/account/export` (202, enqueues ARQ task) and `GET /v1/account/export/status`. `generate_user_export` ARQ task with partial failure handling (creates `PARTIAL_EXPORT.txt` if any component fails). Frontend: `Settings → Data` page fixed 7 bugs — format card icons now render, 429 rate limit toast, polling `enabled` flag uses `queryClient.getQueryData`, progress bar `rounded-full`, error display with dismiss button. Loading state skeleton fixed to `grid-cols-1 sm:grid-cols-3`.
+
+**Key decisions:**
+- `JobStatus` model uses `id` as primary key (not `job_id`) and stores result JSON in `message` field — followed `DeletionService` pattern exactly.
+- Supabase `create_signed_url` returns `SignedUrlResponse` object with `.signed_url` attribute, not a plain string — used `getattr` with fallback to `str()`.
+- All PostgreSQL queries use `db.execute(text(...))` not `db.exec()` — `exec()` has pyright overload issues with raw SQL.
+- Progress callback inside `export_for_user` uses closure over `result` dict — avoids mutable default argument.
+- Rate limit Redis key set inside ARQ task (not route handler) so it persists only on successful job completion.
+
+**Gotchas:**
+- `ExportFormat(str, Enum)` ruff UP042 error — changed to `ExportFormat(StrEnum)` from `enum` module.
+- Parameter order error in `start_export`: `body` before `request` caused "non-default follows default" TypeError — reordered to `request, body, user`.
+- `JobStatus` query in ARQ task used `job_id=` but the field is `id=` — fixed throughout.
+- `create_signed_url` pyright error — Supabase client's `storage.from_().create_signed_url()` returns `SignedUrlResponse`, not string. Used `getattr(signed_url_response, "signed_url", None) or str(signed_url_response)`.
+- Frontend `enabled` flag in `useQuery` was checking `exportMutation.data?.job_id` but job_id is stored via `queryClient.setQueryData`, not mutation data — broke polling. Fixed to use `queryClient.getQueryData(["export-job-id"])?.job_id`.
+
+**Tech debt noted:**
+- No dedicated export tests written yet (coverage gap).
 
 ---
 

@@ -8,24 +8,24 @@
 ## Current State
 
 **Phase:** B — Frontend (Sprints 20–38)
-**Current sprint:** 34
-**Status:** In progress — 37 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033, STORY-034 done)
+**Current sprint:** 35
+**Status:** In progress — 38 of 38 stories complete (Phase A backend complete, STORY-018-FE, STORY-019, STORY-020, STORY-007-FE, STORY-008-FE, STORY-017, STORY-027, STORY-028-FE, STORY-011, STORY-014, STORY-030, STORY-021, STORY-022, STORY-031, STORY-032, STORY-033, STORY-034, STORY-035 done)
 
-**Next story to implement:** STORY-035 (Sprint 35 — Data export: multi-store ZIP, email link, Settings → Data)
+**Next story to implement:** STORY-036-FE (Sprint 36 — Admin dashboard UI: user management, credit adjustment, stats)
 **Story file:** `docs/stories/EPIC-08-polish/STORY-035.md`
 
 ---
 
 ## Last Completed Story
 
-**STORY-034 — Referral System (Sprint 34)** (2026-04-02)
-Backend: ReferralTransaction model, ReferralService with apply_referral_code and award_referrer_on_first_upload, two new API endpoints (GET /v1/account/referral, POST /v1/account/apply-referral), ARQ task integration for awarding referrers on first source upload, monthly cap of 50. Frontend: Settings → Referrals page already existed. Migration created for referral_transactions table with merge of two diverging branches.
+**STORY-035 — Data Export / Portability (Sprint 35)** (2026-04-02)
+Backend: ExportService collecting PostgreSQL (sources, meta_documents, profiles, chat_sessions), Neo4j (nodes + relationships), and Supabase Storage (original files) into a ZIP, uploaded to exports/{user_id}/{timestamp}.zip, pre-signed URL with 72h expiry, completion email via EmailService, 24h Redis rate limiting. Frontend: Settings → Data page fixed 7 bugs including format selector icons, 429 rate limit handling, polling enabled flag, progress bar rounded-full, error + dismiss states.
 
 ---
 
 ## Context for Next Session
 
-STORY-034 complete. Backend quality passes (0 ruff, 0 pyright), 350 tests pass. Frontend build passes. API client regenerated. Next: STORY-035 (data export).
+STORY-035 complete. Backend quality passes (0 ruff, 0 pyright), 350 tests pass. Frontend build passes. API client regenerated. Next: STORY-036-FE (admin dashboard UI).
 
 ---
 
