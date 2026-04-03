@@ -232,11 +232,14 @@ export function MemoryChat() {
           }
         }
       }
-    } catch {
+    } catch (err) {
       setChatState("error")
+      const errorMsg = err instanceof Error ? err.message : "Network error"
       setMessages((prev) =>
         prev.map((m) =>
-          m.id === asstMsgId ? { ...m, isStreaming: false, isError: true } : m
+          m.id === asstMsgId
+            ? { ...m, content: `Connection failed: ${errorMsg}. Check that the API server is running.`, isStreaming: false, isError: true }
+            : m
         )
       )
     } finally {
@@ -272,7 +275,7 @@ export function MemoryChat() {
   }, [])
 
   return (
-    <div className="flex h-[100dvh]">
+    <div className="flex h-full">
       {/* Desktop sidebar */}
       <ChatSessionSidebar
         sessions={sessionList?.items ?? []}
