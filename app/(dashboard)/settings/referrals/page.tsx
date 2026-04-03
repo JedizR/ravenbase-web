@@ -49,6 +49,11 @@ export default function ReferralsPage() {
 
   return (
     <div className="space-y-8">
+      <div>
+        <p className="font-mono text-xs text-muted-foreground tracking-wider mb-1">◆ INVITE_FRIENDS</p>
+        <h1 className="font-serif text-3xl">Referrals</h1>
+      </div>
+
       {/* Referral link card */}
       <div className="bg-card rounded-2xl border border-border p-6 space-y-4">
         <p className="text-xs font-mono text-muted-foreground tracking-wider">◆ REFERRAL_LINK</p>

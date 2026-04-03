@@ -1,6 +1,7 @@
 "use client"
 import { useCallback } from "react"
 import { useDropzone } from "react-dropzone"
+import { X } from "lucide-react"
 
 const ACCEPTED_TYPES = {
   "application/pdf": [".pdf"],
@@ -15,12 +16,14 @@ const MAX_SIZE = 50 * 1024 * 1024 // 50 MB
 interface IngestionDropzoneProps {
   onFileAccepted: (file: File) => void
   onFileRejected?: () => void
+  onClear?: () => void
   selectedFile?: File | null
 }
 
 export function IngestionDropzone({
   onFileAccepted,
   onFileRejected,
+  onClear,
   selectedFile,
 }: IngestionDropzoneProps) {
   const onDrop = useCallback(
@@ -56,7 +59,17 @@ export function IngestionDropzone({
     >
       <input {...getInputProps()} />
       {selectedFile ? (
-        <div className="space-y-1">
+        <div className="relative space-y-1">
+          {onClear && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onClear() }}
+              className="absolute -top-2 -right-2 p-1 rounded-full bg-muted hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+              aria-label="Clear selected file"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
           <p className="font-mono text-xs text-muted-foreground tracking-wider">
             ◆ FILE_SELECTED
           </p>

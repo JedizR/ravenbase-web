@@ -95,6 +95,7 @@ export function Omnibar({ className }: OmnibarProps) {
         toast.info("Type some text after /ingest")
         return
       }
+      const loadingId = toast.loading("Capturing text...")
       try {
         await apiFetch("/v1/ingest/text", {
           method: "POST",
@@ -104,6 +105,7 @@ export function Omnibar({ className }: OmnibarProps) {
             tags: [],
           }),
         })
+        toast.dismiss(loadingId)
         toast.success(
           activeProfile ? `Captured to ${activeProfile.name}` : "Captured",
           { duration: 3000 }
@@ -111,6 +113,7 @@ export function Omnibar({ className }: OmnibarProps) {
         setOpen(false)
         setValue("")
       } catch (err) {
+        toast.dismiss(loadingId)
         const msg = err instanceof Error ? err.message : "Ingest failed"
         toast.error("Ingest failed", { description: msg })
       }

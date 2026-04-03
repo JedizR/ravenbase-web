@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ChevronDown, ChevronUp, AlertTriangle } from "lucide-react"
+import { ChevronDown, ChevronUp, AlertTriangle, Loader2 } from "lucide-react"
 import { useProfile } from "@/contexts/ProfileContext"
 import {
   getImportPromptV1IngestImportPromptGet,
@@ -264,7 +264,12 @@ export function ImportFromAIChat() {
           size="lg"
           aria-live="polite"
         >
-          {mutation.isPending ? "Importing..." : "Import"}
+          {mutation.isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Importing...
+            </>
+          ) : "Import"}
         </Button>
       )}
     </div>

@@ -20,6 +20,7 @@ export default function SourcesPage() {
     setSelectedFile(file)
     setUploading(true)
     setSourceId(null)
+    const loadingId = toast.loading(`Uploading ${file.name}...`)
 
     try {
       const formData = new FormData()
@@ -31,8 +32,10 @@ export default function SourcesPage() {
         "/v1/ingest/upload",
         formData,
       )
+      toast.dismiss(loadingId)
       setSourceId(data.source_id)
     } catch (err) {
+      toast.dismiss(loadingId)
       const msg = err instanceof Error ? err.message : "Unknown error"
       toast.error(`Upload failed: ${msg}`)
       setSelectedFile(null)
@@ -71,6 +74,7 @@ export default function SourcesPage() {
           <IngestionDropzone
             onFileAccepted={handleFileAccepted}
             onFileRejected={handleFileRejected}
+            onClear={() => { setSelectedFile(null); setSourceId(null) }}
             selectedFile={selectedFile}
           />
           {(uploading || sourceId) && (
