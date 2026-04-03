@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { SignUp } from "@clerk/nextjs"
 import { RavenbaseLockup } from "@/components/brand"
+import { CLERK_APPEARANCE } from "@/app/(auth)/clerk-theme"
 
 export const metadata: Metadata = {
   title: "Sign Up",
@@ -11,15 +12,16 @@ export default function RegisterPage() {
   return (
     <main
       id="main-content"
-      className="flex min-h-[100dvh] flex-col items-center justify-center bg-background"
+      className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#f5f3ee]"
     >
-      <div className="mb-8 text-primary">
+      <div className="mb-8 text-[#2d4a3e]">
         <RavenbaseLockup size="lg" />
       </div>
       <SignUp
         path="/register"
         signInUrl="/login"
-        afterSignUpUrl="/onboarding"
+        fallbackRedirectUrl="/onboarding"
+        appearance={CLERK_APPEARANCE}
       />
     </main>
   )
