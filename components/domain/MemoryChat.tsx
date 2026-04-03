@@ -227,10 +227,11 @@ export function MemoryChat() {
           }
           if (event.type === "error") {
             setChatState("error")
+            const errMsg = (event as { message?: string }).message ?? "Stream failed"
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === asstMsgId
-                  ? { ...m, isStreaming: false, isError: true }
+                  ? { ...m, content: errMsg, isStreaming: false, isError: true }
                   : m
               )
             )

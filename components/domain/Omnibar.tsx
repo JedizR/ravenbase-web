@@ -178,10 +178,22 @@ export function Omnibar({ className }: OmnibarProps) {
     }
   }, [open])
 
+  // Close on click outside
+  useEffect(() => {
+    if (!open) return
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+        setValue("")
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [open])
+
   return (
-    <div ref={containerRef} className={className} aria-label="Command palette">
+    <div ref={containerRef} className={`relative ${className ?? ""}`} aria-label="Command palette">
       <div
-        className="relative"
         onClick={() => setOpen((v) => !v)}
         role="button"
         tabIndex={0}
@@ -201,7 +213,7 @@ export function Omnibar({ className }: OmnibarProps) {
       </div>
 
       {open && (
-        <div className="absolute left-0 right-0 bottom-full mb-2 z-50">
+        <div className="absolute left-0 right-0 top-full mt-2 z-50">
           <Command
             className="rounded-2xl border border-border bg-card shadow-xl overflow-hidden"
             loop

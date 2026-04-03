@@ -175,19 +175,32 @@ export default function NotificationsPage() {
     staleTime: 60_000,
   })
 
-  // Update mutation (PATCH)
+  // Update mutation (PATCH) with optimistic UI
   const updateMutation = useMutation({
     mutationFn: (updates: Partial<NotificationPrefs>) =>
       apiFetch("/v1/account/notification-preferences", {
         method: "PATCH",
         body: JSON.stringify(updates),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notification-prefs"] })
-      toast.success("Preferences saved")
+    onMutate: async (updates) => {
+      // Cancel outgoing refetches so they don't overwrite optimistic update
+      await queryClient.cancelQueries({ queryKey: ["notification-prefs"] })
+      const previous = queryClient.getQueryData<NotificationPrefs>(["notification-prefs"])
+      // Optimistically update the cache immediately
+      queryClient.setQueryData<NotificationPrefs>(["notification-prefs"], (old) =>
+        old ? { ...old, ...updates } : old
+      )
+      return { previous }
     },
-    onError: () => {
+    onError: (_err, _updates, context) => {
+      // Rollback on error
+      if (context?.previous) {
+        queryClient.setQueryData(["notification-prefs"], context.previous)
+      }
       toast.error("Failed to save preferences. Please try again.")
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notification-prefs"] })
     },
   })
 
