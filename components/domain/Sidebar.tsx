@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
+import { UserButton } from "@clerk/nextjs"
 import { RavenbaseLogo } from "@/components/brand"
 import { ProfileSwitcher } from "@/components/domain/ProfileSwitcher"
 import { Separator } from "@/components/ui/separator"
@@ -179,6 +180,21 @@ export function Sidebar() {
           <span className="ml-auto font-mono text-primary-foreground/80">
             {creditsData?.balance ?? "—"}
           </span>
+        </div>
+      </div>
+
+      {/* User account — sign out via Clerk UserButton */}
+      <div className="p-4 border-t border-primary-foreground/10">
+        <div className="flex items-center gap-3 px-2">
+          <UserButton
+            afterSignOutUrl="/"
+            appearance={{
+              elements: {
+                avatarBox: "w-8 h-8 border-2 border-primary-foreground/20",
+              },
+            }}
+          />
+          <span className="text-xs font-mono text-primary-foreground/50">◆ SIGNED_IN</span>
         </div>
       </div>
     </aside>

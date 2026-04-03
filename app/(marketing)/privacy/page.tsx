@@ -19,6 +19,9 @@ export default function PrivacyPage() {
         Skip to main content
       </a>
       <main id="main-content" className="mx-auto max-w-3xl px-4 sm:px-6 py-16 lg:py-24">
+        <a href="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+          ← Back to Ravenbase
+        </a>
         <article className="prose prose-stone max-w-none">
           <h1 className="font-serif text-4xl lg:text-5xl text-foreground mb-2">
             Privacy Policy

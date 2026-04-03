@@ -1,6 +1,7 @@
 "use client"
 
 import { Menu } from "lucide-react"
+import { UserButton } from "@clerk/nextjs"
 import { Omnibar } from "@/components/domain/Omnibar"
 import { ThemeToggle } from "@/components/domain/ThemeToggle"
 
@@ -18,8 +19,9 @@ export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
       {/* Mobile menu toggle — only visible on mobile */}
       <button
         onClick={onMenuOpen}
-        className="lg:hidden p-2 rounded-lg hover:bg-secondary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+        className="lg:hidden p-2 rounded-lg hover:bg-secondary transition-colors min-h-11 min-w-11 flex items-center justify-center"
         aria-label="Open navigation menu"
+        aria-expanded={false}
       >
         <Menu className="w-5 h-5" />
       </button>
@@ -29,8 +31,19 @@ export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
         <Omnibar />
       </div>
 
-      {/* Theme toggle — right side, visible on all screen sizes */}
-      <ThemeToggle />
+      {/* Right side controls */}
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        <UserButton
+          afterSignOutUrl="/"
+          appearance={{
+            elements: {
+              avatarBox: "w-8 h-8",
+              userButtonPopoverCard: "rounded-2xl shadow-lg border border-border",
+            },
+          }}
+        />
+      </div>
     </header>
   )
 }

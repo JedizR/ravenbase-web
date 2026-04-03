@@ -1,5 +1,5 @@
 "use client"
-import { Trash2 } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 import type { ChatSessionSummary } from "@/src/lib/api-client/types.gen"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ interface ChatSessionSidebarProps {
   activeSessionId: string | null
   onSelectSession: (sessionId: string) => void
   onDeleteSession: (sessionId: string) => void
+  onNewChat?: () => void
   isLoading: boolean
   className?: string
 }
@@ -65,6 +66,7 @@ export function ChatSessionSidebar({
   activeSessionId,
   onSelectSession,
   onDeleteSession,
+  onNewChat,
   isLoading,
   className = "",
 }: ChatSessionSidebarProps) {
@@ -77,6 +79,19 @@ export function ChatSessionSidebar({
           ◆ SESSIONS
         </span>
       </div>
+
+      {/* New Chat button */}
+      {onNewChat && (
+        <Button
+          onClick={onNewChat}
+          variant="outline"
+          size="sm"
+          className="w-full rounded-xl"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Chat
+        </Button>
+      )}
 
       {isLoading ? (
         [...Array(4)].map((_, i) => (

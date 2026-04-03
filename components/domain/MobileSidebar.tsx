@@ -12,12 +12,15 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
+import { UserButton } from "@clerk/nextjs"
 
 import { RavenbaseLogo } from "@/components/brand"
 import { ProfileSwitcher } from "@/components/domain/ProfileSwitcher"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { getCreditsBalanceV1CreditsBalanceGet } from "@/src/lib/api-client/services.gen"
 
 interface MobileSidebarProps {
   /** Whether the sheet is open — controlled by parent */
@@ -37,6 +40,13 @@ const NAV_ITEMS = [
 export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
   const pathname = usePathname()
 
+  // Fetch real credits balance (same query as desktop Sidebar)
+  const { data: creditsData } = useQuery({
+    queryKey: ["credits", "balance"],
+    queryFn: () => getCreditsBalanceV1CreditsBalanceGet(),
+    staleTime: 15_000,
+  })
+
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
       <SheetContent
@@ -49,7 +59,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
           <RavenbaseLogo size="sm" color="currentColor" />
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="p-2 rounded-lg hover:bg-primary-foreground/10 transition-colors min-h-11 min-w-11 flex items-center justify-center"
             aria-label="Close menu"
           >
             <X className="w-4 h-4" />
@@ -74,7 +84,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors min-h-[44px]",
+                  "flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors min-h-11",
                   isActive
                     ? "bg-primary-foreground/15 text-primary-foreground font-medium"
                     : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
@@ -99,7 +109,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
             href="/settings"
             onClick={onClose}
             className={cn(
-              "flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors min-h-[44px]",
+              "flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors min-h-11",
               pathname.startsWith("/settings")
                 ? "bg-primary-foreground/15 text-primary-foreground font-medium"
                 : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
@@ -112,12 +122,29 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 
         <Separator className="bg-primary-foreground/10" />
 
-        {/* Credits */}
-        <div className="p-4">
+        {/* Credits — real balance, not hardcoded */}
+        <div className="px-4 py-2">
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-foreground/10 text-xs text-primary-foreground/60">
             <Coins className="w-3.5 h-3.5 opacity-50" aria-hidden="true" />
             <span className="font-mono">◆ CREDITS</span>
-            <span className="ml-auto font-mono text-primary-foreground/80">— —</span>
+            <span className="ml-auto font-mono text-primary-foreground/80">
+              {creditsData?.balance ?? "—"}
+            </span>
+          </div>
+        </div>
+
+        {/* User account — sign out via Clerk */}
+        <div className="p-4 border-t border-primary-foreground/10">
+          <div className="flex items-center gap-3 px-2">
+            <UserButton
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  avatarBox: "w-8 h-8 border-2 border-primary-foreground/20",
+                },
+              }}
+            />
+            <span className="text-xs font-mono text-primary-foreground/50">◆ ACCOUNT</span>
           </div>
         </div>
       </SheetContent>

@@ -263,6 +263,14 @@ export function MemoryChat() {
     [handleSend]
   )
 
+  // Start a new chat — clear session and messages
+  const handleNewChat = useCallback(() => {
+    setSessionId(null)
+    setMessages([])
+    setChatState("idle")
+    setInput("")
+  }, [])
+
   return (
     <div className="flex h-[100dvh]">
       {/* Desktop sidebar */}
@@ -270,6 +278,7 @@ export function MemoryChat() {
         sessions={sessionList?.items ?? []}
         activeSessionId={sessionId}
         onSelectSession={loadSession}
+        onNewChat={handleNewChat}
         onDeleteSession={deleteSession}
         isLoading={isLoading}
         className="hidden md:flex w-64 flex-col"
@@ -372,6 +381,7 @@ export function MemoryChat() {
             activeSessionId={sessionId}
             onSelectSession={loadSession}
             onDeleteSession={deleteSession}
+            onNewChat={handleNewChat}
             isLoading={isLoading}
             className="flex-col h-full border-0"
           />
