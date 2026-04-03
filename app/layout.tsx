@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { DM_Sans, Playfair_Display, JetBrains_Mono } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 import { Providers } from "@/app/providers"
 import "./globals.css"
 
@@ -74,6 +76,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Skip to main content
           </a>
           <Providers>{children}</Providers>
+          <SpeedInsights />
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

@@ -130,7 +130,11 @@ export function ConflictCard({
                 disabled={isPending || isSubmitting}
                 aria-label="Keep old memory (Backspace)"
               >
-                <RotateCcw className="w-3 h-3 mr-1" />
+                {isSubmitting ? (
+                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                ) : (
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                )}
                 Keep Old
               </Button>
               <Button

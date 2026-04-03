@@ -159,11 +159,16 @@ export function MemoryChat() {
     }
 
     if (!response.ok) {
+      let errorMsg = `Server error (${response.status})`
+      try {
+        const errorData = await response.json()
+        errorMsg = errorData?.detail?.message ?? errorData?.detail ?? errorMsg
+      } catch { /* response not JSON */ }
       setChatState("error")
       setMessages((prev) =>
         prev.map((m) =>
           m.id === asstMsgId
-            ? { ...m, content: "Failed to get a response. Please try again.", isStreaming: false, isError: true }
+            ? { ...m, content: errorMsg, isStreaming: false, isError: true }
             : m
         )
       )
@@ -343,7 +348,9 @@ export function MemoryChat() {
             </div>
           )}
           {messages.map((msg) => (
-            <ChatMessage key={msg.id} message={msg} />
+            <div key={msg.id} className="animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <ChatMessage message={msg} />
+            </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
@@ -363,7 +370,7 @@ export function MemoryChat() {
               onClick={handleSend}
               disabled={chatState === "streaming" || !input.trim()}
               size="icon"
-              className="h-[48px] w-[48px] shrink-0 rounded-full"
+              className="h-12 w-12 shrink-0 rounded-full active:scale-95 transition-transform"
               aria-label="Send message"
             >
               {chatState === "streaming" ? (

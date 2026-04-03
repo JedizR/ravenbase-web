@@ -32,8 +32,9 @@ export default function SourcesPage() {
         formData,
       )
       setSourceId(data.source_id)
-    } catch {
-      toast.error("Upload failed. Please try again.")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error"
+      toast.error(`Upload failed: ${msg}`)
       setSelectedFile(null)
     } finally {
       setUploading(false)
