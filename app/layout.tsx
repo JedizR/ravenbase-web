@@ -54,9 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               __html: `
 (function() {
   try {
-    var s = localStorage.getItem('ravenbase-theme');
-    var d = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (s === 'dark' || (!s && d)) {
+    if (localStorage.getItem('ravenbase-theme') === 'dark') {
       document.documentElement.classList.add('dark');
     }
   } catch(e) {}

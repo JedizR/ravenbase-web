@@ -12,14 +12,8 @@ export function useTheme() {
     // Read stored preference from localStorage
     const stored = localStorage.getItem(STORAGE_KEY)
 
-    // Determine effective dark state:
-    // 1. If 'dark' stored explicitly → dark
-    // 2. If 'light' stored explicitly → light
-    // 3. If nothing stored → respect system preference
-    // 4. If system prefers dark → dark
-    // 5. Otherwise → light (default)
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-    const dark = stored === "dark" || (!stored && prefersDark)
+    // Light mode is the Ravenbase default. Only go dark if user explicitly toggled.
+    const dark = stored === "dark"
 
     // Initialize state
     setIsDark(dark)

@@ -1,7 +1,8 @@
 "use client"
 
 import { Suspense, useState, useEffect } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useAuth } from "@clerk/nextjs"
 import { Toaster } from "sonner"
 import { Providers } from "@/app/providers"
 import { DashboardHeader } from "@/components/domain/DashboardHeader"
@@ -9,12 +10,34 @@ import { MobileSidebar } from "@/components/domain/MobileSidebar"
 import { ProfileContextProvider } from "@/contexts/ProfileContext"
 import { Sidebar } from "@/components/domain/Sidebar"
 import { CheckoutSuccessHandler } from "@/components/dashboard/CheckoutSuccessHandler"
+import { Skeleton } from "@/components/ui/skeleton"
+
+function DashboardSkeleton() {
+  return (
+    <div className="flex h-[100dvh] bg-background overflow-hidden">
+      {/* Sidebar skeleton */}
+      <div className="hidden lg:block w-60 bg-primary shrink-0" />
+      {/* Content skeleton */}
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="h-14 border-b border-border bg-background px-4 flex items-center">
+          <Skeleton className="h-8 w-64" />
+        </div>
+        <div className="flex-1 p-6 space-y-4">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-64 w-full rounded-2xl" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { isLoaded, userId } = useAuth()
+  const router = useRouter()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const pathname = usePathname()
 
@@ -22,6 +45,23 @@ export default function DashboardLayout({
   useEffect(() => {
     setMobileNavOpen(false)
   }, [pathname])
+
+  // Auth guard: redirect to login if not authenticated
+  useEffect(() => {
+    if (isLoaded && !userId) {
+      router.replace("/login")
+    }
+  }, [isLoaded, userId, router])
+
+  // Show skeleton while Clerk loads auth state
+  if (!isLoaded) {
+    return <DashboardSkeleton />
+  }
+
+  // After Clerk loads, if no user, show nothing (redirect is in-flight)
+  if (!userId) {
+    return <DashboardSkeleton />
+  }
 
   return (
     <ProfileContextProvider>

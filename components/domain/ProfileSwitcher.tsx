@@ -20,7 +20,7 @@ interface ProfileSwitcherProps {
 }
 
 export function ProfileSwitcher({ variant = "sidebar" }: ProfileSwitcherProps) {
-  const { profiles, activeProfile, setActiveProfile } = useProfile()
+  const { profiles, activeProfile, setActiveProfile, isLoading } = useProfile()
 
   function handleSwitch(profile: Profile) {
     if (profile.id === activeProfile?.id) return
@@ -28,17 +28,18 @@ export function ProfileSwitcher({ variant = "sidebar" }: ProfileSwitcherProps) {
     toast.success(`Switched to ${profile.name}`, { duration: 2000 })
   }
 
-  if (!activeProfile) {
+  // Loading state — pulsing skeleton instead of stuck "Loading..."
+  if (isLoading || !activeProfile) {
     return (
       <div
         className={
           variant === "sidebar"
-            ? "flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-primary-foreground/50"
-            : "flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground"
+            ? "flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-primary-foreground/50 animate-pulse"
+            : "flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground animate-pulse"
         }
       >
         <Briefcase className="w-3 h-3" />
-        <span>Loading…</span>
+        <div className="h-3 w-20 bg-current/20 rounded" />
       </div>
     )
   }
