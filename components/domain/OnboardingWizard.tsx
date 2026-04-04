@@ -9,6 +9,7 @@ import { RavenbaseLockup } from "@/components/brand"
 import { IngestionDropzone } from "@/components/domain/IngestionDropzone"
 import { useApiFetch, useApiUpload } from "@/lib/api-client"
 import { useSSE } from "@/hooks/use-sse"
+import { createProfileV1ProfilesPost } from "@/src/lib/api-client/services.gen"
 import { CheckCircle2 } from "lucide-react"
 
 // ---------------------------------------------------------------------------
@@ -71,6 +72,8 @@ export function OnboardingWizard() {
   const [profileNameTouched, setProfileNameTouched] = useState(false)
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
+  const [isCreatingProfile, setIsCreatingProfile] = useState(false)
+  const [profileCreateError, setProfileCreateError] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [pastedText, setPastedText] = useState("")
   const [fileRejected, setFileRejected] = useState(false)
@@ -251,12 +254,31 @@ export function OnboardingWizard() {
             onRoleSelect={handleRoleSelect}
             onProfileNameChange={setProfileName}
             onProfileNameBlur={handleProfileNameBlur}
-            onContinue={() => {
+            isCreatingProfile={isCreatingProfile}
+            profileCreateError={profileCreateError}
+            onContinue={async () => {
               const err = validateProfileName(profileName)
               setProfileNameError(err)
               setProfileNameTouched(true)
               if (!role || err) return
-              setStep(2)
+              setIsCreatingProfile(true)
+              setProfileCreateError(null)
+              try {
+                await createProfileV1ProfilesPost({
+                  requestBody: {
+                    name: profileName.trim(),
+                    description: role,
+                    is_default: true,
+                  },
+                })
+                setStep(2)
+              } catch (e) {
+                setProfileCreateError(
+                  e instanceof Error ? e.message : "Failed to create profile"
+                )
+              } finally {
+                setIsCreatingProfile(false)
+              }
             }}
           />
         )}
@@ -337,6 +359,8 @@ interface StepProfileProps {
   profileNameError: string | null
   profileNameTouched: boolean
   showGreeting: boolean
+  isCreatingProfile: boolean
+  profileCreateError: string | null
   onRoleSelect: (r: Role) => void
   onProfileNameChange: (v: string) => void
   onProfileNameBlur: (e: React.FocusEvent<HTMLInputElement>) => void
@@ -349,6 +373,8 @@ function StepProfile({
   profileNameError,
   profileNameTouched,
   showGreeting,
+  isCreatingProfile,
+  profileCreateError,
   onRoleSelect,
   onProfileNameChange,
   onProfileNameBlur,
@@ -456,13 +482,19 @@ function StepProfile({
         )}
       </div>
 
+      {profileCreateError && (
+        <p className="text-xs text-destructive" role="alert">
+          {profileCreateError}
+        </p>
+      )}
+
       <Button
         type="button"
         onClick={onContinue}
-        disabled={!role}
+        disabled={!role || isCreatingProfile}
         className="w-full rounded-full h-11"
       >
-        Continue →
+        {isCreatingProfile ? "Creating profile..." : "Continue →"}
       </Button>
     </div>
   )

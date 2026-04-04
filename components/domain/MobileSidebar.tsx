@@ -53,6 +53,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         side="left"
         className="w-72 bg-primary text-primary-foreground p-0 flex flex-col gap-0 h-full"
         aria-label="Navigation menu"
+        showCloseButton={false}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4">

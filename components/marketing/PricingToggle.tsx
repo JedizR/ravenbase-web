@@ -24,13 +24,11 @@ export function PricingToggle({ isAnnual, onToggle }: PricingToggleProps) {
         role="switch"
         aria-checked={isAnnual}
         onClick={() => onToggle(!isAnnual)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-          isAnnual ? "bg-primary" : "bg-secondary border border-border"
-        }`}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring bg-primary`}
         aria-label="Toggle annual billing"
       >
         <span
-          className={`inline-block h-4 w-4 rounded-full bg-secondary transition-transform ${
+          className={`inline-block h-4 w-4 rounded-full bg-background transition-transform ${
             isAnnual ? "translate-x-6" : "translate-x-1"
           }`}
         />

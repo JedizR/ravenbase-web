@@ -181,22 +181,26 @@ export function MemoryChat() {
     const reader = response.body!.getReader()
     readerRef.current = reader
     const decoder = new TextDecoder()
+    let buffer = ""
 
     try {
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        const chunk = decoder.decode(value)
-        const lines = chunk.split("\n").filter((l) =>
-          l.startsWith("data:")
-        )
-        for (const line of lines) {
-          let event: { type?: string; session_id?: string; content?: string; citations?: Citation[] }
-          try {
-            event = JSON.parse(line.slice(5).trim()) as typeof event
-          } catch {
-            continue // Skip malformed SSE events
-          }
+        buffer += decoder.decode(value, { stream: true })
+        // SSE events are delimited by double newlines
+        const parts = buffer.split("\n\n")
+        // Last part may be incomplete — keep it in the buffer
+        buffer = parts.pop() ?? ""
+        for (const part of parts) {
+          const lines = part.split("\n").filter((l) => l.startsWith("data:"))
+          for (const line of lines) {
+            let event: { type?: string; session_id?: string; content?: string; citations?: Citation[]; message?: string }
+            try {
+              event = JSON.parse(line.slice(5).trim()) as typeof event
+            } catch {
+              continue // Skip malformed SSE events
+            }
           if (event.type === "session" && event.session_id) {
             setSessionId(event.session_id)
           }
@@ -235,6 +239,7 @@ export function MemoryChat() {
                   : m
               )
             )
+          }
           }
         }
       }
