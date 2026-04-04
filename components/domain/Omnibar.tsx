@@ -182,11 +182,11 @@ export function Omnibar({ className }: OmnibarProps) {
     const isDark = html.classList.contains("dark")
     if (isDark) {
       html.classList.remove("dark")
-      localStorage.setItem("theme", "light")
+      localStorage.setItem("ravenbase-theme", "light")
       toast.success("Switched to light mode", { duration: 1500 })
     } else {
       html.classList.add("dark")
-      localStorage.setItem("theme", "dark")
+      localStorage.setItem("ravenbase-theme", "dark")
       toast.success("Switched to dark mode", { duration: 1500 })
     }
     setOpen(false)
