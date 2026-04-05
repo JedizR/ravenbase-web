@@ -71,14 +71,15 @@ export default function SourcesPage() {
   const { activeProfile } = useProfile()
   const queryClient = useQueryClient()
 
-  // Fetch upload history
+  // Fetch upload history — filtered by active profile
+  const profileParam = activeProfile?.id ? `?profile_id=${activeProfile.id}` : ""
   const { data: sourcesData, isLoading: sourcesLoading } = useQuery<{
     items: SourceItem[]
     total: number
   }>({
-    queryKey: ["sources"],
+    queryKey: ["sources", activeProfile?.id ?? "all"],
     queryFn: () =>
-      apiFetch<{ items: SourceItem[]; total: number }>("/v1/ingest/sources"),
+      apiFetch<{ items: SourceItem[]; total: number }>(`/v1/ingest/sources${profileParam}`),
     staleTime: 15_000,
     refetchInterval: uploading || sourceId ? 5000 : false,
   })

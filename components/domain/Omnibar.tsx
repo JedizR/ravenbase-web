@@ -110,11 +110,11 @@ function Kbd({ children, className }: { children: string; className?: string }) 
 // ---------------------------------------------------------------------------
 
 const NAV_ITEMS = [
-  { label: "Chat", href: "/chat", icon: MessageSquare, shortcut: "⌘1", key: "1" },
-  { label: "Graph Explorer", href: "/graph", icon: Search, shortcut: "⌘2", key: "2" },
+  { label: "Graph Explorer", href: "/graph", icon: Search, shortcut: "⌘1", key: "1" },
+  { label: "Chat", href: "/chat", icon: MessageSquare, shortcut: "⌘2", key: "2" },
   { label: "Memory Inbox", href: "/inbox", icon: Inbox, shortcut: "⌘3", key: "3" },
-  { label: "Sources", href: "/sources", icon: Upload, shortcut: "⌘4", key: "4" },
-  { label: "Workstation", href: "/workstation", icon: PenTool, shortcut: "⌘5", key: "5" },
+  { label: "Workstation", href: "/workstation", icon: PenTool, shortcut: "⌘4", key: "4" },
+  { label: "Sources", href: "/sources", icon: Upload, shortcut: "⌘5", key: "5" },
   { label: "Settings", href: "/settings", icon: Settings, shortcut: "⌘,", key: "," },
 ] as const
 

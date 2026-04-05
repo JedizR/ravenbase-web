@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { MessageSquare, Send, Loader2, History } from "lucide-react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
-  listSessionsV1ChatSessionsGet,
   getSessionV1ChatSessionsSessionIdGet,
   deleteSessionV1ChatSessionsSessionIdDelete,
 } from "@/src/lib/api-client/services.gen"
@@ -14,6 +13,7 @@ import type {
   ChatSessionDetail,
 } from "@/src/lib/api-client/types.gen"
 import { useProfile } from "@/contexts/ProfileContext"
+import { useApiFetch } from "@/lib/api-client"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import {
@@ -60,12 +60,26 @@ export function MemoryChat() {
     }
   }, [])
 
-  // Session list query
+  const apiFetch = useApiFetch()
+
+  // Session list query — filtered by active profile
+  const profileParam = activeProfile?.id ? `&profile_id=${activeProfile.id}` : ""
   const { data: sessionList, isLoading } = useQuery({
-    queryKey: ["chat", "sessions"],
-    queryFn: () => listSessionsV1ChatSessionsGet(),
+    queryKey: ["chat", "sessions", activeProfile?.id ?? "all"],
+    queryFn: () =>
+      apiFetch<{ items: ChatSessionSummary[]; total: number; page: number; page_size: number }>(
+        `/v1/chat/sessions?page=1&page_size=20${profileParam}`
+      ),
     staleTime: 10_000,
   })
+
+  // Reset chat when profile changes
+  useEffect(() => {
+    setSessionId(null)
+    setMessages([])
+    setChatState("idle")
+    setInput("")
+  }, [activeProfile?.id])
 
   // Scroll to bottom when messages change
   useEffect(() => {
