@@ -182,6 +182,73 @@ export function MemoryChat() {
     readerRef.current = reader
     const decoder = new TextDecoder()
     let buffer = ""
+    let gotAnyToken = false
+
+    // 30-second timeout: if we never receive a token, show error
+    const timeoutId = setTimeout(() => {
+      if (!gotAnyToken) {
+        reader.cancel().catch(() => null)
+        setChatState("error")
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === asstMsgId
+              ? {
+                  ...m,
+                  content: "No response received after 30 seconds. The AI service may be unavailable — check that ANTHROPIC_API_KEY is set correctly on Railway.",
+                  isStreaming: false,
+                  isError: true,
+                }
+              : m
+          )
+        )
+      }
+    }, 30_000)
+
+    const processEvent = (event: {
+      type?: string
+      session_id?: string
+      content?: string
+      citations?: Citation[]
+      message?: string
+    }) => {
+      if (event.type === "session" && event.session_id) {
+        setSessionId(event.session_id)
+      }
+      if (event.type === "token") {
+        gotAnyToken = true
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === asstMsgId
+              ? { ...m, content: m.content + (event.content ?? "") }
+              : m
+          )
+        )
+      }
+      if (event.type === "done") {
+        gotAnyToken = true
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === asstMsgId
+              ? { ...m, citations: event.citations ?? [], isStreaming: false }
+              : m
+          )
+        )
+        setChatState("idle")
+        queryClient.invalidateQueries({ queryKey: ["chat", "sessions"] })
+        queryClient.invalidateQueries({ queryKey: ["credits"] })
+      }
+      if (event.type === "error") {
+        setChatState("error")
+        const errMsg = event.message ?? "Stream failed"
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === asstMsgId
+              ? { ...m, content: errMsg, isStreaming: false, isError: true }
+              : m
+          )
+        )
+      }
+    }
 
     try {
       while (true) {
@@ -195,53 +262,42 @@ export function MemoryChat() {
         for (const part of parts) {
           const lines = part.split("\n").filter((l) => l.startsWith("data:"))
           for (const line of lines) {
-            let event: { type?: string; session_id?: string; content?: string; citations?: Citation[]; message?: string }
             try {
-              event = JSON.parse(line.slice(5).trim()) as typeof event
+              const event = JSON.parse(line.slice(5).trim())
+              processEvent(event)
             } catch {
               continue // Skip malformed SSE events
             }
-          if (event.type === "session" && event.session_id) {
-            setSessionId(event.session_id)
-          }
-          if (event.type === "token") {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === asstMsgId
-                  ? { ...m, content: m.content + (event.content ?? "") }
-                  : m
-              )
-            )
-          }
-          if (event.type === "done") {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === asstMsgId
-                  ? {
-                      ...m,
-                      citations: event.citations ?? [],
-                      isStreaming: false,
-                    }
-                  : m
-              )
-            )
-            setChatState("idle")
-            queryClient.invalidateQueries({ queryKey: ["chat", "sessions"] })
-            queryClient.invalidateQueries({ queryKey: ["credits"] })
-          }
-          if (event.type === "error") {
-            setChatState("error")
-            const errMsg = (event as { message?: string }).message ?? "Stream failed"
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === asstMsgId
-                  ? { ...m, content: errMsg, isStreaming: false, isError: true }
-                  : m
-              )
-            )
-          }
           }
         }
+      }
+      // Process any remaining buffer after stream ends
+      if (buffer.trim()) {
+        const lines = buffer.split("\n").filter((l) => l.startsWith("data:"))
+        for (const line of lines) {
+          try {
+            const event = JSON.parse(line.slice(5).trim())
+            processEvent(event)
+          } catch {
+            // ignore
+          }
+        }
+      }
+      // If stream ended without ever receiving a token or done/error event
+      if (!gotAnyToken) {
+        setChatState("error")
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === asstMsgId
+              ? {
+                  ...m,
+                  content: "Stream ended without a response. Check Railway logs for backend errors.",
+                  isStreaming: false,
+                  isError: true,
+                }
+              : m
+          )
+        )
       }
     } catch (err) {
       setChatState("error")
@@ -249,11 +305,17 @@ export function MemoryChat() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === asstMsgId
-            ? { ...m, content: `Connection failed: ${errorMsg}. Check that the API server is running.`, isStreaming: false, isError: true }
+            ? {
+                ...m,
+                content: `Connection failed: ${errorMsg}`,
+                isStreaming: false,
+                isError: true,
+              }
             : m
         )
       )
     } finally {
+      clearTimeout(timeoutId)
       readerRef.current = null
     }
   }, [
